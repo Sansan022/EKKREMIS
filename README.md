@@ -1,0 +1,1 @@
+# odoo_training_july_2022
