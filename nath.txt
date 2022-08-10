@@ -1,9 +1,0 @@
-
-testing text edited edited 2
-<<<<<<< HEAD
-test jerald 123e12312111
-=======
-test jerald
-
-MJ MALAKAS
->>>>>>> 85cdc030804f5d91b9b7a4ed39b64f2664507d1e
