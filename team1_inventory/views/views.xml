@@ -1,0 +1,147 @@
+<odoo>
+  <data>
+
+  <record id="stock_view_picking_form" model="ir.ui.view">
+    <field name="name">stock.picking.view.form.inherit</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+
+      <field name="move_type" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+
+      <field name="group_id" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <field name="priority" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+     
+      <field name="partner_id" position="attributes">
+        <attribute name="string">Subscriber</attribute>
+      </field>
+
+
+      <field name="min_date" position="attributes">
+        <attribute name="string">Service Date</attribute>
+      </field>
+
+    </field>
+  </record>
+
+
+
+  <record id="product_template_form_view" model="ir.ui.view">
+    <field name="name">product.template.view.form.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_only_form_view"/>
+    <field name="arch" type="xml">
+
+     
+      <xpath expr="//button[@name='action_view_orderpoints']" position="attributes">
+        <attribute name="invisible">1</attribute>
+     </xpath>
+   
+    <xpath expr="//button[@name='action_view_sales']" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>   
+    
+
+    </field>
+  </record>  
+
+
+
+
+<!-- 
+  <record id="product_template_view_form" model="ir.ui.view">
+      <field name="name">test.inherit</field>
+      <field name="model">product.template.procurement.stat.button</field>
+      <field name="inherit_id" ref="procurement.product_template_view_form_procurement_button" />
+      <field name="arch" type="xml">
+        
+          <field name="296" position="attributes">
+              <attribute name="invisible">True</attribute>
+          </field>
+          
+
+          
+
+
+
+      </field>
+
+  </record> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="team1_inventory.list">
+      <field name="name">team1_inventory list</field>
+      <field name="model">team1_inventory.team1_inventory</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="team1_inventory.action_window">
+      <field name="name">team1_inventory window</field>
+      <field name="res_model">team1_inventory.team1_inventory</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="team1_inventory.action_server">
+      <field name="name">team1_inventory server</field>
+      <field name="model_id" ref="model_team1_inventory_team1_inventory"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="team1_inventory" id="team1_inventory.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="team1_inventory.menu_1" parent="team1_inventory.menu_root"/>
+    <menuitem name="Menu 2" id="team1_inventory.menu_2" parent="team1_inventory.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="team1_inventory.menu_1_list" parent="team1_inventory.menu_1"
+              action="team1_inventory.action_window"/>
+    <menuitem name="Server to list" id="team1_inventory" parent="team1_inventory.menu_2"
+              action="team1_inventory.action_server"/>
+    -->
+  </data>
+</odoo>
