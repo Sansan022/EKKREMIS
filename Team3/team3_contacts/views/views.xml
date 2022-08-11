@@ -1,0 +1,67 @@
+<odoo>
+  <data>
+    <record id="inherited_model_view_form" model="ir.ui.view">
+      <field name="name">team3.contacts</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+          <!-- find field description and add the field
+               new_field after it -->
+
+               <xpath expr="//div[@name='button_box']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+
+               <xpath expr="//notebook/page[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+
+               <!-- 
+               
+               <xpath expr="//notebook/page[3]" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath> -->
+
+               <!-- <xpath expr="//notebook/page[4]" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath> -->
+
+               <!-- <xpath expr="//page[3]" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+
+               
+               <xpath expr="//page[4]" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath> -->
+
+             
+               
+               <!-- <xpath expr="//button[@name='toggle_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+               
+               <xpath expr="//button[@name='toggle_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+               <xpath expr="//button[@name='toggle_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+               <xpath expr="//button[@name='toggle_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+               <xpath expr="//button[@name='toggle_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+               </xpath>
+ -->
+
+
+
+              
+          
+            
+      </field>
+  </record>
+  
+  </data>
+</odoo>
