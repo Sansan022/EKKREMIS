@@ -1,67 +1,68 @@
 <odoo>
   <data>
-    <record id="inherited_model_view_form" model="ir.ui.view">
-      <field name="name">team3.contacts</field>
+    <record id="contract_inherited_views" model="ir.ui.view">
+      <field name="name">team3.contact</field>
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="base.view_partner_form"/>
       <field name="arch" type="xml">
-          <!-- find field description and add the field
-               new_field after it -->
-
-               <xpath expr="//div[@name='button_box']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-
-               <xpath expr="//notebook/page[1]" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-
-               <!-- 
-               
-               <xpath expr="//notebook/page[3]" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath> -->
-
-               <!-- <xpath expr="//notebook/page[4]" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath> -->
-
-               <!-- <xpath expr="//page[3]" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-
-               
-               <xpath expr="//page[4]" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath> -->
-
-             
-               
-               <!-- <xpath expr="//button[@name='toggle_active']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-               
-               <xpath expr="//button[@name='toggle_active']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-               <xpath expr="//button[@name='toggle_active']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-               <xpath expr="//button[@name='toggle_active']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
-               <xpath expr="//button[@name='toggle_active']" position="attributes">
-                <attribute name="invisible">1</attribute>
-               </xpath>
- -->
 
 
+          <xpath expr="//div[@name='button_box']" position="attributes">
+          <attribute name="invisible">1</attribute>
+          </xpath>
 
-              
-          
-            
+          <xpath expr="//notebook/page[1]" position="attributes">
+          <attribute name="invisible">1</attribute>
+          </xpath>
+
+          <page name="sales_purchases" position='attributes'>
+            <attribute name="invisible">1</attribute>
+          </page>
+        
       </field>
-  </record>
-  
+    </record>
+    
+          <record id="team3_inherited_view" model="ir.ui.view">
+            <field name="name">team3.inherited.view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="etsi_payroll.etsi_payroll_partner_form"/>
+            <field name="arch" type="xml">
+
+                <page name="payroll_partner" position='attributes'>
+                  <attribute name="invisible">1</attribute>
+                </page>
+                
+                <xpath expr="//page[4]" position="attributes">
+                <attribute name="invisible">1</attribute>
+                </xpath> 
+
+            </field>
+          </record>
+
+          <record id="banking_inherit" model="ir.ui.view">
+            <field name="name">banking.view.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="etsi_base.base_partner_form_view"/>
+            <field name="arch" type="xml">
+
+              <xpath expr="//page[4]" position="attributes">
+                <attribute name="invisible">1</attribute>
+                </xpath> 
+
+            </field>
+          </record>
+
+          <record id="subscriber" model="ir.ui.view">
+            <field name="name">subscriber.view.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+              
+              <field name="category_id" position='after'>
+                  <field name="subscriber" />
+              </field>
+
+            </field>
+          </record>
   </data>
 </odoo>
