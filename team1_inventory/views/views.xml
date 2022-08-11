@@ -54,21 +54,17 @@
 
 
 
-<!-- 
-  <record id="product_template_view_form" model="ir.ui.view">
-      <field name="name">test.inherit</field>
-      <field name="model">product.template.procurement.stat.button</field>
-      <field name="inherit_id" ref="procurement.product_template_view_form_procurement_button" />
+
+  <!-- <record id="procurement_group_form_inheritss" model="ir.ui.view">
+      <field name="name">procurement.group.form.inheritss</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="procurement.procurement_group_form_view" />
       <field name="arch" type="xml">
         
-          <field name="296" position="attributes">
-              <attribute name="invisible">True</attribute>
-          </field>
-          
-
-          
-
-
+          <xpath expr="//button[1]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>   
+        
 
       </field>
 
