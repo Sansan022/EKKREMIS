@@ -20,16 +20,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','contacts','etsi_payroll','etsi_base'],
+    'depends': ['base','contacts','etsi_payroll','etsi_base','account', 'sale', 'project', 'website_partner', 'crm'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
-        'views/templates.xml',
-    ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
     ],
 }
