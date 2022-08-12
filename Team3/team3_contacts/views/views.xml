@@ -94,7 +94,7 @@
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="sale.res_partner_view_buttons"/>
       <field name="arch" type="xml">
-        <xpath expr="//div/button[@name='759']" position="attributes">
+        <xpath expr="//div[@name='button_box']/button[7]" position="attributes">
           <attribute name="attrs">{'invisible': [('customer', '=', True)]}</attribute>
         </xpath>
       </field>
@@ -110,7 +110,7 @@
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="project.view_task_partner_info_form"/>
       <field name="arch" type="xml">
-        <xpath expr="//div/button[@name='307']" position="attributes">
+        <xpath expr="//div[@name='button_box']/button[11]" position="attributes">
           <attribute name="invisible">1</attribute>
         </xpath>
       </field>
@@ -147,12 +147,12 @@
         </xpath>
 
         <!-- ACTIVITIES -->
-        <xpath expr="//div/button[@name='729']" position="attributes">
+        <xpath expr="//div[@name='button_box']/button[4]" position="attributes">
           <attribute name="invisible">1</attribute>
         </xpath>
 
         <!-- OPPORTUNITY -->
-        <xpath expr="//div/button[@name='721']" position="attributes">
+        <xpath expr="//div[@name='button_box']/button[2]" position="attributes">
           <attribute name="attrs">{'invisible': [('customer', '=', True)]}</attribute>
         </xpath>
       </field>
