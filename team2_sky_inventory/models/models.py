@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api
 
+<<<<<<< HEAD:team1_inventory/models/models.py
 class team1_inventory(models.Model):
     _inherit = 'product.template'
 
@@ -22,3 +23,16 @@ class testing(models.Model):
     #     }
     #     res = super(testing,self)._compute_picking_count()
     #     return res
+=======
+# class sky_inventory(models.Model):
+#     _name = 'sky_inventory.sky_inventory'
+
+#     name = fields.Char()
+#     value = fields.Integer()
+#     value2 = fields.Float(compute="_value_pc", store=True)
+#     description = fields.Text()
+#
+#     @api.depends('value')
+#     def _value_pc(self):
+#         self.value2 = float(self.value) / 100
+>>>>>>> 31235fa86106c67a5653f66d376a1998cf995b1c:team2_sky_inventory/models/models.py

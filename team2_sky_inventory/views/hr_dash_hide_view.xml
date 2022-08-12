@@ -1,0 +1,81 @@
+<odoo>
+  <data>
+    <record id="management_inherit_employee_asset" model="ir.ui.view">
+      <field name="name">employee.form.inherit.asset</field>
+      <field name="model">hr.employee</field>
+      <field name="inherit_id" ref="etsi_asset.custom_hr_employee_form_view" />
+      <field name="arch" type="xml">
+        <xpath expr="/form/sheet/notebook/page[@name='asset_accountability']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+      </field>
+    </record>
+
+    <!-- <record id="management_inherit_employee_bank" model="ir.ui.view">
+      <field name="name">employee.form.inherit.bank</field>
+      <field name="model">hr.employee</field>
+      <field name="inherit_id" ref="wsi_hrms_custom.hr_hr_employee_view_form2" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='bank_account_id']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+      </field>
+
+    </record>
+
+    <record id="hr_inherit_hr_set" model="ir.ui.view">
+            <field name="name">hr.inherit.hr.set</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="sale_timesheet.hr_timesheet_employee_extd_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="//notebook/page[5]/group/group" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+
+              <xpath expr="//notebook/page[5]/group/group[3]" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+
+              <xpath expr="//notebook/page[5]/group/group[4]" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+
+               <xpath expr="//notebook/page[5]/group/group[2]/field[@name='manual_attendance']" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+
+
+
+            </field>
+        </record>
+
+        <record id="hr_inherit_leaves" model="ir.ui.view">
+            <field name="name">hr.inherit.leaves</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_holidays.view_employee_form_leave_inherit"/>
+            <field name="arch" type="xml">
+              <xpath expr="//notebook/page[5]/group/group[2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+              </xpath>
+            
+            </field>
+        </record> -->
+
+
+
+    
+<!--Department menu item parent change-->
+    <menuitem id="department_label"
+      name="Department label"
+      parent="hr.menu_human_resources_configuration" 
+      sequence="90"/>
+    
+    <menuitem 
+      id="hr.menu_hr_department_tree"
+      action="hr.open_module_tree_department"
+      parent="department_label" 
+      sequence="90"/>
+      
+
+  </data>
+</odoo>
