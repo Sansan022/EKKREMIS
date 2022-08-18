@@ -1,0 +1,238 @@
+<odoo>
+  <data>
+
+  <!-- Operations hide fields and rename fields -->
+  <record id="stock_view_picking_form_inherit" model="ir.ui.view">
+    <field name="name">stock.picking.view.form.inherit</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+      <!-- hide delivery type, procurement group, priority -->
+      <field name="move_type" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <field name="group_id" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <field name="priority" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <!-- partner field renamed to Subscriber -->
+      <field name="partner_id" position="attributes">
+        <attribute name="string">Subscriber</attribute>
+      </field>
+      <!-- renamed schedule date to service date -->
+      <field name="min_date" position="attributes">
+        <attribute name="string">Service Date test</attribute>
+      </field>
+      
+      
+      <!-- <field name="min_date" position="replace">
+        <attribute name="compute"></attribute>
+      </field> -->
+       <!-- <field name="min_date" position="replace">
+        <attribute name="inverse"></attribute>
+      </field> -->
+
+
+    </field>
+  </record>
+
+  <!-- Inventory Control/ Product -->
+  <!-- hide procurement button -->
+  <record id="product_template_form_view_procurement_button_inherit" model="ir.ui.view">
+      <field name="name">product.template.form.view.procurement.button.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="stock.product_template_form_view_procurement_button" />
+      <field name="arch" type="xml">
+      <xpath expr="//button[3]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>   
+      </field>
+  </record>
+
+  <!-- hide smart buttons -->
+
+    <record id="product_template_form_view_inherit" model="ir.ui.view">
+    <field name="name">product.template.view.form.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_only_form_view"/>
+    <field name="arch" type="xml">
+      <!-- hide reordeing smart button    -->
+      <xpath expr="//button[@name='action_view_orderpoints']" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>
+      <!-- hide sales smart button -->
+      <xpath expr="//button[@name='action_view_sales']" position="attributes">
+            <attribute name="invisible">1</attribute>
+      </xpath>   
+     
+    </field>
+  </record>  
+
+  <!-- hide purchase smart button -->
+  <record id="view_product_template_purchase_buttons_from_inherit" model="ir.ui.view">
+      <field name="name">view.product.template.purchase.buttons.from.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="purchase.view_product_template_purchase_buttons_from" />
+      <field name="arch" type="xml">
+  
+      <xpath expr="//div[@name='button_box']/button[10]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>  
+          
+      </field>
+  </record>
+
+  <!-- hide procurement smart button -->
+  <record id="product_template_view_form_procurement_button_inherit" model="ir.ui.view">
+      <field name="name">product.template.view.form.procurement.button.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="procurement.product_template_view_form_procurement_button" />
+      <field name="arch" type="xml">
+        <xpath expr="//div[@name='button_box']/button[9]" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>   
+      </field>
+  </record>
+
+  <!-- hide can be sold, can be purchased, can be expensed -->
+  <record id="product_template_only_form_view_inherit" model="ir.ui.view">
+    <field name="name">product.template.only.form_view.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_only_form_view"/>
+    <field name="arch" type="xml">
+
+      <field name="sale_ok" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <label for="sale_ok" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </label>
+
+      
+      <field name="purchase_ok" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <label for="purchase_ok" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </label>
+     
+           
+      <field name="can_be_expensed" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </field>
+      <label for="can_be_expensed" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </label>
+     
+    </field>
+  </record>  
+    <!-- hide sales notetab invoice page -->
+    <record id="product_template_form_view_inherit_2" model="ir.ui.view">
+      <field name="name">product.template.form.view.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_form_view" />
+      <field name="arch" type="xml">
+  
+          <page name="sales" position='attributes'>
+              <attribute name="invisible">1</attribute>
+          </page>
+          <page name="notes" position='attributes'>
+              <attribute name="invisible">1</attribute>
+          </page>
+          <page name="invoicing" position='attributes'>
+              <attribute name="invisible">1</attribute>
+          </page>
+          
+      </field>
+  </record>
+
+  <!-- hide inventory page -->
+  <record id="view_template_property_form_inherit" model="ir.ui.view">
+      <field name="name">view.template.property.form.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="stock.view_template_property_form" />
+      <field name="arch" type="xml">
+  
+           <xpath expr="//notebook/page[2]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>  
+
+      </field>
+  </record>
+
+  <!-- hide cost prices bills -->
+  <record id="product_template_form_view_inherit_3" model="ir.ui.view">
+    <field name="name">product.template.view.form.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_only_form_view"/>
+    <field name="arch" type="xml">
+
+      <field name="list_price" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+     
+      <field name="standard_price" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+    
+    </field>
+  </record>
+
+  <!-- hide control bills -->
+  <record id="view_product_supplier_inherit_inherit" model="ir.ui.view">
+      <field name="name">view_.product.supplier.inherit.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="purchase.view_product_supplier_inherit" />
+      <field name="arch" type="xml">
+  
+      <xpath expr="//group[@name='group_standard_price']" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>  
+           <xpath expr="//group[@name='group_standard_price']/field[8]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>  
+
+      </field>
+  </record>
+
+    <!-- add new field description after internal category -->
+   <record id="product_template_form_view_inherit_3" model="ir.ui.view">
+      <field name="name">product.template.form.view.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_form_view" />
+      <field name="arch" type="xml">
+  
+          <!-- <xpath expr="//notebook/page[1]/group/group[2]" position="after">
+            <group>
+              <field name="description_txt"/>
+            </group>
+          </xpath> -->
+
+          <!-- <field name="categ_id" position="after">
+              <field name="description_txt"/>
+          </field> -->
+
+          <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
+              <field name="description_txt"/>
+          </xpath>
+
+
+          
+      </field>
+  </record>
+  
+    <!-- <field name="min_date" string ="testing"></field> -->
+
+    <!-- <record id="stock.action_picking_tree_all" model="ir.actions.act_window">
+            <field name="name">All Transfers</field>
+            <field name="model">stock.picking</field>
+            <field name="view_mode">form</field>
+            <field name="view_type">form</field>
+            <field name="context">{'default_min_date':'self.datetodayfield'}</field>
+        </record> -->
+   
+  
+  </data>
+</odoo>
