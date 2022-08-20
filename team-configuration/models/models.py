@@ -12,10 +12,12 @@ class team_configuration(models.Model):
     team_number = fields.Integer()
     team_members = fields.One2many('team.configuration.line','team_members_lines1')
 
+    # check if team number already exist
     _sql_constraints = [
     ('team_number', 'UNIQUE(team_number)', 'The team number already Exists!'),
 ]
 
+    # function for sequence
     @api.model
     def create(self, vals):
         # if sequence data is equal to new 
@@ -23,6 +25,7 @@ class team_configuration(models.Model):
             vals['sequence'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
             return super(team_configuration, self).create(vals)
 
+    # validation for team members, one team only
     @api.multi
     @api.onchange('team_members')
     def _check_team_members(self):
@@ -53,6 +56,7 @@ class team_page(models.Model):
     history = fields.One2many('team.page.lines', 'team_page_lines')
     samp = fields.Many2one('team.configuration')
 
+    # get team number id in team configuration to team page
     @api.onchange('team_number_id')
     def _get_number_id(self):
         # id of employee
