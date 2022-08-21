@@ -39,6 +39,7 @@
                 <tree string="team configuration">
                     <field name="sequence" />
                     <field name="team_number" />
+                    <field name="team_members" />
                 </tree>
             </field>
         </record>
