@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =================== Operations ==================== -->
+    <!-- Add page -> Teams -->
+    <record id="stock_view_picking_form_inherit" model="ir.ui.view">
+      <field name="name">stock.picking.view.form.inherit</field>
+      <field name="model">stock.picking</field>
+      <field name="inherit_id" ref="stock.view_picking_form"/>
+      <field name="arch" type="xml">
+        <!-- hide delivery type, procurement group, priority -->
+        <field name="move_type" position="attributes">
+          <attribute name="invisible">True</attribute>
+        </field>
+
+        <field name="group_id" position="attributes">
+          <attribute name="invisible">True</attribute>
+        </field>
+
+        <field name="priority" position="attributes">
+          <attribute name="invisible">True</attribute>
+        </field>
+        <!-- partner field renamed to Subscriber -->
+        <field name="partner_id" position="attributes">
+          <attribute name="string">Subscriber</attribute>
+        </field>
+        <!-- renamed schedule date to service date -->
+        <field name="min_date" position="attributes">
+          <attribute name="string">Service Date</attribute>
+        </field>
+
+        <xpath expr="//sheet/notebook/page[3]" position="after">
+          <page name="team" string="Teams">
+            <group>
+              <field name="etsi_teams_id" />
+                <field name ="etsi_teams_line_ids">
+                <field name="etsi_teams_connect_id" />
+              </field>
+            </group>
+          </page>
+        </xpath>
+
+        
+      </field>
+    </record>
+
+</odoo>
