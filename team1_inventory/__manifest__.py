@@ -20,13 +20,15 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','procurement','purchase','product'],
+    'depends': ['base','stock','procurement','purchase','product','stock_account'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/inventory_views_inherit.xml',
         'views/templates.xml',
+        'views/operation_type_views_inherit.xml',
+        'views/quantiy_on_hand_btn_form.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

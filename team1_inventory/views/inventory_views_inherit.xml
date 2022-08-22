@@ -204,15 +204,7 @@
       <field name="inherit_id" ref="product.product_template_form_view" />
       <field name="arch" type="xml">
   
-          <!-- <xpath expr="//notebook/page[1]/group/group[2]" position="after">
-            <group>
-              <field name="description_txt"/>
-            </group>
-          </xpath> -->
 
-          <!-- <field name="categ_id" position="after">
-              <field name="description_txt"/>
-          </field> -->
 
           <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
               <field name="description_txt"/>
@@ -222,16 +214,60 @@
           
       </field>
   </record>
-  
-    <!-- <field name="min_date" string ="testing"></field> -->
 
-    <!-- <record id="stock.action_picking_tree_all" model="ir.actions.act_window">
-            <field name="name">All Transfers</field>
-            <field name="model">stock.picking</field>
-            <field name="view_mode">form</field>
-            <field name="view_type">form</field>
-            <field name="context">{'default_min_date':'self.datetodayfield'}</field>
-        </record> -->
+
+  <!-- product smart button -->
+
+  <record id="inherit_view_id_inherit_product_temp" model="ir.ui.view">
+        <field name="name">model.name.view.form.inherit.smart</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div/button[@name='action_view_stock_moves']" position="after">
+                <button name="serial_location" string="Serialss"  type="object">
+                  <field name="product_count"/>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+    <!-- hide purchase smart button -->
+    <record id="view_product_template_purchase_buttons_from_inherit_2" model="ir.ui.view">
+      <field name="name">view.product.template.purchase.buttons.from.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="purchase.view_product_template_purchase_buttons_from" />
+      <field name="arch" type="xml">
+  
+      <xpath expr="//div[@name='button_box']/button[11]" position="attributes">
+          <attribute name="invisible">1</attribute>
+      </xpath>  
+          
+      </field>
+  </record>
+
+
+
+  <record model="ir.ui.view" id="patient_tree_view">
+
+  <field name="name">serials.tree</field>
+  <field name="model">etsi.inventory</field>
+  <field name="arch" type="xml">
+      <tree string="Serial Tree">
+        <field name="etsi_serial"/>
+        <field name="etsi_mac"/>
+        <field name="etsi_status"/>
+
+        <field name="etsi_quantity"/>
+
+        <field name="etsi_status_id"/>
+
+        <field name="id_domain"/>
+
+
+      </tree>
+  </field>
+</record>
+
    
   
   </data>

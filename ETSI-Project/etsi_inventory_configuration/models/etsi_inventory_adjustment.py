@@ -89,6 +89,9 @@ class ProductDetails(models.Model):
         for rec in self.etsi_product_detail:
             etsi_serial_duplicate = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials)])
             etsi_mac_duplicate = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_macs)])
+            if rec.etsi_serials == False and rec.etsi_macs == False:
+                check3 = "Product must have either Serial NUmber or Mac Number"
+                raise ValidationError(check3)
             if etsi_serial_duplicate >= 1:
                 check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials)
                 raise ValidationError(check)
@@ -176,7 +179,7 @@ class ProductAdjustment(models.Model):
                 raise ValidationError(check4)
 
     @api.constrains('etsi_macs')
-    def check_unique_pname2(self):
+    def check_unique_pname3(self):
         check3 = self.etsi_product_ids.etsi_product_detail - self
         for rec2 in check3:
             if rec2.etsi_macs == self.etsi_macs:
