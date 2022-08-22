@@ -54,8 +54,6 @@
                   <page name="teams_page" string="Teams">
                   <group name="name" string="Team Number">
                     <field name="team_number_id" string="Team number" />
-                    <field name="samp" />
-                    <field name="aye" />
                   </group>
                     <field name="history" string="History">
                         <tree editable="bottom">
