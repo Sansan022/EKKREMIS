@@ -26,6 +26,6 @@
         'views/skycable_inventory_operation_type_views.xml',
         'views/skycable_inventory_products_views.xml',
         'views/skycable_employee_configuration_sequence.xml',
-        'views/skycable_employee_configuration_sequence.xml'
+        'views/skycable_employee_teams_configuration.xml'
     ]
 }
