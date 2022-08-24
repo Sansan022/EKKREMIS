@@ -16,9 +16,11 @@
             <field name="model">team.configuration</field>
             <field name="arch" type="xml">
                 <form string="team configuration">
+                    <header>
+                        <button string="Confirm" type="object" name="history" class="oe_highlight" />
+                    </header>
                     <sheet>
                         <group>
-                            <field name="sequence" />
                             <field name="team_number" />
                         </group>
                         <field name="team_members" >
@@ -37,7 +39,6 @@
             <field name="model">team.configuration</field>
             <field name="arch" type="xml">
                 <tree string="team configuration">
-                    <field name="sequence" />
                     <field name="team_number" />
                     <field name="team_members" />
                 </tree>
