@@ -6,10 +6,9 @@ from odoo.exceptions import ValidationError
 
 class team_configuration(models.Model):
     _name = 'team.configuration'
-    _rec_name = 'sequence'
+    _rec_name = 'team_number'
 
-    sequence= fields.Char(string='Reference', readonly=True, required=True, copy=False, default='New') 
-    team_number = fields.Integer()
+    team_number= fields.Char(string='Team number', required=True, copy=False, default='New') 
     team_members = fields.One2many('team.configuration.line','team_members_lines1')
 
     # check if team number already exist
@@ -24,35 +23,33 @@ class team_configuration(models.Model):
 
     @api.model
     def create(self, vals):
-        # if sequence data is equal to new 
-        if vals.get('sequence', 'New') == 'New':
-            vals['sequence'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
-            
-            return super(team_configuration, self).create(vals)
+        if vals.get('team_number', 'New') == 'New':
+            vals['team_number'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
+        res =super(team_configuration, self).create(vals)
+        
+        for rec in res.team_members:
+            for records in rec.team_members_lines:
+                records.write({'team_number_id': res.team_number})
+        
+        return res
+    
+    def history(self):
+        vals2 = {
+            'team_number_id': self.team_number,
+            'transaction_number': 112
+        }
+        self.env['team.page.lines'].create(vals2)
 
     @api.multi
     def write(self, values):
         res = super(team_configuration, self).write(values)
         # here you can do accordingly
-        
-        # rec = self.env['hr.employee'].search([]).mapped('id')
-        # for rec in self.team_members:
-        #     # rec.team_number_id = values.get('team_number')
-        #     rec.write({'team_number_id': self.team_number})
-        #     print('yes')
-        #     print(self.team_number)
-        #     print(self.team_members)
-        #     print(rec)
-
-        record_ids = self.env['team.configuration.line'].search([('team_members_lines', '=', self.team_members.team_members_lines.id)])
-        for record in record_ids:
-            record.write({
-            'team_number_id': self.team_number
-        })
-       
+        for rec in self.team_members:
+            for records in rec.team_members_lines:
+                records.write({'team_number_id': self.team_number, })
         return res
-
-
+   
+                        
 class team_configuration_line(models.Model):
     _name = 'team.configuration.line'
     _rec_name = 'team_members_lines'
@@ -74,7 +71,7 @@ class team_configuration_line(models.Model):
         
         return res
 
-    @api.model
+    @api.multi
     def write(self, vals):
         y = []
         x = self.env['team.configuration'].search([]).mapped('team_members')
@@ -83,8 +80,8 @@ class team_configuration_line(models.Model):
 
         res = super(team_configuration_line, self).write(vals)
 
-        if res.team_members_lines.id in y:
-            raise ValidationError("Invalid")
+        if self.team_members_lines.id in y:
+            raise ValidationError("Invalid team member")
         
         return res
 
@@ -96,15 +93,15 @@ class team_configuration_line(models.Model):
         for rec in x:
             s.append(rec.team_members_lines.id)
         if self.team_members_lines.id in s:
-            raise ValidationError("Invalid")
+            raise ValidationError("Invalid team member")
 
 
 class team_page(models.Model):
     _inherit = 'hr.employee'
-    # _rec_name = 'team_number_lines'
+    _rec_name = 'team_number_id'
 
     history = fields.One2many('team.page.lines', 'team_page_lines')
-    team_number_id = fields.Integer()
+    team_number_id = fields.Char(readonly=True)
 
       
 class team_page_lines(models.Model):  
@@ -112,12 +109,9 @@ class team_page_lines(models.Model):
     _rec_name = 'team_page_lines'
 
     team_page_lines = fields.Many2one('hr.employee')
-    team_number = fields.Integer()
+    team_number = fields.Char()
     transaction_number = fields.Integer()
     status = fields.Selection([
         ('permanent', 'Permanent'),
         ('temporary','Temporary')
     ],default='permanent')
-    
-
-
