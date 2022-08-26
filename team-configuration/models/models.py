@@ -30,13 +30,16 @@ class team_configuration(models.Model):
 
         for rec in res.team_members:
             rec.team_members_lines.write({'team_number_id': res.team_number})
-            if rec.team_number == res.team_number:
-                raise ValidationError('invalid')
-            else:
-                self.env['team.page.lines'].create({
-                'team_page_lines': rec.team_members_lines.id,
-                'team_number_team': res.team_number
-            })
+            # if res.team_number == self.team_number:
+            #     self.env['team.page.lines'].create(3,0,{
+            #     'team_page_lines': rec.team_members_lines.id,
+            #     'team_number_team': self.team_number
+            # })
+            # else:
+            self.env['team.page.lines'].create({
+            'team_page_lines': rec.team_members_lines.id,
+            'team_number_team': res.team_number
+        })
             
 
         return res
@@ -47,10 +50,16 @@ class team_configuration(models.Model):
 
         for rec in self.team_members:
             rec.team_members_lines.write({'team_number_id': self.team_number})
+            # if res.team_number == self.team_number:
+            #     self.env['team.page.lines'].create(3,0,{
+            #     'team_page_lines': rec.team_members_lines.id,
+            #     'team_number_team': self.team_number
+            # })
+            # else:
             self.env['team.page.lines'].create({
-            'team_page_lines': rec.team_members_lines.id,
-            'team_number_team': self.team_number
-        })
+                'team_page_lines': rec.team_members_lines.id,
+                'team_number_team': self.team_number
+            })
                 
         return res
 
