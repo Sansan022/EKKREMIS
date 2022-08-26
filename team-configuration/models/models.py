@@ -25,30 +25,58 @@ class team_configuration(models.Model):
     def create(self, vals):
         if vals.get('team_number', 'New') == 'New':
             vals['team_number'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
-        res =super(team_configuration, self).create(vals)
-        
+
+        res =super(team_configuration,self).create(vals)
+
         for rec in res.team_members:
-            for records in rec.team_members_lines:
-                records.write({'team_number_id': res.team_number})
-        
+            rec.team_members_lines.write({'team_number_id': res.team_number})
+            # if res.team_number == self.team_number:
+            #     self.env['team.page.lines'].create(3,0,{
+            #     'team_page_lines': rec.team_members_lines.id,
+            #     'team_number_team': self.team_number
+            # })
+            # else:
+            self.env['team.page.lines'].create({
+            'team_page_lines': rec.team_members_lines.id,
+            'team_number_team': res.team_number
+        })
+            
+
         return res
-    
-    def history(self):
-        vals2 = {
-            'team_number_id': self.team_number,
-            'transaction_number': 112
-        }
-        self.env['team.page.lines'].create(vals2)
 
     @api.multi
     def write(self, values):
         res = super(team_configuration, self).write(values)
-        # here you can do accordingly
+
         for rec in self.team_members:
-            for records in rec.team_members_lines:
-                records.write({'team_number_id': self.team_number, })
+            rec.team_members_lines.write({'team_number_id': self.team_number})
+            # if res.team_number == self.team_number:
+            #     self.env['team.page.lines'].create(3,0,{
+            #     'team_page_lines': rec.team_members_lines.id,
+            #     'team_number_team': self.team_number
+            # })
+            # else:
+            self.env['team.page.lines'].create({
+                'team_page_lines': rec.team_members_lines.id,
+                'team_number_team': self.team_number
+            })
+                
         return res
-   
+
+    # def history(self):
+        
+    #     for rec in self.team_members:
+    #         rec.team_members_lines.write({'team_number_id': self.team_number})
+    #         self.env['team.page.lines'].create({
+    #             'team_page_lines': rec.team_members_lines.id,
+    #             'team_number_team': self.team_number
+    #         })
+
+    # team_page_lines = fields.Many2one('hr.employee')
+    # team_number_team = fields.Char()
+           
+       
+       
                         
 class team_configuration_line(models.Model):
     _name = 'team.configuration.line'
@@ -103,14 +131,26 @@ class team_page(models.Model):
     history = fields.One2many('team.page.lines', 'team_page_lines')
     team_number_id = fields.Char(readonly=True)
 
+    # @api.onchange('team_number_id')
+    # def _onchange_team_number(self):
+    #     lines = []
+    #     for rec in self.history:
+    #         for line in rec.team_page_lines:
+    #             vals = {
+    #                 'team_number': 12,
+    #             }
+    #             lines.append((0,0, vals))
+    #         rec.history = lines
+    #         print('---->',lines)
+
       
 class team_page_lines(models.Model):  
     _name = 'team.page.lines'
     _rec_name = 'team_page_lines'
 
     team_page_lines = fields.Many2one('hr.employee')
-    team_number = fields.Char()
-    transaction_number = fields.Integer()
+    team_number_team = fields.Char()
+    transaction_number = fields.Char()
     status = fields.Selection([
         ('permanent', 'Permanent'),
         ('temporary','Temporary')
