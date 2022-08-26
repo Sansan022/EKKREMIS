@@ -191,7 +191,9 @@
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
+             
                 <field name="description_txt"/>
+            
             </xpath>
         </field>
     </record>

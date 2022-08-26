@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class ProductDetails(models.Model):
     _inherit = 'stock.inventory'
     
+    name = fields.Char('Reference', readonly=True, required=False, states={'draft': [('readonly', False)]})
     # fields
     etsi_product_detail =  fields.One2many('etsi.product.detail.line','etsi_product_ids')
 
@@ -40,24 +41,14 @@ class ProductDetails(models.Model):
             if is_empty == True:
                 raise ValidationError(('Inventory Details Table cant be Empty.'))
         return result
-        
-   
 
-    # @api.multi
-    # def prepare_inventory(self):
-    #     res = super(ProductDetails, self).prepare_inventory()
+    # create sequence to product adjustment
+    @api.model
+    def create(self, value):
+        # if value.get('name', 'New') == 'New':
+        value['name'] = self.env['ir.sequence'].next_by_code('skycable.inventory.adjustment.sequence') or 'New'
+        return super(ProductDetails, self).create(value)
 
-    #     if self.state =='confirm':
-    #         print("CONFIRM")
-    #         print("CONFIRM")
-    #         print("CONFIRM")
-    #         print("CONFIRM")
-    #         if len(vals['etsi_product_detail']) == 0:
-    #             raise ValidationError(('Table cant be Empty.'))
-    #     return res
-
-
-    # overide actiondone
 
     @api.multi
     def action_done(self):
@@ -99,30 +90,6 @@ class ProductDetails(models.Model):
                 check2 = "Duplicate detected within the database \n MAC Number: {}".format(rec.etsi_macs)
                 raise ValidationError(check2)
 
-    # @api.model
-    # def create(self, vals):
-    #     res = super(ProductDetails, self).create(vals)
-    #     if vals.get('state') =='confirm':
-    #         if len(vals['etsi_product_detail']) == 0:
-    #             raise ValidationError(('Table cant be Empty.'))
-
-    #     return res
-
-    # @api.multi
-    # def write(self, vals):
-    #     if 'etsi_product_detail' in vals:
-    #         is_empty = True
-    #         for record in vals['etsi_product_detail']:
-
-    #             if record[0] != 2:
-    #                 is_empty = False
-
-    #         if is_empty == True:
-    #             raise ValidationError(('Table cant be Empty.'))
-                
-    #         if len(vals['etsi_product_detail']) == 0:
-    #             raise ValidationError(('Table cant be Empty.'))
-
     filter = fields.Selection(selection='_selection_filter_test')
 
     # ******    HIDE RADIO BUTTONS (WIDGET): ALL PRODUCTS AND ONE PRODUCT CATEGORY
@@ -131,8 +98,7 @@ class ProductDetails(models.Model):
         """ Get the list of filter allowed according to the options checked
         in 'Settings\Warehouse'. """
         res_filter = [
-            ('product', _('One product only')),
-            ('partial', _('Select products manually'))]
+            ('product', _('One product only'))]
 
         if self.user_has_groups('stock.group_tracking_owner'):
             res_filter += [('owner', _('One owner only')), ('product_owner', _('One product for a specific owner'))]

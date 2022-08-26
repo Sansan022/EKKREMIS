@@ -8,6 +8,8 @@ class ProductTemplateInheritance(models.Model):
     description_txt = fields.Text(string="Description:")
 
     product_count = fields.Integer(compute ='get_product_count')
+    
+    
 
     @api.multi
     def serial_location(self):
@@ -41,3 +43,12 @@ class Product_Serial_SmartButton(models.Model):
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Many2one('product.product',string="Product")
 
+# Delete this
+
+    
+    
+    
+    
+        
+     
+    

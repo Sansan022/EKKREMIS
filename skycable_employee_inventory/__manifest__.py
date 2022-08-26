@@ -10,22 +10,37 @@
         Long description of module's purpose
     """,
 
-    'author': "Team 1 - Odoo Training",
+    'author': "WSI GANG",
     'website': "http://www.yourcompany.com",
     'category': 'Warehouse',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','procurement','purchase','product', 'etsi_hrms'],
+    'depends': ['base','stock','procurement','purchase','product', 'etsi_hrms','contacts','etsi_payroll','etsi_base','account', 'sale', 'project', 'website_partner','crm'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        'data/skycable_inventory_adjustment_sequence.xml',
         'views/skycable_inventory_all_transfer_views.xml',
         'views/skycable_inventory_adjustment_views.xml',
         'views/skycable_inventory_operation_type_views.xml',
         'views/skycable_inventory_products_views.xml',
         'views/skycable_employee_configuration_sequence.xml',
-        'views/skycable_employee_teams_configuration.xml'
+        'views/skycable_employee_teams_configuration.xml',
+        'views/skycable_contact_configuration.xml',
+        
+
+
+        'views/skycable_employee_hr_dash_hide_view.xml',
+        'views/skycable_employee_hr_hide_asset.xml',
+        'views/skycable_employee_hr_hide_states.xml',
+        'views/skycable_employee_hr_hide_smart_button.xml',
+        'views/skycable_employee_default_category.xml',
+        'views/skycable_employee_hr_hide_bank_account_id.xml',
+        'views/skycable_employee_hr_working_time.xml',
+        'views/skycable_employee_hr_settings.xml',
+        'views/skycable_employee_hr_manual_attendance.xml',
+
     ]
 }
