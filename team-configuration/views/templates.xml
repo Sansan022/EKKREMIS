@@ -58,7 +58,7 @@
                   </group>
                     <field name="history" string="History">
                         <tree editable="bottom">
-                            <field name="team_number"/>
+                            <field name="team_number_team"/>
                             <field name="transaction_number"/>
                             <field name="status"/>
                         </tree>
