@@ -16,7 +16,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','procurement','purchase','product', 'etsi_hrms','contacts','etsi_payroll','etsi_base','account', 'sale', 'project', 'website_partner','crm'],
+    'depends': ['base','stock','procurement','purchase','product','contacts', 'account', 'sale', 'project', 'website_partner','crm','etsi_base','etsi_hrms','etsi_payroll'],
 
     # always loaded
     'data': [
