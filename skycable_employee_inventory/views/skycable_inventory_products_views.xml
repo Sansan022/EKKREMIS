@@ -190,11 +190,30 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
+                              
+
             <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
-             
-                <field name="description_txt"/>
-            
+                <field name="internal_ref_name"/>
             </xpath>
+
+            <xpath expr="//notebook/page[1]/group/group[1]/field[3]" position="after">
+                <field name="description_txt"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- add new field description after internal category -->
+    <record id="product_template_only_form_view_inherit_2" model="ir.ui.view">
+        <field name="name">product.template.form.view.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view" />
+        <field name="arch" type="xml">
+                              
+        <xpath expr="//notebook/page[1]/group/group[1]/field[@name='default_code']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        
         </field>
     </record>
 
@@ -244,6 +263,49 @@
           
       </field>
   </record>
+
+
+  <!-- ONE2MANY PRODUCT CONFIGURATION: SERIAL, MAC, STATUS -->
+    <record id="inherit_apply_module_name" model="ir.ui.view">
+        <field name="name">stock.view.form.inherit.apply</field>
+        <field name="model">stock.change.product.qty</field>
+        <field name="inherit_id" ref="stock.view_change_product_quantity" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//group/field[@name='new_quantity']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//group/field[@name='new_quantity']" position="after">
+                <field name="new_quantity2"/>
+            </xpath>
+
+            <xpath expr="//group/field[@name='new_quantity']" position="after">
+                <field name="internal_ref_name_2"/>
+            </xpath>
+
+
+            <xpath expr="//group" position="after">
+
+                
+                <notebook>
+                    <page string="Product Items">
+                        <field name="etsi_product_items">
+                            <tree editable="bottom">
+                                <field name="etsi_serial_product" />
+                                <field name="etsi_mac_product" />
+                                <field name="etsi_status_product" />
+                                <field name="etsi_product_id_product"></field>
+                                <field name="etsi_product_name_product"></field>
+                                <field name="etsi_quantity"></field>
+                            </tree>
+
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
 
 
 
