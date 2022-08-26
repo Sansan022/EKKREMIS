@@ -26,10 +26,12 @@
                     <page name="product_details" string="Product Details">
                         <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': [('lineidscount2','=',0)]}">
                             <tree editable="bottom">
-                                <field name="etsi_serials" />
-                                <field name="etsi_macs" />
+                                <field name="etsi_serials"/>
+                                <field name="etsi_macs" attrs="{'readonly': [('type_checker1','=','modem')]}"/>
+                                <field name="etsi_smartcard" attrs="{'readonly': [('type_checker1','=','catv5')]}"/>
                                 <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product')]" />
                                 <field name="etsi_filter" invisible="True" />
+                                <field name="type_checker1" />
                             </tree>
                         </field>
                     </page>

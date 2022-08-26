@@ -229,8 +229,8 @@
           <field name="etsi_serial"/>
           <field name="etsi_mac"/>
           <field name="etsi_status"/>
-          <field name="etsi_product_id" invisible="True"/>
-          <field name="etsi_product_name"/>
+          <field name="etsi_product_id"/>
+          <field name="etsi_product_name" invisible='True'/>
 
         </tree>
     </field>
@@ -281,29 +281,52 @@
             </xpath>
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
-                <field name="internal_ref_name_2"/>
+                <field name="internal_ref_name_2" invisible='True' />
             </xpath>
 
 
             <xpath expr="//group" position="after">
-
-                
                 <notebook>
-                    <page string="Product Items">
+                    <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','modem')]}">
                         <field name="etsi_product_items">
                             <tree editable="bottom">
-                                <field name="etsi_serial_product" />
+                                <field name="etsi_serial_product"/>
                                 <field name="etsi_mac_product" />
                                 <field name="etsi_status_product" />
-                                <field name="etsi_product_id_product"></field>
+                                <field name="etsi_product_id_product" invisible='True'></field>
                                 <field name="etsi_product_name_product"></field>
-                                <field name="etsi_quantity"></field>
+                                <field name="etsi_quantity" invisible='True'></field>
+                                <field name="etsi_product_type" invisible='True'></field>
                             </tree>
 
                         </field>
                     </page>
                 </notebook>
             </xpath>
+
+            <xpath expr="//notebook/page" position="after">
+                <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">
+                    <field name="etsi_product_items_2">
+                        <tree editable="bottom">
+                            <field name="etsi_serial_product_2"/>
+                            <field name="etsi_mac_product_2" invisible='True'/>
+                            <field name="etsi_smart_card_product_2"/>
+                            <field name="etsi_status_product_2" />
+                            <field name="etsi_product_id_product_2" invisible='True'></field>
+                            <field name="etsi_product_name_product_2"></field>
+                            <field name="etsi_quantity_2" invisible='True'></field>
+                            <field name="etsi_product_type_2" invisible='True'></field>
+                        </tree>
+
+                    </field>
+                </page>
+
+            </xpath>
+
+
+
+
+
         </field>
     </record>
 

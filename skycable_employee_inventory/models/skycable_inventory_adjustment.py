@@ -9,7 +9,6 @@ class ProductDetails(models.Model):
     
     # fields
     etsi_product_detail =  fields.One2many('etsi.product.detail.line','etsi_product_ids')
-
     # Line Id counter 
     lineidscount2 =  fields.Integer(compute='get_count_lineids2')
 
@@ -125,6 +124,8 @@ class ProductDetails(models.Model):
     #             raise ValidationError(('Table cant be Empty.'))
 
     filter = fields.Selection(selection='_selection_filter_test')
+    filter2 = fields.Selection(related='product_id.internal_ref_name')
+    
 
     # ******    HIDE RADIO BUTTONS (WIDGET): ALL PRODUCTS AND ONE PRODUCT CATEGORY
     @api.model
@@ -151,7 +152,9 @@ class ProductAdjustment(models.Model):
     etsi_product_ids = fields.Many2one('stock.inventory')
     etsi_serials = fields.Char(string="Serial ID", )
     etsi_macs = fields.Char(string="MAC ID")
+    etsi_smartcard = fields.Char(string="Smart Card ID")
     etsi_products = fields.Many2one('product.product', string="Products", domain="[('etsi_product_detail', '=', self.etsi_product_ids)]", required=True)
+    type_checker1 = fields.Selection(related='etsi_products.internal_ref_name')
 
     @api.model
     def _selection_filter(self):
@@ -161,6 +164,7 @@ class ProductAdjustment(models.Model):
             ('product', _('One product only')),
             ('partial', _('Select products manually'))]
         return res_filter
+
     
     etsi_filter = fields.Selection(
         string='Inventory of', selection='_selection_filter',
