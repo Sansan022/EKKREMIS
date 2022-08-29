@@ -24,12 +24,18 @@ class ProductDetails(models.Model):
 
     @api.onchange('etsi_product_detail')
     def add_quantity_method(self): 
+
         for line in self.line_ids:
             count = line.theoretical_qty
             for line2 in self.etsi_product_detail:
                 if line.product_id.id == line2.etsi_products.id:
                     count += 1
             line.product_qty = count
+            for line3 in self.etsi_product_detail_2:
+                if line.product_id.id == line3.etsi_products_2.id:
+                    count += 1
+            line.product_qty = count
+
 
 
 
@@ -37,10 +43,15 @@ class ProductDetails(models.Model):
     def add_quantity_method2(self): 
         for line in self.line_ids:
             count = line.theoretical_qty
-            for line2 in self.etsi_product_detail_2:
-                if line.product_id.id == line2.etsi_products_2.id:
+            for line2 in self.etsi_product_detail:
+                if line.product_id.id == line2.etsi_products.id:
                     count += 1
             line.product_qty = count
+            for line3 in self.etsi_product_detail_2:
+                if line.product_id.id == line3.etsi_products_2.id:
+                    count += 1
+            line.product_qty = count
+        
     
     # Newly added write
     def write(self, vals):
