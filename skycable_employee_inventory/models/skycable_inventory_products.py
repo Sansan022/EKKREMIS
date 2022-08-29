@@ -26,14 +26,25 @@ class ProductTemplateInheritance(models.Model):
 
     @api.multi
     def serial_location(self):
-         
-        return {
-            'name': 'serials.items.list',
-            'type': 'ir.actions.act_window',
-            'res_model': 'etsi.inventory',
-            'view_mode': 'tree,form',
-            'domain': [('etsi_product_id', '=', self.name )]
-        }
+        if self.internal_ref_name == 'catv5':
+            return {
+                'name': 'serials.tree',
+                'type': 'ir.actions.act_window',
+                'res_model': 'etsi.inventory',
+                'view_mode': 'tree',
+                'domain': [('etsi_product_id', '=', self.name )]
+            }
+        else:
+            view_id = self.env.ref("skycable_employee_inventory.serials_tree_view_two").id
+            return {
+                'name': 'serials.tree.two',
+                'type': 'ir.actions.act_window',
+                'res_model': 'etsi.inventory',
+                'view_mode': 'tree',
+                'views': [(view_id,'tree')],
+                'domain': [('etsi_product_id', '=', self.name )]
+            }
+
 
     def get_product_count(self):
         for rec in self:
@@ -52,9 +63,12 @@ class Product_Serial_SmartButton(models.Model):
 
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
+    etsi_smart_card = fields.Char(string="Smart Card")
     etsi_status = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Many2one('product.product',string="Product")
+
+    type_checker = fields.Selection(related='etsi_product_id.internal_ref_name')
 
 # update quantity on hand one2many content
 
@@ -66,7 +80,6 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     etsi_serial_product = fields.Char(string="Serial ID")
     etsi_mac_product = fields.Char(string="MAC ID")
-    etsi_smart_card_product = fields.Char(string="Smart Card ID")
     etsi_status_product = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
     etsi_product_id_product = fields.Many2one('stock.change.product.qty')
     etsi_product_name_product = fields.Many2one(related='etsi_product_id_product.product_id',string="Product")
@@ -81,7 +94,6 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
 
     etsi_serial_product_2 = fields.Char(string="Serial ID")
-    etsi_mac_product_2 = fields.Char(string="MAC ID")
     etsi_smart_card_product_2 = fields.Char(string="Smart Card ID")
     etsi_status_product_2 = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
     etsi_product_id_product_2 = fields.Many2one('stock.change.product.qty')
@@ -97,13 +109,12 @@ class Inherit_Product_Quantity(models.TransientModel):
     etsi_product_items = fields.One2many('etsi.inventory.product', 'etsi_product_id_product')
     etsi_product_items_2 = fields.One2many('etsi.inventory.product_2', 'etsi_product_id_product_2')
     new_quantity = fields.Float()
-    new_quantity2 = fields.Float(compute='update_product_qty2', string='New Quantity on Hand')
+    new_quantity2 = fields.Float(compute='update_product_qty3', string='New Quantity on Hand')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
 
     @api.onchange('etsi_product_items')
     def update_product_qty1(self):
- 
         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
         self.new_quantity = len(count)
         self.new_quantity2 = len(count)
@@ -112,15 +123,35 @@ class Inherit_Product_Quantity(models.TransientModel):
             self.new_quantity += record.etsi_quantity
             self.new_quantity2 = self.new_quantity 
 
+    @api.onchange('etsi_product_items_2')
     def update_product_qty2(self):
-
         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
         self.new_quantity = len(count)
         self.new_quantity2 = len(count)
 
-        for record in self.etsi_product_items:
-            self.new_quantity += record.etsi_quantity
+        for record in self.etsi_product_items_2:
+            self.new_quantity += record.etsi_quantity_2
             self.new_quantity2 = self.new_quantity 
+
+
+
+    def update_product_qty3(self):
+        if self.internal_ref_name_2 =='catv5':
+            count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+            self.new_quantity = len(count)
+            self.new_quantity2 = len(count)
+
+            for record in self.etsi_product_items:
+                self.new_quantity += record.etsi_quantity
+                self.new_quantity2 = self.new_quantity 
+        else:
+            count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+            self.new_quantity = len(count)
+            self.new_quantity2 = len(count)
+
+            for record in self.etsi_product_items_2:
+                self.new_quantity += record.etsi_quantity_2
+                self.new_quantity2 = self.new_quantity 
 
     @api.multi
     def change_product_qty(self):
@@ -132,27 +163,31 @@ class Inherit_Product_Quantity(models.TransientModel):
             # line_data2 = wizard._prepare_product_line()
 
             lst = []
-            if self.internal_ref_name_2 == 'catv5':
-                for line in self.etsi_product_items:
-                    res = {
-                        'etsi_serials': line.etsi_serial_product,
-                        'etsi_macs': line.etsi_mac_product,
-                        'etsi_products': line.etsi_product_name_product.id
-                    }
-                    lst.append(res)
-            else:
-                for line in self.etsi_product_items:
-                    res = {
-                        'etsi_serials': line.etsi_serial_product_2,
-                        'etsi_smartcard': line.etsi_mac_product_2,
-                        'etsi_products': line.etsi_product_name_product_2.id
-                    }
-                    lst.append(res)
+            for line in self.etsi_product_items:
+                res = {
+                    'etsi_serials': line.etsi_serial_product,
+                    'etsi_macs': line.etsi_mac_product,
+                    'etsi_products': line.etsi_product_name_product.id
+                }
+                lst.append(res)
+
+            lst2 = []    
+            for line in self.etsi_product_items_2:
+                res = {
+                    'etsi_serials_2': line.etsi_serial_product_2,
+                    'etsi_smart_card_2': line.etsi_smart_card_product_2,
+                    'etsi_products_2': line.etsi_product_name_product_2.id
+                }
+                lst2.append(res)
 
             
             new_lst = []
             for x in lst:
                 new_lst.append((0, 0, x))
+
+            new_lst2 = []
+            for x in lst2:
+                new_lst2.append((0, 0, x))
 
 
             if wizard.product_id.id and wizard.lot_id.id:
@@ -169,6 +204,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 'lot_id': wizard.lot_id.id,
                 'line_ids': [(0, 0, line_data)],
                 'etsi_product_detail': new_lst,
+                'etsi_product_detail_2': new_lst2,
             })
             inventory.action_done()
         return {'type': 'ir.actions.act_window_close'}
@@ -189,18 +225,18 @@ class Inherit_Product_Quantity(models.TransientModel):
 
         return res
 
-    @api.multi
-    def _prepare_product_line(self):
+    # @api.multi
+    # def _prepare_product_line(self):
 
-        lst = []
-        for line in self.etsi_product_items:
-            res = {
-                'etsi_serials': line.etsi_serial_product,
-                'etsi_macs': line.etsi_mac_product,
-                'etsi_products': line.etsi_product_name_product.id
-            }
-            lst.append(res[line])
-        return lst
+    #     lst = []
+    #     for line in self.etsi_product_items:
+    #         res = {
+    #             'etsi_serials': line.etsi_serial_product,
+    #             'etsi_macs': line.etsi_mac_product,
+    #             'etsi_products': line.etsi_product_name_product.id
+    #         }
+    #         lst.append(res[line])
+    #     return lst
 
 
 

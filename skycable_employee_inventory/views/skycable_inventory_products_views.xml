@@ -219,7 +219,7 @@
 
     <!-- smart button content -->
 
-    <record model="ir.ui.view" id="patient_tree_view">
+    <record model="ir.ui.view" id="serials_tree_view">
 
     <field name="name">serials.tree</field>
     <field name="model">etsi.inventory</field>
@@ -231,10 +231,30 @@
           <field name="etsi_status"/>
           <field name="etsi_product_id"/>
           <field name="etsi_product_name" invisible='True'/>
+          <field name="type_checker"/>
 
         </tree>
     </field>
     </record>
+
+    <record model="ir.ui.view" id="serials_tree_view_two">
+
+    <field name="name">serials.tree</field>
+    <field name="model">etsi.inventory</field>
+    <field name="arch" type="xml">
+        <tree string="Serial Tree">
+
+          <field name="etsi_serial"/>
+          <field name="etsi_smart_card"/>
+          <field name="etsi_status"/>
+          <field name="etsi_product_id"/>
+          <field name="etsi_product_name" invisible='True'/>
+          <field name="type_checker"/>
+
+        </tree>
+    </field>
+    </record>
+
 
     <record id="product_template_form_view_procurement_button_serialbutton" model="ir.ui.view">
         <field name="name">model.name.view.form.inherit.smart</field>
@@ -309,7 +329,6 @@
                     <field name="etsi_product_items_2">
                         <tree editable="bottom">
                             <field name="etsi_serial_product_2"/>
-                            <field name="etsi_mac_product_2" invisible='True'/>
                             <field name="etsi_smart_card_product_2"/>
                             <field name="etsi_status_product_2" />
                             <field name="etsi_product_id_product_2" invisible='True'></field>

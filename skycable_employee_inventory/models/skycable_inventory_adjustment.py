@@ -9,8 +9,12 @@ class ProductDetails(models.Model):
     
     # fields
     etsi_product_detail =  fields.One2many('etsi.product.detail.line','etsi_product_ids')
+    etsi_product_detail_2 =  fields.One2many('etsi.product.detail.line.two','etsi_product_ids_2')
     # Line Id counter 
     lineidscount2 =  fields.Integer(compute='get_count_lineids2')
+
+    filter = fields.Selection(selection='_selection_filter_test')
+    filter2 = fields.Selection(related='product_id.internal_ref_name')
 
     @api.depends('line_ids')
     def get_count_lineids2(self):
@@ -24,6 +28,17 @@ class ProductDetails(models.Model):
             count = line.theoretical_qty
             for line2 in self.etsi_product_detail:
                 if line.product_id.id == line2.etsi_products.id:
+                    count += 1
+            line.product_qty = count
+
+
+
+    @api.onchange('etsi_product_detail_2')
+    def add_quantity_method2(self): 
+        for line in self.line_ids:
+            count = line.theoretical_qty
+            for line2 in self.etsi_product_detail_2:
+                if line.product_id.id == line2.etsi_products_2.id:
                     count += 1
             line.product_qty = count
     
@@ -68,9 +83,10 @@ class ProductDetails(models.Model):
             raise ValidationError(('Inventory details table can not be empty.'))
 
     
-        if len(self.etsi_product_detail) == 0:
-            raise ValidationError(('Product details table can not be empty.'))
-        else:
+
+        if self.filter2 == 'catv5':
+            if len(self.etsi_product_detail) == 0:
+                raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail:
                 self.env['etsi.inventory'].create(
                     {'etsi_serial': line.etsi_serials,
@@ -79,6 +95,35 @@ class ProductDetails(models.Model):
                     'etsi_product_id':line.etsi_products.id,
                     'etsi_product_name':line.etsi_products.id,
                     })
+        elif self.filter2 == 'modem':
+            if len(self.etsi_product_detail_2) == 0:
+                raise ValidationError(('Product details table can not be empty.'))
+            for line in self.etsi_product_detail_2:
+                self.env['etsi.inventory'].create(
+                    {'etsi_serial': line.etsi_serials_2,
+                    'etsi_smart_card':line.etsi_smart_card_2,
+                    'etsi_product_id':line.etsi_products_2.id,
+                    'etsi_product_name':line.etsi_products_2.id,
+                    })
+        else:
+            if len(self.etsi_product_detail) == 0:
+                raise ValidationError(('Product details table can not be empty.'))
+                if len(self.etsi_product_detail_2) == 0:
+                    raise ValidationError(('Product details table can not be empty.'))
+                    for line in self.etsi_product_detail:
+                        self.env['etsi.inventory'].create(
+                            {'etsi_serial': line.etsi_serials,
+                            'etsi_mac':line.etsi_macs,
+                            'etsi_product_id':line.etsi_products.id,
+                            'etsi_product_name':line.etsi_products.id,
+                            })
+                    for line in self.etsi_product_detail_2:
+                        self.env['etsi.inventory'].create(
+                            {'etsi_serial': line.etsi_serials_2,
+                            'etsi_smart_card':line.etsi_smart_card_2,
+                            'etsi_product_id':line.etsi_products_2.id,
+                            'etsi_product_name':line.etsi_products_2.id,
+                            })
                     
 
 
@@ -123,9 +168,6 @@ class ProductDetails(models.Model):
     #         if len(vals['etsi_product_detail']) == 0:
     #             raise ValidationError(('Table cant be Empty.'))
 
-    filter = fields.Selection(selection='_selection_filter_test')
-    filter2 = fields.Selection(related='product_id.internal_ref_name')
-    
 
     # ******    HIDE RADIO BUTTONS (WIDGET): ALL PRODUCTS AND ONE PRODUCT CATEGORY
     @api.model
@@ -152,9 +194,8 @@ class ProductAdjustment(models.Model):
     etsi_product_ids = fields.Many2one('stock.inventory')
     etsi_serials = fields.Char(string="Serial ID", )
     etsi_macs = fields.Char(string="MAC ID")
-    etsi_smartcard = fields.Char(string="Smart Card ID")
-    etsi_products = fields.Many2one('product.product', string="Products", domain="[('etsi_product_detail', '=', self.etsi_product_ids)]", required=True)
-    type_checker1 = fields.Selection(related='etsi_products.internal_ref_name')
+    etsi_products = fields.Many2one('product.product', string="Products", required=True)
+    type_checker = fields.Selection(related='etsi_products.internal_ref_name')
 
     @api.model
     def _selection_filter(self):
@@ -176,20 +217,63 @@ class ProductAdjustment(models.Model):
             
 
     @api.constrains('etsi_serials')
-    def check_unique_pname2(self):
-        check3 = self.etsi_product_ids.etsi_product_detail - self
-        for rec2 in check3:
+    def check_unique_serial(self):
+        check1 = self.etsi_product_ids.etsi_product_detail - self
+        for rec2 in check1:
             if rec2.etsi_serials == self.etsi_serials:
-                check4 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials)
-                raise ValidationError(check4)
+                check2 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials)
+                raise ValidationError(check2)
 
     @api.constrains('etsi_macs')
-    def check_unique_pname3(self):
+    def check_unique_mac(self):
         check3 = self.etsi_product_ids.etsi_product_detail - self
         for rec2 in check3:
             if rec2.etsi_macs == self.etsi_macs:
                 check4 = "Duplicate detected within the Table \n Mac Number: {}".format(rec2.etsi_macs)
                 raise ValidationError(check4)
+
+class ProductAdjustment_02(models.Model):
+    _name = 'etsi.product.detail.line.two'
+    
+
+    etsi_product_ids_2 = fields.Many2one('stock.inventory')
+    etsi_serials_2 = fields.Char(string="Serial ID")
+    etsi_smart_card_2 = fields.Char(string="Smart Card")
+    etsi_products_2 = fields.Many2one('product.product', string="Products", required=True)
+    type_checker_2 = fields.Selection(related='etsi_products_2.internal_ref_name')
+
+    @api.model
+    def _selection_filter(self):
+        res_filter = [
+            ('none', _('All products')),
+            ('category', _('One product category')),
+            ('product', _('One product only')),
+            ('partial', _('Select products manually'))]
+        return res_filter
+
+    
+    etsi_filter_2 = fields.Selection(
+        string='Inventory of', selection='_selection_filter',
+        default='none',
+        help="If you do an entire inventory, you can choose 'All Products' and it will prefill the inventory with the current stock.  If you only do some products  "
+             "(e.g. Cycle Counting) you can choose 'Manual Selection of Products' and the system won't propose anything.  You can also let the "
+             "system propose for a single product / lot /... ")
+
+    @api.constrains('etsi_serials_2')
+    def check_unique_serial_2(self):
+        check5 = self.etsi_product_ids_2.etsi_product_detail_2 - self
+        for rec2 in check5:
+            if rec2.etsi_serials_2 == self.etsi_serials_2:
+                check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_2)
+                raise ValidationError(check6)
+
+    @api.constrains('etsi_smart_card_2')
+    def check_unique_smart_card_2(self):
+        check7 = self.etsi_product_ids_2.etsi_product_detail_2 - self
+        for rec2 in check7:
+            if rec2.etsi_smart_card_2 == self.etsi_smart_card_2:
+                check8 = "Duplicate detected within the Table \n Smart Card: {}".format(rec2.etsi_smart_card_2)
+                raise ValidationError(check8)
 
 
 

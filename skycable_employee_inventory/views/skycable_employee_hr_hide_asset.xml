@@ -4,7 +4,7 @@
     
 <!-- Hide the Asset! -->
 
-    <record id="etsi_status_inherit_view_asset" model="ir.ui.view">
+    <!-- <record id="etsi_status_inherit_view_asset" model="ir.ui.view">
       <field name="name">etsi.status.inherit.view.asset</field>
       <field name="model">hr.employee</field>
       <field name="inherit_id" ref="etsi_asset.custom_hr_employee_form_view"/>
@@ -18,6 +18,6 @@
 
      
       </field>
-    </record> 
+    </record>  -->
 
 </odoo>

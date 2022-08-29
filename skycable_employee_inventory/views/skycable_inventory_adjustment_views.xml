@@ -21,21 +21,49 @@
                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_qty']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_id']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+
+                <!-- <xpath expr="//notebook/page/field[@name='line_ids']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath> -->
+
+                <!-- filter selection -->
+                <xpath expr="//sheet/group/group[2]/field[@name='product_id']" position="after">
+                    <field name="filter2" invisible='0'/>
+                </xpath>
+
                 
                 <xpath expr="//sheet/notebook/page[1]" position="after">
-                    <page name="product_details" string="Product Details">
-                        <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': [('lineidscount2','=',0)]}">
+                    <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','modem')]}">
+                        <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}">
                             <tree editable="bottom">
                                 <field name="etsi_serials"/>
-                                <field name="etsi_macs" attrs="{'readonly': [('type_checker1','=','modem')]}"/>
-                                <field name="etsi_smartcard" attrs="{'readonly': [('type_checker1','=','catv5')]}"/>
-                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product')]" />
-                                <field name="etsi_filter" invisible="True" />
-                                <field name="type_checker1" />
+                                <field name="etsi_macs"/>
+                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','catv5')]" />
+                                <field name="etsi_filter"/>
+                                <field name="type_checker" />
                             </tree>
                         </field>
                     </page>
                 </xpath>
+
+                <xpath expr="//sheet/notebook/page[2]" position="after">
+                    <page name="MODEM" string="MODEM" attrs="{'invisible': [('filter2','=','catv5')]}">
+                        <field name="etsi_product_detail_2"  context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}">
+                            <tree editable="bottom">
+                                <field name="etsi_serials_2"/>
+                                <field name="etsi_smart_card_2"/>
+                                <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','modem')]" />
+                                <field name="etsi_filter_2"/>
+                                <field name="type_checker_2" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+
             </field>
         </record>
 
@@ -55,36 +83,9 @@
                 </xpath>
 
 
-                <!-- Modify Product field -->
-                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="attributes">
-                    <attribute name="attrs"></attribute>
-                </xpath>
             </field>
         </record>
 
-        <!-- Unhide Status -->
-        <record id="inherit_inventory_adjustment" model="ir.ui.view">
-            <field name="name">stock.inventory.form.inherit</field>
-            <field name="model">stock.inventory</field>
-            <field name="inherit_id" ref="stock.view_inventory_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="after">
-                    <field name="state" invisible="0" />
-                </xpath>
-            </field>
-        </record>
-
-         <!-- Readonly -->
-         <record id="inherit_inventory_adjustment" model="ir.ui.view">
-            <field name="name">stock.inventory.form.inherit</field>
-            <field name="model">stock.inventory</field>
-            <field name="inherit_id" ref="stock.view_inventory_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="after">
-                    <field name="state" invisible="0" />
-                </xpath>
-            </field>
-        </record>
 
 
 
