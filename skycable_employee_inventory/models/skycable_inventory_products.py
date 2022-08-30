@@ -26,7 +26,7 @@ class ProductTemplateInheritance(models.Model):
 
     @api.multi
     def serial_location(self):
-        if self.internal_ref_name == 'catv5':
+        if self.internal_ref_name == 'modem':
             return {
                 'name': 'serials.tree',
                 'type': 'ir.actions.act_window',
@@ -136,7 +136,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 
     def update_product_qty3(self):
-        if self.internal_ref_name_2 =='catv5':
+        if self.internal_ref_name_2 =='modem':
             count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
             self.new_quantity = len(count)
             self.new_quantity2 = len(count)

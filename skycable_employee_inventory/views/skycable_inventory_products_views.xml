@@ -307,7 +307,7 @@
 
             <xpath expr="//group" position="after">
                 <notebook>
-                    <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','modem')]}">
+                    <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">
                         <field name="etsi_product_items">
                             <tree editable="bottom">
                                 <field name="etsi_serial_product"/>
@@ -325,7 +325,7 @@
             </xpath>
 
             <xpath expr="//notebook/page" position="after">
-                <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">
+                <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','modem')]}">
                     <field name="etsi_product_items_2">
                         <tree editable="bottom">
                             <field name="etsi_serial_product_2"/>

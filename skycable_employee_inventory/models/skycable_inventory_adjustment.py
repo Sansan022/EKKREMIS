@@ -107,7 +107,7 @@ class ProductDetails(models.Model):
 
     
 
-        if self.filter2 == 'catv5':
+        if self.filter2 == 'modem':
             if len(self.etsi_product_detail) == 0:
                 raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail:
@@ -118,7 +118,7 @@ class ProductDetails(models.Model):
                     'etsi_product_id':line.etsi_products.id,
                     'etsi_product_name':line.etsi_products.id,
                     })
-        elif self.filter2 == 'modem':
+        elif self.filter2 == 'catv5':
             if len(self.etsi_product_detail_2) == 0:
                 raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail_2:
