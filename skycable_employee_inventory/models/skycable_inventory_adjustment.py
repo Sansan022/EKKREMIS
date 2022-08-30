@@ -16,6 +16,18 @@ class ProductDetails(models.Model):
     filter = fields.Selection(selection='_selection_filter_test')
     filter2 = fields.Selection(related='product_id.internal_ref_name')
 
+
+    # Inventory Adjustment Sequence 
+    name = fields.Char(required=True, copy=False, readonly=True, default = lambda self : ('New'))
+    @api.model
+    def create(self, vals):
+       
+        vals['name']  = self.env['ir.sequence'].next_by_code('skycable.inventory.adjustment.sequence') or _('New')
+        res = super(ProductDetails, self).create(vals)
+        return res
+
+
+
     @api.depends('line_ids')
     def get_count_lineids2(self):
         for rec in self:
@@ -117,31 +129,30 @@ class ProductDetails(models.Model):
                     'etsi_product_name':line.etsi_products_2.id,
                     })
         else:
-            if len(self.etsi_product_detail) == 0:
+            if len(self.etsi_product_detail) == 0 and len(self.etsi_product_detail_2) == 0:
                 raise ValidationError(('Product details table can not be empty.'))
-                if len(self.etsi_product_detail_2) == 0:
-                    raise ValidationError(('Product details table can not be empty.'))
-                    for line in self.etsi_product_detail:
-                        self.env['etsi.inventory'].create(
-                            {'etsi_serial': line.etsi_serials,
-                            'etsi_mac':line.etsi_macs,
-                            'etsi_product_id':line.etsi_products.id,
-                            'etsi_product_name':line.etsi_products.id,
-                            })
-                    for line in self.etsi_product_detail_2:
-                        self.env['etsi.inventory'].create(
-                            {'etsi_serial': line.etsi_serials_2,
-                            'etsi_smart_card':line.etsi_smart_card_2,
-                            'etsi_product_id':line.etsi_products_2.id,
-                            'etsi_product_name':line.etsi_products_2.id,
-                            })
+            else:
+                for line in self.etsi_product_detail:
+                    self.env['etsi.inventory'].create(
+                        {'etsi_serial': line.etsi_serials,
+                        'etsi_mac':line.etsi_macs,
+                        'etsi_product_id':line.etsi_products.id,
+                        'etsi_product_name':line.etsi_products.id,
+                        })
+                for line in self.etsi_product_detail_2:
+                    self.env['etsi.inventory'].create(
+                        {'etsi_serial': line.etsi_serials_2,
+                        'etsi_smart_card':line.etsi_smart_card_2,
+                        'etsi_product_id':line.etsi_products_2.id,
+                        'etsi_product_name':line.etsi_products_2.id,
+                        })
                     
 
 
         return res
 
     @api.constrains('etsi_product_detail')
-    def check_unique_pname(self):
+    def check_unique_check(self):
         for rec in self.etsi_product_detail:
             etsi_serial_duplicate = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials)])
             etsi_mac_duplicate = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_macs)])
@@ -149,11 +160,40 @@ class ProductDetails(models.Model):
                 check3 = "Product must have either Serial NUmber or Mac Number"
                 raise ValidationError(check3)
             if etsi_serial_duplicate >= 1:
-                check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials)
-                raise ValidationError(check)
+                if etsi_serial_duplicate == False:
+                    pass
+                else:
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials)
+                    raise ValidationError(check)
             elif etsi_mac_duplicate >= 1:
-                check2 = "Duplicate detected within the database \n MAC Number: {}".format(rec.etsi_macs)
-                raise ValidationError(check2)
+                if etsi_mac_duplicate == False:
+                    pass
+                else:
+                    check2 = "Duplicate detected within the database \n MAC Number: {}".format(rec.etsi_macs)
+                    raise ValidationError(check2)
+
+                
+
+    @api.constrains('etsi_product_detail_2')
+    def check_unique_check_2(self):
+        for rec in self.etsi_product_detail_2:
+            etsi_serial_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_2)])
+            etsi_smart_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_smart_card', '=', rec.etsi_smart_card_2)])
+            if rec.etsi_serials_2 == False and rec.etsi_smart_card_2 == False:
+                check3 = "Product must have either Serial NUmber or Smart Card Number"
+                raise ValidationError(check3)
+            if etsi_serial_duplicate_2 >= 1:
+                if etsi_serial_duplicate_2 == False:
+                    pass
+                else:
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials_2)
+                    raise ValidationError(check)
+            elif etsi_smart_duplicate_2 >= 1:
+                if etsi_serial_duplicate_2 == False:
+                    pass
+                else:
+                    check2 = "Duplicate detected within the database \n Smart Card Number: {}".format(rec.etsi_smart_card_2)
+                    raise ValidationError(check2)
 
     # @api.model
     # def create(self, vals):
@@ -287,7 +327,7 @@ class ProductAdjustment_02(models.Model):
                 raise ValidationError(check8)
 
 
-
+# Inventory Adjustment Sequence
 
 
 

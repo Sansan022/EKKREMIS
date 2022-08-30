@@ -314,7 +314,7 @@
                                 <field name="etsi_mac_product" />
                                 <field name="etsi_status_product" />
                                 <field name="etsi_product_id_product" invisible='True'></field>
-                                <field name="etsi_product_name_product"></field>
+                                <field name="etsi_product_name_product" invisible='True'></field>
                                 <field name="etsi_quantity" invisible='True'></field>
                                 <field name="etsi_product_type" invisible='True'></field>
                             </tree>
@@ -332,7 +332,7 @@
                             <field name="etsi_smart_card_product_2"/>
                             <field name="etsi_status_product_2" />
                             <field name="etsi_product_id_product_2" invisible='True'></field>
-                            <field name="etsi_product_name_product_2"></field>
+                            <field name="etsi_product_name_product_2" invisible='True'></field>
                             <field name="etsi_quantity_2" invisible='True'></field>
                             <field name="etsi_product_type_2" invisible='True'></field>
                         </tree>
