@@ -37,7 +37,7 @@
                 
                 <xpath expr="//sheet/notebook/page[1]" position="after">
                     <page name="MODEM" string="MODEM" attrs="{'invisible': [('filter2','=','catv5')]}">
-                        <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': [('state','=','done')]}">
+                        <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials"/>
                                 <field name="etsi_macs"/>
@@ -51,7 +51,7 @@
 
                 <xpath expr="//sheet/notebook/page[2]" position="after">
                     <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','modem')]}">
-                        <field name="etsi_product_detail_2"  context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': [('state','=','done')]}">
+                        <field name="etsi_product_detail_2"  context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials_2"/>
                                 <field name="etsi_smart_card_2"/>
