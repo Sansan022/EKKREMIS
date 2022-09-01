@@ -2,7 +2,6 @@
 <odoo>
 
     <data>
-    
 
         <!-- Add Product Detail Page -->
         <record id="inherit_view_id_product_detail" model="ir.ui.view">
@@ -15,35 +14,32 @@
                 <xpath expr="//sheet/group/group[1]/field[@name='exhausted']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-
-
-                <!-- READ ONLY FOR REAL QUANTITY INSIDE ONE2MANY (stock.inventory.line) -->
+                <!-- READONLY INVENTORY REFERENCE -->
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <!-- READONLY FOR REAL QUANTITY INSIDE ONE2MANY (stock.inventory.line) -->
                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_qty']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
-                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_id']" position="attributes">
+                <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
 
-                <!-- <xpath expr="//notebook/page/field[@name='line_ids']/tree" position="attributes">
-                    <attribute name="attrs">false</attribute>
-                </xpath> -->
-
                 <!-- filter selection -->
                 <xpath expr="//sheet/group/group[2]/field[@name='product_id']" position="after">
-                    <field name="filter2" invisible='1'/>
+                    <field name="filter2" invisible='1' />
                 </xpath>
 
-                
                 <xpath expr="//sheet/notebook/page[1]" position="after">
                     <page name="MODEM" string="MODEM" attrs="{'invisible': [('filter2','=','catv5')]}">
-                        <field name="etsi_product_detail"  context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
+                        <field name="etsi_product_detail" context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
                             <tree editable="bottom">
-                                <field name="etsi_serials"/>
-                                <field name="etsi_macs"/>
+                                <field name="etsi_serials" />
+                                <field name="etsi_macs" />
                                 <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','modem')]" />
-                                <field name="etsi_filter" invisible='1'/>
-                                <field name="type_checker" invisible='1'/>
+                                <field name="etsi_filter" invisible='1' />
+                                <field name="type_checker" invisible='1' />
                             </tree>
                         </field>
                     </page>
@@ -51,13 +47,13 @@
 
                 <xpath expr="//sheet/notebook/page[2]" position="after">
                     <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','modem')]}">
-                        <field name="etsi_product_detail_2"  context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
+                        <field name="etsi_product_detail_2" context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': ['|',('state','=','done'),('lineidscount2','=',0)]}">
                             <tree editable="bottom">
-                                <field name="etsi_serials_2"/>
-                                <field name="etsi_smart_card_2"/>
+                                <field name="etsi_serials_2" />
+                                <field name="etsi_smart_card_2" />
                                 <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','catv5')]" />
-                                <field name="etsi_filter_2" invisible='1'/>
-                                <field name="type_checker_2" invisible='1'/>
+                                <field name="etsi_filter_2" invisible='1' />
+                                <field name="type_checker_2" invisible='1' />
                             </tree>
                         </field>
                     </page>
@@ -87,11 +83,7 @@
         </record>
 
 
-
-
     </data>
-
-
 
 
 </odoo>
