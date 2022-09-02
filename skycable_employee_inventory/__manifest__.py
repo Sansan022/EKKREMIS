@@ -31,6 +31,7 @@
         'views/skycable_contact_configuration.xml',
         # Phase 3
         'views/skycable_operation_return.xml',
+        'views/team_issuance_views.xml',
         
 
 
