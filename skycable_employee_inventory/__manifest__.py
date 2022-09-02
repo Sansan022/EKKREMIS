@@ -29,6 +29,8 @@
         'views/skycable_employee_configuration_sequence.xml',
         'views/skycable_employee_teams_configuration.xml',
         'views/skycable_contact_configuration.xml',
+        # Phase 3
+        'views/skycable_operation_return.xml',
         
 
 
