@@ -6,17 +6,54 @@
             <field name="model">stock.move</field>
             <field name="inherit_id" ref="stock.view_move_picking_tree"/>
             <field name="arch" type="xml">
-                
-                <xpath expr="//tree/field[@name='product_id']" position="after">
-                    <field name="etsi_serials_field"/>
-                    <field name="etsi_mac_field"/>
-                    <field name="etsi_smart_card_field"/>
+
+              <xpath expr="//tree/field[@name='product_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+              </xpath>
+
+              <xpath expr="//tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+              </xpath>
+
+          
+              <xpath expr="//tree/field[@name='product_id']" position="after">
+              
+                  <field name="product_id_duplicate"/>
+                  <field name="etsi_serials_field"/>
+                  <field name="etsi_mac_field"/>
+                  <field name="etsi_smart_card_field"/>
+
+                  <field name="checker_box" attrs="{'invisible': [('state','!=','done')]}"/>
+                  <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}"/>
+                  <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}"/>
 
 
-                </xpath>
+              </xpath>
+
+              <xpath expr="//tree/field[@name='product_id_duplicate']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+              </xpath>
 
             </field>
     </record>
+
+
+    <record id="view_picking_form_table_inherit_one2many" model="ir.ui.view">
+            <field name="name">stock.picking.table.inherit.one2many</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+            <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}</attribute>
+            </xpath>
+              
+              <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
+
+            </field>
+    </record>
+
+    
 
 
   </data>

@@ -7,10 +7,15 @@ from odoo.exceptions import ValidationError
 
 class Team_issuance(models.Model):
     _inherit = 'stock.move'
-
+    product_id_duplicate = fields.Many2one(related="product_id")
     etsi_serials_field = fields.Char(string="Serial ID")
     etsi_mac_field = fields.Char(string="Mac ID")
     etsi_smart_card_field = fields.Char(string="Smart Card")
+
+    checker_box = fields.Boolean(string="Status")
+
+    issued_field = fields.Char(string="Issued",default="No")
+    subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
 
     @api.multi
     @api.onchange('etsi_serials_field')
@@ -29,3 +34,9 @@ class Team_issuance(models.Model):
                 rec.etsi_smart_card_field = test.etsi_smart_card
 
 
+
+class Team_issuance_stock_picking(models.Model):
+    _inherit = 'stock.picking'
+
+
+    move_lines = fields.One2many('stock.move', 'picking_id', string="Stock Moves", copy=True)
