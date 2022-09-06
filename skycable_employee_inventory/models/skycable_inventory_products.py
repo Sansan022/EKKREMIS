@@ -109,7 +109,8 @@ class Inherit_Product_Quantity(models.TransientModel):
     etsi_product_items = fields.One2many('etsi.inventory.product', 'etsi_product_id_product')
     etsi_product_items_2 = fields.One2many('etsi.inventory.product_2', 'etsi_product_id_product_2')
     new_quantity = fields.Float()
-    new_quantity2 = fields.Float(compute='update_product_qty3', string='New Quantity on Hand')
+    # compute='update_product_qty3', 
+    new_quantity2 = fields.Float(string='New Quantity on Hand')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
 
@@ -135,23 +136,23 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 
 
-    def update_product_qty3(self):
-        if self.internal_ref_name_2 =='modem':
-            count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
-            self.new_quantity = len(count)
-            self.new_quantity2 = len(count)
+    # def update_product_qty3(self):
+    #     if self.internal_ref_name_2 =='modem':
+    #         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+    #         self.new_quantity = len(count)
+    #         self.new_quantity2 = len(count)
 
-            for record in self.etsi_product_items:
-                self.new_quantity += record.etsi_quantity
-                self.new_quantity2 = self.new_quantity 
-        else:
-            count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
-            self.new_quantity = len(count)
-            self.new_quantity2 = len(count)
+    #         for record in self.etsi_product_items:
+    #             self.new_quantity += record.etsi_quantity
+    #             self.new_quantity2 = self.new_quantity 
+    #     else:
+    #         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+    #         self.new_quantity = len(count)
+    #         self.new_quantity2 = len(count)
 
-            for record in self.etsi_product_items_2:
-                self.new_quantity += record.etsi_quantity_2
-                self.new_quantity2 = self.new_quantity 
+    #         for record in self.etsi_product_items_2:
+    #             self.new_quantity += record.etsi_quantity_2
+    #             self.new_quantity2 = self.new_quantity 
 
     @api.multi
     def change_product_qty(self):

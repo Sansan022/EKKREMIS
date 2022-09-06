@@ -297,7 +297,7 @@
             </xpath>
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
-                <field name="new_quantity2"/>
+                <field name="new_quantity2" readonly="1"/>
             </xpath>
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">

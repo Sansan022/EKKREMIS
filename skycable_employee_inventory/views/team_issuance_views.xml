@@ -19,13 +19,19 @@
               <xpath expr="//tree/field[@name='product_id']" position="after">
               
                   <field name="product_id_duplicate"/>
-                  <field name="etsi_serials_field"/>
-                  <field name="etsi_mac_field"/>
-                  <field name="etsi_smart_card_field"/>
+                  <!-- attrs="{'readonly': [('product_id','!=',False)]}" -->
+                  <field name="etsi_serials_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
+                  <field name="etsi_mac_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
+                  <field name="etsi_smart_card_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
 
-                  <field name="checker_box" attrs="{'invisible': [('state','!=','done')]}"/>
-                  <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}"/>
-                  <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}"/>
+                  <!-- duplicate -->
+                  <field name="etsi_serials_field_duplicate" invisible="True"/>
+                  <field name="etsi_mac_field_duplicate" invisible="True"/>
+                  <field name="etsi_smart_card_field_duplicate" invisible="True"/>
+
+                  <field name="checker_box" attrs="{'invisible': [('state','!=','done')],'readonly': [('issued_field','!=','No')]}"/>
+                  <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
+                  <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
 
 
               </xpath>
@@ -45,7 +51,7 @@
             <field name="arch" type="xml">
 
             <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}</attribute>
+                    <attribute name="attrs">{'readonly': [('state', 'in', 'cancel')]}</attribute>
             </xpath>
               
               <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
