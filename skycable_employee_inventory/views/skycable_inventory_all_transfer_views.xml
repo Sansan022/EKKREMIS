@@ -8,6 +8,22 @@
       <field name="model">stock.picking</field>
       <field name="inherit_id" ref="stock.view_picking_form"/>
       <field name="arch" type="xml">
+
+         <!--==========Smart Button for issuances=============-->
+         <div name="button_box" position="inside">
+          <button class="oe_stat_button" type="object" name="get_subscriber_issuance" icon="fa-car" attrs="{'invisible':[('etsi_subscriber','=',True)]}" style="width: 6rem;">
+            <field string="Subscriber" name="etsi_subscriber_issuance" widget="statinfo"/>
+          </button>
+
+          <button  class="oe_stat_button" type="object" name="get_team_issuance" icon="fa-car" attrs="{'invisible':[('etsi_subscriber','=',False)]}" style="width: 6rem;">
+            <field string="Teams &#xA; Issuance" name="etsi_team_issuance" widget="statinfo"/>
+          </button>
+          <field name="etsi_subscriber" invisible="True"/>
+        </div>
+        <!--========== End Smart Button for issuances=============-->
+
+
+        
         <!-- hide delivery type, procurement group, priority -->
         <field name="move_type" position="attributes">
           <attribute name="invisible">True</attribute>

@@ -78,9 +78,53 @@
                     <field name="lineidscount2" invisible="True" />
                 </xpath>
 
+                <!-- Modify Product field -->
+                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="attributes">
+                    <attribute name="attrs"></attribute>
+                </xpath>
+            </field>
+        </record>
+
+        !-- Unhide Status -->
+        <record id="inherit_inventory_adjustment" model="ir.ui.view">
+            <field name="name">stock.inventory.form.inherit</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="after">
+                    <field name="state" invisible="0" />
+                </xpath>
+            </field>
+        </record>
+
+         <!-- Readonly -->
+         <record id="inherit_inventory_adjustment" model="ir.ui.view">
+            <field name="name">stock.inventory.form.inherit</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']//tree/field[@name='product_qty']" position="after">
+                    <field name="state" invisible="0" />
+                </xpath>
+
+                <field name='name' position="replace">
+                    <field name="name"/>
+                </field>
+                <!-- hide group date inventory adjustment -->
+                <field name='date' position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name='date' position="before">
+                    <field name="product_id" />
+                </field>
+
+               
 
             </field>
         </record>
+
+
 
 
     </data>

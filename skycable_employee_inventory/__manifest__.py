@@ -45,6 +45,7 @@
         'views/skycable_employee_hr_settings.xml',
         'views/skycable_employee_hr_manual_attendance.xml',
         'views/skycable_product_product.xml',
+        'views/skycable_inventory_all_transfer_return.xml',
 
     ]
 }
