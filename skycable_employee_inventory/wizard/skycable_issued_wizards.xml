@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+        <record id="transiennt_issued" model="ir.ui.view">
+            <field name="name">stock.picking.transient.issued</field>
+            <field name="model">stock.picking.issued</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="skycable_subscriber_id" />    
+                        </group>
+                            <notebook>
+                                <page name="name" string="Product Lists">
+                                    <sheet>
+                                        <field name="skycable_issued_subscriber_ids">
+                                            <tree editable = "bottom">
+                                                <field name="skycable_issued_product_name"/>
+                                                <field name="skycable_issued_serial" />
+                                                <field name="skycable_issued_mac" />
+                                                <field name="skycable_issued_card" />
+                                                <field name="skycable_issued_subscriber_id" invisible='True'/>
+                                            </tree>
+                                        </field>
+                                    </sheet>
+                                </page>
+                            </notebook>
+
+                        <footer>
+                            <button name="validate_btn" type="object" string="validate" class="oe_highlight"/>
+                            <button name="cancel_btn" type="object" string="Cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="transient_issued_action" model="ir.actions.act_window">
+            <field name="name">To be issue:</field>
+            <field name="res_model">stock.picking.issued</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+    
+    </data>
+    
+
+</odoo>

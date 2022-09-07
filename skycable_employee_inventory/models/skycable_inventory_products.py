@@ -10,7 +10,7 @@ class ProductTemplateInheritance(models.Model):
 
     description_txt = fields.Text(string="Description:")
     product_type = fields.Selection([('product','Product'),('material','Material')] , default ="product", string ="Product Type:")
-    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('modem', 'MODEM')], string = "Internal Reference", default='catv5')
+    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('modem', 'MODEM'), ('others', 'OTHERS')], string = "Internal Reference", default='catv5')
     default_code = fields.Char(
         'Internal Reference', compute='_compute_default_code',
         inverse='_set_default_code', store=True,default='catv5')
@@ -18,9 +18,10 @@ class ProductTemplateInheritance(models.Model):
 
     @api.onchange('internal_ref_name')
     def product_type_func(self):
-        print('safsafsafsasfa')
         if self.internal_ref_name == 'catv5':
             self.default_code = 'CATV5'
+        elif self.internal_ref_name == 'others':
+            self.default_code = 'OTHERS'
         else:
             self.default_code = 'MODEM'
 
@@ -164,58 +165,64 @@ class Inherit_Product_Quantity(models.TransientModel):
 
     @api.multi
     def change_product_qty(self):
-        """ Changes the Product Quantity by making a Physical Inventory. """
-        Inventory = self.env['stock.inventory']
-        for wizard in self:
-            product = wizard.product_id.with_context(location=wizard.location_id.id, lot_id=wizard.lot_id.id)
-            line_data = wizard._prepare_inventory_line()
-            # line_data2 = wizard._prepare_product_line()
+        if self.internal_ref_name_2 == 'OTHERS':
+            print("HELLOOOOOO")
+            print("HELLOOOOOO")
+            print("HELLOOOOOO")
+        else:
+                
+            """ Changes the Product Quantity by making a Physical Inventory. """
+            Inventory = self.env['stock.inventory']
+            for wizard in self:
+                product = wizard.product_id.with_context(location=wizard.location_id.id, lot_id=wizard.lot_id.id)
+                line_data = wizard._prepare_inventory_line()
+                # line_data2 = wizard._prepare_product_line()
 
-            lst = []
-            for line in self.etsi_product_items:
-                res = {
-                    'etsi_serials': line.etsi_serial_product,
-                    'etsi_macs': line.etsi_mac_product,
-                    'etsi_products': line.etsi_product_name_product.id
-                }
-                lst.append(res)
+                lst = []
+                for line in self.etsi_product_items:
+                    res = {
+                        'etsi_serials': line.etsi_serial_product,
+                        'etsi_macs': line.etsi_mac_product,
+                        'etsi_products': line.etsi_product_name_product.id
+                    }
+                    lst.append(res)
 
-            lst2 = []    
-            for line in self.etsi_product_items_2:
-                res = {
-                    'etsi_serials_2': line.etsi_serial_product_2,
-                    'etsi_smart_card_2': line.etsi_smart_card_product_2,
-                    'etsi_products_2': line.etsi_product_name_product_2.id
-                }
-                lst2.append(res)
+                lst2 = []    
+                for line in self.etsi_product_items_2:
+                    res = {
+                        'etsi_serials_2': line.etsi_serial_product_2,
+                        'etsi_smart_card_2': line.etsi_smart_card_product_2,
+                        'etsi_products_2': line.etsi_product_name_product_2.id
+                    }
+                    lst2.append(res)
 
-            
-            new_lst = []
-            for x in lst:
-                new_lst.append((0, 0, x))
+                
+                new_lst = []
+                for x in lst:
+                    new_lst.append((0, 0, x))
 
-            new_lst2 = []
-            for x in lst2:
-                new_lst2.append((0, 0, x))
+                new_lst2 = []
+                for x in lst2:
+                    new_lst2.append((0, 0, x))
 
 
-            if wizard.product_id.id and wizard.lot_id.id:
-                inventory_filter = 'none'
-            elif wizard.product_id.id:
-                inventory_filter = 'product'
-            else:
-                inventory_filter = 'none'
-            inventory = Inventory.create({
-                'name': _('INV: %s') % tools.ustr(wizard.product_id.name),
-                'filter': inventory_filter,
-                'product_id': wizard.product_id.id,
-                'location_id': wizard.location_id.id,
-                'lot_id': wizard.lot_id.id,
-                'line_ids': [(0, 0, line_data)],
-                'etsi_product_detail': new_lst,
-                'etsi_product_detail_2': new_lst2,
-            })
-            inventory.action_done()
+                if wizard.product_id.id and wizard.lot_id.id:
+                    inventory_filter = 'none'
+                elif wizard.product_id.id:
+                    inventory_filter = 'product'
+                else:
+                    inventory_filter = 'none'
+                inventory = Inventory.create({
+                    'name': _('INV: %s') % tools.ustr(wizard.product_id.name),
+                    'filter': inventory_filter,
+                    'product_id': wizard.product_id.id,
+                    'location_id': wizard.location_id.id,
+                    'lot_id': wizard.lot_id.id,
+                    'line_ids': [(0, 0, line_data)],
+                    'etsi_product_detail': new_lst,
+                    'etsi_product_detail_2': new_lst2,
+                })
+                inventory.action_done()
         return {'type': 'ir.actions.act_window_close'}
 
     @api.multi

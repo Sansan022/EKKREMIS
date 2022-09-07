@@ -30,7 +30,7 @@ class Team_issuance(models.Model):
             database = self.env['etsi.inventory']
             duplicate_count = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_field)])
             search_first = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-            status_check = search_first.etsi_status
+            #status_check = search_first.etsi_status
 
 
 
@@ -38,14 +38,14 @@ class Team_issuance(models.Model):
                 pass
             elif duplicate_count < 1:
                raise ValidationError("Serial not found in the database.")
-            elif status_check == 'used':
+            elif search_first.etsi_status == 'used':
                 raise ValidationError("Serial is already used.")
             else:
                 test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
                 rec.product_id = test.etsi_product_id.id
 
                 rec.etsi_serials_field = test.etsi_serial
-                rec.etsi_mac_field = test.etsi_mac
+                rec.etsi_mac_field = test.etsi_mac  
                 rec.etsi_smart_card_field = test.etsi_smart_card
 
 

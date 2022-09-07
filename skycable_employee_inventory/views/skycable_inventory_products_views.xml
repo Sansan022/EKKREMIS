@@ -293,11 +293,13 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
+                <attribute name="attrs">{'invisible' : [('internal_ref_name_2', '!=', 'others')]}</attribute>
+                
+                
+            </xpath>    
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
-                <field name="new_quantity2" readonly="1"/>
+                <field name="new_quantity2" readonly='True'/>
             </xpath>
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
@@ -341,6 +343,20 @@
                 </page>
 
             </xpath>
+
+
+            <xpath expr="//notebook" position="attributes">
+                <attribute name="attrs">{'invisible': [('internal_ref_name_2','=','others')]}</attribute>
+            </xpath>
+
+            <!-- <xpath expr="//group/field[@name='new_quantity']" position="attributes">
+                <attribute name="attrs">{'invisible': [('internal_ref_name_2','!=','others')]}</attribute>
+                
+            </xpath> -->
+
+            <xpath expr="//group/field[@name='new_quantity2']" position="attributes">
+                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '==', 'others')]}</attribute>
+            </xpath>   
 
 
 

@@ -20,6 +20,8 @@
 
     # always loaded
     'data': [
+        #wizard
+        'wizard/skycable_issued_wizards.xml',
         # 'security/ir.model.access.csv',
         'data/skycable_inventory_adjustment_sequence.xml',
         'views/skycable_inventory_all_transfer_views.xml',
