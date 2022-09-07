@@ -41,7 +41,7 @@
         </xpath>
         <!-- ADDING ISSUED BOTTON -->
           <xpath expr="//header/button[@name='button_scrap']" position="after">
-            <button name="%(transient_issued_action)d" type="action" string="Issued" states="done"  groups="base.group_user"/>
+            <button name="%(transient_issued_action)d" type="action" string="Issue" states="done"  groups="base.group_user"/>
           </xpath>
 
           <!-- HIDING SCRAP BUTTON -->
