@@ -12,11 +12,7 @@ class IssuedTransient(models.TransientModel):
         'stock.picking.issued.subscriber', 'skycable_issued_subscriber_id')
     
 
-#edit ko pq to bukas -jaw
-    def cancel_btn(self):
-        return
-    def validate_btn(self):
-        return
+
 
     @api.model
     def default_get(self, fields):
@@ -26,9 +22,7 @@ class IssuedTransient(models.TransientModel):
         product_all_values = []
         if picking:
             for move in picking.move_lines:
-               
-
-                if move.checker_box==True:
+                if move.checker_box is True:
                     print("Nag trueeeee")
                     product_all_values.append((0,0,{'skycable_issued_product_name':move.product_id.id,
                                                     'skycable_issued_serial' : move.etsi_serials_field,
@@ -39,6 +33,19 @@ class IssuedTransient(models.TransientModel):
             if 'skycable_issued_subscriber_ids' in fields:
                 res.update({'skycable_issued_subscriber_ids':product_all_values})
             return res
+
+
+    #edit ko pq to bukas -jaw
+    def cancel_btn(self):
+        return
+    def validate_btn(self):
+        print("HELLO WORLD")
+        print("HELLO WORLD")
+        print("HELLO WORLD")
+        print("HELLO WORLD")
+        print("HELLO WORLD")
+        print("HELLO WORLD")
+        print("HELLO WORLD")
 
 
 
