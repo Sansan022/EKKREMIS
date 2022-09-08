@@ -9,7 +9,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="skycable_subscriber_id" />    
+                            <field name="skycable_subscriber_id" domain="[('subscriber','=','True')]" options="{'no_create': True, 'no_open': True}"/>    
                         </group>
                             <notebook>
                                 <page name="name" string="Product Lists">
@@ -28,7 +28,7 @@
                             </notebook>
 
                         <footer>
-                            <button name="validate_btn" type="object" string="validate" class="oe_highlight"/>
+                            <button name="validate_btn" type="object" string="Validate" class="btn-primary"/>
                             <button string="Cancel" class="btn-default" special="cancel" />
                         </footer>
                     </sheet>

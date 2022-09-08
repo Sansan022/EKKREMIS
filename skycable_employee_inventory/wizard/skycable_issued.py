@@ -6,7 +6,7 @@ class IssuedTransient(models.TransientModel):
     test_name = fields.Char(string="NAME: ")
     test_age = fields.Integer('AGE: ')  
 
-    skycable_subscriber_id = fields.Many2one('res.partner', domain=[('subscriber', '=', True)])
+    skycable_subscriber_id = fields.Many2one('res.partner', required=True)
 
     skycable_issued_subscriber_ids = fields.One2many(
         'stock.picking.issued.subscriber', 'skycable_issued_subscriber_id')
@@ -35,17 +35,71 @@ class IssuedTransient(models.TransientModel):
             return res
 
 
+    @api.multi
+    def _validating_data(self):
+
+        picking = self.env['stock.picking'].browse(self.env.context['active_id'])
+        return_subscriber = self.skycable_issued_subscriber_ids.mapped('skycable_issued_product_name')
+
+        for sub in return_subscriber:
+            just_check_subs = self.env['stock.move'] | move.skycable_issued_serial
+
+            while just_check_subs:
+                current_subs = just_check_subs[-1]
+                just_check_subs = just_check_subs[:1]
+
+                print("current_subs {}".format(current_subs))
+                print("current_subs {}".format(current_subs))
+                print("current_subs {}".format(current_subs))
+                print("current_subs {}".format(current_subs))
+
+                print("check subs {}".format(just_check_subs))
+                print("check subs {}".format(just_check_subs))
+                print("check subs {}".format(just_check_subs))
+                print("check subs {}".format(just_check_subs))
+                if current_subs.state not in ('done','cancel') and current_subs.reserved_quant_ids:
+                    print("pasok sa banga")
+
+        new_picking =  picking.copy({
+            'move_lines':[],
+        })
+
+        return picking
+
+        
+
+
+
     #edit ko pq to bukas -jaw
-    def cancel_btn(self):
-        return
     def validate_btn(self):
-        print("HELLO WORLD")
-        print("HELLO WORLD")
-        print("HELLO WORLD")
-        print("HELLO WORLD")
-        print("HELLO WORLD")
-        print("HELLO WORLD")
-        print("HELLO WORLD")
+        print("HELO")
+        print("HELO")
+        print("HELO")
+        print("HELO")
+        print("HELO")
+        print("HELO")
+
+        # for _inWizard in self:
+
+        #     #picking = _inWizard._validating_data()
+
+        #     print(picking)
+        #     print(picking)
+        #     print(picking)
+
+            
+        #     print(_inWizard.skycable_subscriber_id.name)
+        #     print(_inWizard.skycable_subscriber_id.name)
+        #     print(_inWizard.skycable_subscriber_id.name)
+        #     print(_inWizard.skycable_subscriber_id.name)
+        #     print(_inWizard.skycable_subscriber_id.id)
+        #     print(_inWizard.skycable_subscriber_id.id)
+        #     print(_inWizard.skycable_subscriber_id)
+        #     print(_inWizard.skycable_subscriber_id)
+        #     print(_inWizard)
+        #     print(_inWizard)
+        #     print(_inWizard)
+        
 
 
 
