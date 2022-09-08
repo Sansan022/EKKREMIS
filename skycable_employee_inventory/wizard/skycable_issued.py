@@ -26,19 +26,17 @@ class IssuedTransient(models.TransientModel):
         product_all_values = []
         if picking:
             for move in picking.move_lines:
+               
+
                 if move.checker_box==True:
+                    print("Nag trueeeee")
                     product_all_values.append((0,0,{'skycable_issued_product_name':move.product_id.id,
                                                     'skycable_issued_serial' : move.etsi_serials_field,
                                                     'skycable_issued_mac':move.etsi_mac_field, 
                                                     'skycable_issued_card': move.etsi_smart_card_field}))
-                else:
-                    product_all_values =[]
-
             if not product_all_values:
-                raise UserError(_("NOT SHITSSS"))
-
+                raise UserError(_("There are no products to be issued"))
             if 'skycable_issued_subscriber_ids' in fields:
-
                 res.update({'skycable_issued_subscriber_ids':product_all_values})
             return res
 
