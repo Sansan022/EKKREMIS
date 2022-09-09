@@ -33,13 +33,20 @@
           <page name="team" string="Teams">
             <group>
               <field name="etsi_teams_id" />
-                <field name ="etsi_teams_line_ids">
-                <field name="etsi_teams_connect_id" />
-              </field>
+              <field name="etsi_teams_member_no"/>
+              <!-- <field name="etsi_teams_id2"/>
+              <field name="team_members_con"/> -->
             </group>
+              <field name ="etsi_teams_line_ids" >
+                <tree editable="bottom" create="false" delete="false">
+                  <field name="team_members_lines"  />
+                  <field name="etsi_teams_replace" attrs="{'readonly':[('etsi_teams_temporary', '=', False)]}"/>
+                  <field name="etsi_teams_temporary"/>
+                </tree>
+              </field>
+            
           </page>
         </xpath>
-        
 
         
       </field>

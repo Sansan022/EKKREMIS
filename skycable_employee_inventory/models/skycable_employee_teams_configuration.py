@@ -6,11 +6,11 @@ from odoo.exceptions import ValidationError
 
 class team_configuration(models.Model):
     _name = 'team.configuration'
-    _rec_name = 'sequence'
+    _rec_name = 'team_number'
 
-    sequence= fields.Char(string='Reference', readonly=True, required=True, copy=False, default='New') 
-    team_number = fields.Integer()
+    team_number= fields.Char(string='Team number', required=True, copy=False, default='New') 
     team_members = fields.One2many('team.configuration.line','team_members_lines1')
+
 
     # check if team number already exist
     _sql_constraints = [
@@ -24,42 +24,73 @@ class team_configuration(models.Model):
 
     @api.model
     def create(self, vals):
-        # if sequence data is equal to new 
-        if vals.get('sequence', 'New') == 'New':
-            vals['sequence'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
+        if vals.get('team_number', 'New') == 'New':
+            vals['team_number'] = self.env['ir.sequence'].next_by_code('team_sequence') or 'New'
+
+        res =super(team_configuration,self).create(vals)
+
+        for rec in res.team_members:
+            rec.team_members_lines.write({'team_number_id': res.team_number})
+
+
+
+            self.env['team.page.lines'].create({
+            'team_page_lines': rec.team_members_lines.id,
+            'team_number_team': res.team_number,
+            'status': 'permanent',
+            })
             
-            return super(team_configuration, self).create(vals)
+            
+
+        return res
 
     @api.multi
     def write(self, values):
         res = super(team_configuration, self).write(values)
-        # here you can do accordingly
-        
-        # rec = self.env['hr.employee'].search([]).mapped('id')
-        # for rec in self.team_members:
-        #     # rec.team_number_id = values.get('team_number')
-        #     rec.write({'team_number_id': self.team_number})
-        #     print('yes')
-        #     print(self.team_number)
-        #     print(self.team_members)
-        #     print(rec)
+        b = []
+        c = []
+        # temp3 = []
+        a = self.env['hr.employee'].search([('team_number_id','=',self.team_number)])   
+        for recs in a:
+            b.append(recs.id)
+        for rec in self.team_members:
+            for x in rec.team_members_lines:
+                c.append(x.id)
+        for element in b:
+            if element not in c:
 
-        record_ids = self.env['team.configuration.line'].search([('team_members_lines', '=', self.team_members.team_members_lines.id)])
-        for record in record_ids:
-            record.write({
-            'team_number_id': self.team_number
-        })
-       
+
+                self.env['team.page.lines'].create({
+                'team_page_lines': element,
+                'team_number_team': self.team_number,
+                'status': 'removed',
+                })
+            else:
+                for rec in self.team_members:
+                    rec.team_members_lines.write({'history_team_number': self.team_number})
+                self.env['team.page.lines'].create({
+                'history_line': rec.team_members_lines.id,
+                'team_page_number': self.team_number,
+                'status': 'temporary',
+            })
+
         return res
 
-
+                        
 class team_configuration_line(models.Model):
     _name = 'team.configuration.line'
     _rec_name = 'team_members_lines'
 
     team_members_lines = fields.Many2one('hr.employee')
     team_members_lines1 = fields.Many2one('team.configuration')
+    # etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Team")
+    # etsi_teams_temporary = fields.Boolean(string="Temporary Team")
 
+    # @api.constrains('etsi_teams_replace','etsi_teams_temporary')
+    # def check(self):
+    #     if self.etsi_teams_temporary != True:
+    #         if len(self.etsi_teams_replace) == 0:
+    #             raise ValidationError("Please select a member.")
     @api.model
     def create(self, vals):
         y = []
@@ -70,41 +101,53 @@ class team_configuration_line(models.Model):
         res = super(team_configuration_line, self).create(vals)
 
         if res.team_members_lines.id in y:
-            raise ValidationError("Invalid")
+            raise ValidationError("Invalid team member")
         
         return res
 
-    @api.model
-    def write(self, vals):
-        y = []
-        x = self.env['team.configuration'].search([]).mapped('team_members')
-        for rec in x:
-            y.append(rec.team_members_lines.id)
+    # @api.multi
+    # def write(self, vals):
+    #     y = []
+    #     x = self.env['team.configuration'].search([]).mapped('team_members')
+    #     for rec in x:
+    #         y.append(rec.team_members_lines.id)
 
-        res = super(team_configuration_line, self).write(vals)
+    #     res = super(team_configuration_line, self).write(vals)
 
-        if res.team_members_lines.id in y:
-            raise ValidationError("Invalid")
+    #     if self.team_members_lines.id in y:
+    #         raise ValidationError("Invalid team member")
         
-        return res
+    #     return res
 
-    #validation for team members, one team only
-    @api.onchange('team_members_lines')
-    def _check_team_members(self):
-        s = []
-        x = self.env['team.configuration'].search([]).mapped('team_members')
-        for rec in x:
-            s.append(rec.team_members_lines.id)
-        if self.team_members_lines.id in s:
-            raise ValidationError("Invalid")
+    # #validation for team members, one team only
+    # @api.onchange('team_members_lines')
+    # def _check_team_members(self):
+    #     s = []
+    #     x = self.env['team.configuration'].search([]).mapped('team_members')
+    #     for rec in x:
+    #         s.append(rec.team_members_lines.id)
+    #     if self.team_members_lines.id in s:
+    #         raise ValidationError("Invalid team member")
 
 
 class team_page(models.Model):
     _inherit = 'hr.employee'
-    # _rec_name = 'team_number_lines'
+    _rec_name = 'team_number_id'
 
     history = fields.One2many('team.page.lines', 'team_page_lines')
-    team_number_id = fields.Integer()
+    team_number_id = fields.Char(readonly=True)
+
+    # @api.onchange('team_number_id')
+    # def _onchange_team_number(self):
+    #     lines = []
+    #     for rec in self.history:
+    #         for line in rec.team_page_lines:
+    #             vals = {
+    #                 'team_number': 12,
+    #             }
+    #             lines.append((0,0, vals))
+    #         rec.history = lines
+    #         print('---->',lines)
 
       
 class team_page_lines(models.Model):  
@@ -112,12 +155,16 @@ class team_page_lines(models.Model):
     _rec_name = 'team_page_lines'
 
     team_page_lines = fields.Many2one('hr.employee')
-    team_number = fields.Integer()
-    transaction_number = fields.Integer()
-    status = fields.Selection([
-        ('permanent', 'Permanent'),
-        ('temporary','Temporary')
-    ],default='permanent')
+    team_number_team = fields.Char()
+    transaction_number = fields.Char()
+    status = fields.Char()
+
+    # for additional field on stock picking
+# class team_replaced_team(models.Model):
+#     _inherit = "stock.picking"
+#     _rec_name = 'etsi_teams_replace'
+
+#     etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Team")
+#     etsi_teams_temporary = fields.Boolean(string="Temporary Team")
+
     
-
-

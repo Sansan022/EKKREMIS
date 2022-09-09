@@ -16,9 +16,11 @@
             <field name="model">team.configuration</field>
             <field name="arch" type="xml">
                 <form string="team configuration">
+                    <!-- <header>
+                        <button string="Confirm" type="object" name="history" class="oe_highlight" />
+                    </header> -->
                     <sheet>
                         <group>
-                            <field name="sequence" />
                             <field name="team_number" />
                         </group>
                         <field name="team_members" >
@@ -37,7 +39,6 @@
             <field name="model">team.configuration</field>
             <field name="arch" type="xml">
                 <tree string="team configuration">
-                    <field name="sequence" />
                     <field name="team_number" />
                     <field name="team_members" />
                 </tree>
@@ -50,14 +51,14 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-              <xpath expr="//notebook/page[2]" position="after">
+              <xpath expr="//notebook/page[5]" position="after">
                   <page name="teams_page" string="Teams">
                   <group name="name" string="Team Number">
                     <field name="team_number_id" string="Team number" />
                   </group>
                     <field name="history" string="History">
-                        <tree editable="bottom">
-                            <field name="team_number"/>
+                        <tree editable="bottom" create="false" delete="false">
+                            <field name="team_number_team"/>
                             <field name="transaction_number"/>
                             <field name="status"/>
                         </tree>
