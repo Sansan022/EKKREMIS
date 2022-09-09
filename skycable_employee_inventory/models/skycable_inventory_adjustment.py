@@ -341,7 +341,9 @@ class ProductAdjustment_02(models.Model):
     def check_unique_serial_2(self):
         check5 = self.etsi_product_ids_2.etsi_product_detail_2 - self
         for rec2 in check5:
-            if rec2.etsi_serials_2 == self.etsi_serials_2:
+            if self.etsi_serials_2 == False:
+                pass
+            elif rec2.etsi_serials_2 == self.etsi_serials_2:
                 check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_2)
                 raise ValidationError(check6)
 
@@ -349,7 +351,9 @@ class ProductAdjustment_02(models.Model):
     def check_unique_smart_card_2(self):
         check7 = self.etsi_product_ids_2.etsi_product_detail_2 - self
         for rec2 in check7:
-            if rec2.etsi_smart_card_2 == self.etsi_smart_card_2:
+            if self.etsi_smart_card_2 == False:
+                pass
+            elif rec2.etsi_smart_card_2 == self.etsi_smart_card_2:
                 check8 = "Duplicate detected within the Table \n Smart Card: {}".format(rec2.etsi_smart_card_2)
                 raise ValidationError(check8)
 
