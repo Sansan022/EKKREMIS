@@ -2,6 +2,7 @@ from odoo import models, fields, api,_
 from odoo.exceptions import UserError
 
 class IssuedTransient(models.TransientModel):
+    # _inherit ='stock.immediate.transfer'
     _name='stock.picking.issued'
     test_name = fields.Char(string="NAME: ")
     test_age = fields.Integer('AGE: ')  
@@ -68,21 +69,21 @@ class IssuedTransient(models.TransientModel):
     def validate_btn(self):
 
       
-        picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+        # picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         # create_picking = self.
-        sub = self.env['stock.picking']
+        # sub = self.env['stock.picking']
        
-        if picking:
-            for move in self.skycable_issued_subscriber_ids:
-                product_all_values=[]
-                product_all_values_new=[]
-                for move2 in picking.move_lines:
-                    if move.skycable_issued_serial == move2.etsi_serials_field:
+        # if picking:
+        #     for move in self.skycable_issued_subscriber_ids:
+        #         product_all_values=[]
+        #         product_all_values_new=[]
+        #         for move2 in picking.move_lines:
+        #             if move.skycable_issued_serial == move2.etsi_serials_field:
 
-                        move2.origin = move2.name
-                        move2.issued_field = "Yes"
-                        move2.subscriber_field = self.skycable_subscriber_id.id
-                        move2.checker_box = False
+        #                 move2.origin = move2.name
+        #                 move2.issued_field = "Yes"
+        #                 move2.subscriber_field = self.skycable_subscriber_id.id
+        #                 move2.checker_box = False
                         
         Uom = self.env['product.uom'].search([], limit=1)
         lst = []
@@ -105,6 +106,7 @@ class IssuedTransient(models.TransientModel):
             new_list.append((0,0,line2))
 
         get_all_data = self.env['stock.picking']
+        # stock_immediate  = self.env['stock.immediate.transfer'].search([], limit=1).process()
         
         
         picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
@@ -117,7 +119,20 @@ class IssuedTransient(models.TransientModel):
             'location_dest_id': picking_checker.default_location_dest_id.id,
             })
 
-        runfunctiontest.do_transfer()
+
+        # testloop = self.env['stock.pack.operation'].browse(self.env.context.get('active_id'))
+
+        # for move2 in picking.move_lines:
+
+
+        runfunctiontest.action_assign()
+        runfunctiontest.process()
+        # runfunctiontest.do_new_transfer()
+        # runfunctiontest.action_confirm()
+        # stock_immediate.process()
+        # stock_immediate.process()
+        # self.env['stock.immediate.transfer'].process()
+        # runfunctiontest.do_transfer()
 
         return
 

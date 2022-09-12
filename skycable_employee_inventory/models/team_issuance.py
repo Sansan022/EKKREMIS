@@ -99,3 +99,15 @@ class Team_issuance_stock_picking(models.Model):
 
 
     move_lines = fields.One2many('stock.move', 'picking_id', string="Stock Moves", copy=True)
+
+    # pick_id = fields.Many2one('stock.picking')
+
+    @api.multi
+    def process(self):
+        self.ensure_one()
+        for pack in self.pack_operation_product_ids:
+            if pack.product_qty > 0:
+                pack.write({'qty_done': pack.product_qty})
+            else:
+                pack.unlink()
+        return 
