@@ -21,6 +21,7 @@
                                                 <field name="skycable_issued_mac" readonly='True'/>
                                                 <field name="skycable_issued_card" readonly='True' />
                                                 <field name="skycable_issued_subscriber_id" invisible='True'/>
+                                                
                                             </tree>
                                         </field>
                                     </sheet>

@@ -24,31 +24,75 @@ class Team_issuance(models.Model):
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
 
     @api.multi
-    @api.onchange('etsi_serials_field')
+    @api.onchange('etsi_serials_field','etsi_mac_field','etsi_smart_card_field')
     def auto_fill_details_01(self): 
         for rec in self:
             database = self.env['etsi.inventory']
+
             duplicate_count = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_field)])
+            duplicate_count2 = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_mac_field)])
+            duplicate_count3 = self.env['etsi.inventory'].search_count([('etsi_smart_card', '=', rec.etsi_smart_card_field)])
+
             search_first = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-            #status_check = search_first.etsi_status
+            search_first2 = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+            search_first3 = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+
+
+            if rec.etsi_serials_field != False:
+                if duplicate_count < 1:
+                    raise ValidationError("Serial not found in the database.")
+                else:
+                    if search_first.etsi_status == 'used':
+                        raise ValidationError("Serial is already used.")
+                    else:
+
+                        test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                        rec.product_id = test.etsi_product_id.id
+                        rec.etsi_serials_field = test.etsi_serial
+                        rec.etsi_mac_field = test.etsi_mac  
+                        rec.etsi_smart_card_field = test.etsi_smart_card
 
 
 
-            if rec.etsi_serials_field == False:
+            elif rec.etsi_mac_field != False:
+                if duplicate_count2 < 1:
+                    raise ValidationError("Mac not found in the database.")
+                else:
+                    if search_first2.etsi_status == 'used':
+                        raise ValidationError("Mac is already used.")
+                    else:
+                        test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+                        rec.product_id = test.etsi_product_id.id
+
+                        rec.etsi_serials_field = test.etsi_serial
+                        rec.etsi_mac_field = test.etsi_mac  
+                        rec.etsi_smart_card_field = test.etsi_smart_card
+
+            elif rec.etsi_smart_card_field != False:
+                if duplicate_count3 < 1:
+                    raise ValidationError("Smart Card not found in the database.")
+                else:
+                    if search_first3.etsi_status == 'used':
+                        raise ValidationError("Smart Card is already used.")
+                    else:
+                        test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+                        rec.product_id = test.etsi_product_id.id
+
+                        rec.etsi_serials_field = test.etsi_serial
+                        rec.etsi_mac_field = test.etsi_mac  
+                        rec.etsi_smart_card_field = test.etsi_smart_card 
+            
+
+    @api.constrains('etsi_serials_field')
+    def testfunc(self):
+        check5 = self.picking_id.move_lines - self
+        for rec2 in check5:
+            if self.etsi_serials_field == False:
+                print("running")
                 pass
-            elif duplicate_count < 1:
-               raise ValidationError("Serial not found in the database.")
-            elif search_first.etsi_status == 'used':
-                raise ValidationError("Serial is already used.")
-            else:
-                test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-                rec.product_id = test.etsi_product_id.id
-
-                rec.etsi_serials_field = test.etsi_serial
-                rec.etsi_mac_field = test.etsi_mac  
-                rec.etsi_smart_card_field = test.etsi_smart_card
-
-
+            elif rec2.etsi_serials_field == self.etsi_serials_field:
+                check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
+                raise ValidationError(check6)
 
 class Team_issuance_stock_picking(models.Model):
     _inherit = 'stock.picking'
