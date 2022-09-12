@@ -68,28 +68,33 @@ class IssuedTransient(models.TransientModel):
     def validate_btn(self):
 
       
-        # picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-        # # create_picking = self.
-        # sub = self.env['stock.picking']
+        picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+        # create_picking = self.
+        sub = self.env['stock.picking']
        
-        # if picking:
-        #     for move in self.skycable_issued_subscriber_ids:
-        #         product_all_values=[]
-        #         product_all_values_new=[]
-        #         for move2 in picking.move_lines:
-        #             if move.skycable_issued_serial == move2.etsi_serials_field:
+        if picking:
+            for move in self.skycable_issued_subscriber_ids:
+                product_all_values=[]
+                product_all_values_new=[]
+                for move2 in picking.move_lines:
+                    if move.skycable_issued_serial == move2.etsi_serials_field:
 
-        #                 move2.origin = move2.name
-        #                 move2.issued_field = "Yes"
-        #                 move2.subscriber_field = self.skycable_subscriber_id.id
-        #                 move2.checker_box = False
+                        move2.origin = move2.name
+                        move2.issued_field = "Yes"
+                        move2.subscriber_field = self.skycable_subscriber_id.id
+                        move2.checker_box = False
                         
+        Uom = self.env['product.uom'].search([], limit=1)
         lst = []
         for line in self.skycable_issued_subscriber_ids:
             res = {
+                'name':line.skycable_issued_product_id.product_tmpl_id.name,
+                'product_id': line.skycable_issued_product_id.id,
                 'etsi_serials_field': line.skycable_issued_serial,
                 'etsi_mac_field': line.skycable_issued_mac,
                 'etsi_smart_card_field': line.skycable_issued_card,
+                'product_uom': line.skycable_issued_product_id.product_tmpl_id.uom_id.id,
+
             }
 
             lst.append(res)
@@ -103,32 +108,17 @@ class IssuedTransient(models.TransientModel):
         
         
         picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
-        Uom = self.env['product.uom']
-        stock_shot = self.env['stock.move']
 
-        get_all_data.create({
+        runfunctiontest = get_all_data.create({
             'picking_type_id': picking_checker.id,
             'partner_id': self.skycable_subscriber_id.id,
             'move_lines': new_list,
             'location_id': picking_checker.default_location_src_id.id,
             'location_dest_id': picking_checker.default_location_dest_id.id,
-            # 'product_uom': Uom.id,
             })
 
+        runfunctiontest.do_transfer()
 
-        stock_shot.create({
-            'product_uom': Uom.id,
-        })
-        # get_all_data.do_new_transfer()
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
-        print(picking_checker.id)
         return
 
 
@@ -139,8 +129,8 @@ class SubscribeIssued(models.TransientModel):
     
     
     skycable_issued_subscriber_id = fields.Many2one('stock.picking.issued', 'list')
-    skycable_issued_product_id = fields.Many2one('stock.move')
-    skycable_issued_product_name = fields.Many2one(related='skycable_issued_product_id.product_id',string='Product ID')
+    skycable_issued_product_id = fields.Many2one('product.product')
+    skycable_issued_product_name = fields.Many2one(related='skycable_issued_product_id',string='Product ID')
     skycable_issued_serial = fields.Char('Serial ID')
     skycable_issued_mac = fields.Char('Mac ID')
     skycable_issued_card = fields.Char('Smart Card')
