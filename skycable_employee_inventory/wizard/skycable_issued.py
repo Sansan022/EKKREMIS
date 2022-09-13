@@ -69,21 +69,20 @@ class IssuedTransient(models.TransientModel):
     def validate_btn(self):
 
       
-        # picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-        # create_picking = self.
-        # sub = self.env['stock.picking']
+        picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+        sub = self.env['stock.picking']
        
-        # if picking:
-        #     for move in self.skycable_issued_subscriber_ids:
-        #         product_all_values=[]
-        #         product_all_values_new=[]
-        #         for move2 in picking.move_lines:
-        #             if move.skycable_issued_serial == move2.etsi_serials_field:
+        if picking:
+            for move in self.skycable_issued_subscriber_ids:
+                product_all_values=[]
+                product_all_values_new=[]
+                for move2 in picking.move_lines:
+                    if move.skycable_issued_serial == move2.etsi_serials_field:
 
-        #                 move2.origin = move2.name
-        #                 move2.issued_field = "Yes"
-        #                 move2.subscriber_field = self.skycable_subscriber_id.id
-        #                 move2.checker_box = False
+                        move2.origin = move2.name
+                        move2.issued_field = "Yes"
+                        move2.subscriber_field = self.skycable_subscriber_id.id
+                        move2.checker_box = False
                         
         Uom = self.env['product.uom'].search([], limit=1)
         lst = []
@@ -94,7 +93,10 @@ class IssuedTransient(models.TransientModel):
                 'etsi_serials_field': line.skycable_issued_serial,
                 'etsi_mac_field': line.skycable_issued_mac,
                 'etsi_smart_card_field': line.skycable_issued_card,
+                'subscriber_field': self.skycable_subscriber_id.id,
+                'issued_field': "Yes",
                 'product_uom': line.skycable_issued_product_id.product_tmpl_id.uom_id.id,
+
 
             }
 
@@ -126,7 +128,7 @@ class IssuedTransient(models.TransientModel):
 
 
         runfunctiontest.action_assign()
-        runfunctiontest.process()
+        # runfunctiontest.process()
         # runfunctiontest.do_new_transfer()
         # runfunctiontest.action_confirm()
         # stock_immediate.process()

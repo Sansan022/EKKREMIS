@@ -26,6 +26,7 @@ class Team_issuance(models.Model):
     @api.multi
     @api.onchange('etsi_serials_field','etsi_mac_field','etsi_smart_card_field')
     def auto_fill_details_01(self): 
+        self.ensure_one()
         for rec in self:
             database = self.env['etsi.inventory']
 
@@ -111,3 +112,17 @@ class Team_issuance_stock_picking(models.Model):
             else:
                 pack.unlink()
         return 
+
+    @api.multi
+    def do_transfer(self):
+        res = super(Team_issuance_stock_picking, self).do_transfer()
+
+        picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+        if self.picking_type_id.id == picking_checker.id:
+            for rec in self.move_lines:
+                status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
+                status_checker.etsi_status = "used"
+        else:
+            pass
+
+        return res
