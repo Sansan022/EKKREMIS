@@ -49,37 +49,38 @@ class team_configuration(models.Model):
         res = super(team_configuration, self).write(values)
         b = []
         c = []
-        # temp3 = []
+        temp3 = []
         a = self.env['hr.employee'].search([('team_number_id','=',self.team_number)])   
         for recs in a:
             b.append(recs.id)
+
         for rec in self.team_members:
-            for x in rec.team_members_lines:
-                c.append(x.id)
-        for element in b:
-            if element not in c:
-
-
-                self.env['team.page.lines'].create({
-                'team_page_lines': element,
+            rec.team_members_lines.write({'team_number_id': self.team_number})
+            c.append(rec.team_members_lines.id)
+            self.env['team.page.lines'].create({
+                'team_page_lines': rec.employee_id.id,
                 'team_number_team': self.team_number,
-                'status': 'removed',
-                })
-            else:
-                for rec in self.team_members:
-                    rec.team_members_lines.write({'history_team_number': self.team_number})
-                self.env['team.page.lines'].create({
-                'history_line': rec.team_members_lines.id,
-                'team_page_number': self.team_number,
-                'status': 'temporary',
+                'status': 'Permanent'
             })
 
+        for element in b:
+            if element not in c:
+                temp3.append(element)
+
+        for removed in temp3:
+            self.env['hr.employee'].search([('id','=',removed)]).write({'team_number_id': ''}) 
+            self.env['team.page.lines'].create({
+                'team_page_lines': removed,
+                'team_number_team': self.team_number,
+                'status': 'Removed'
+            })
+      
         return res
 
                         
 class team_configuration_line(models.Model):
     _name = 'team.configuration.line'
-    _rec_name = 'team_members_lines'
+    # _rec_name = 'team_members_lines'
 
     team_members_lines = fields.Many2one('hr.employee')
     team_members_lines1 = fields.Many2one('team.configuration')
@@ -132,7 +133,7 @@ class team_configuration_line(models.Model):
 
 class team_page(models.Model):
     _inherit = 'hr.employee'
-    _rec_name = 'team_number_id'
+    # _rec_name = 'team_number_id'
 
     history = fields.One2many('team.page.lines', 'team_page_lines')
     team_number_id = fields.Char(readonly=True)
@@ -152,7 +153,7 @@ class team_page(models.Model):
       
 class team_page_lines(models.Model):  
     _name = 'team.page.lines'
-    _rec_name = 'team_page_lines'
+    # _rec_name = 'team_page_lines'
 
     team_page_lines = fields.Many2one('hr.employee')
     team_number_team = fields.Char()

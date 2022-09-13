@@ -16,7 +16,7 @@ class EtsiTeams(models.Model):
     
     @api.multi
     @api.onchange('etsi_teams_member_no')
-    def auto_fill_details_transfer(self): 
+    def auto_fill_details_01(self): 
         for rec in self:
             database = self.env['hr.employee'].search([('identification_id','=',rec.etsi_teams_member_no)])
             database2 = self.env['team.configuration'].search([('team_number','=',database.team_number_id)])
@@ -24,7 +24,7 @@ class EtsiTeams(models.Model):
 
     @api.multi
     @api.onchange('etsi_teams_id')
-    def auto_fill_details_all_transfer2(self):
+    def auto_fill_details_02(self):
         table=[]
         for rec2 in self.etsi_teams_id.team_members:
             table.append((0,0,{
@@ -34,18 +34,41 @@ class EtsiTeams(models.Model):
             }))
         self.etsi_teams_line_ids = table
         
-    @api.model 
-    def create(self, vals):
+    # @api.model 
+    # def create(self, vals):
         
         
-        res =super(EtsiTeams,self).create(vals)
-        for line in res.etsi_teams_line_ids:
-            if line.etsi_teams_temporary is False:
+    #     res =super(EtsiTeams,self).create(vals)
+    #     for line in res.etsi_teams_line_ids:
+    #         if line.etsi_teams_temporary is False:
            
+    #             self.env['team.page.lines'].create({
+    #             'team_page_lines':  line.team_members_lines.id,
+    #             'team_number_team': res.etsi_teams_id.team_number,
+    #             'transaction_number': res.origin,
+    #             'status': 'Permanent',
+    #             })
+    #         else:
+    #             # for rec in self.team_configuration_id:
+    #             #     rec.employee_id.write({'history_team_number': self.team_number})
+    #             self.env['team.page.lines'].create({
+    #             'team_page_lines':  line.etsi_teams_replace.id,
+    #             'team_number_team': res.etsi_teams_id.team_number,
+    #             'transaction_number': res.origin,
+    #             'status': 'Temporary',
+    #              })
+    #     return res
+
+    @api.multi
+    def do_new_transfer(self):
+        res = super(EtsiTeams,self).do_new_transfer()
+        for line in self.etsi_teams_line_ids:
+            if line.etsi_teams_temporary is False:
+            
                 self.env['team.page.lines'].create({
                 'team_page_lines':  line.team_members_lines.id,
-                'team_number_team': res.etsi_teams_id.team_number,
-                'transaction_number': res.origin,
+                'team_number_team': self.etsi_teams_id.team_number,
+                'transaction_number': self.name,
                 'status': 'Permanent',
                 })
             else:
@@ -53,10 +76,10 @@ class EtsiTeams(models.Model):
                 #     rec.employee_id.write({'history_team_number': self.team_number})
                 self.env['team.page.lines'].create({
                 'team_page_lines':  line.etsi_teams_replace.id,
-                'team_number_team': res.etsi_teams_id.team_number,
-                'transaction_number': res.origin,
+                'team_number_team': self.etsi_teams_id.team_number,
+                'transaction_number': self.name,
                 'status': 'Temporary',
-                 })
+                    })
         return res
 
 class EtsiTeamsReplace(models.Model):
@@ -66,8 +89,6 @@ class EtsiTeamsReplace(models.Model):
     team_members_lines = fields.Many2one('hr.employee', string="Team Member")
     etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Member")
     etsi_teams_temporary = fields.Boolean(string="Temporary Team")
-
-    
     # etsi_teams_id_line = fields.Many2one('team.configuration.line', string="Teams")
     # etsi_team_members_lines = fields.Many2one('stock.picking', related="etsi_teams_id_line.team_members_lines1")
     # team_members_lines = fields.Many2one(related="etsi_teams_id_line.team_members_lines")
@@ -77,6 +98,25 @@ class EtsiTeamsReplace(models.Model):
         if self.etsi_teams_temporary == True:
             if len(self.etsi_teams_replace) == 0:
                 raise ValidationError("No Replaced Member selected!")
+
+    @api.onchange('etsi_teams_temporary')
+    def onchange_replaced_id(self):
+        for request in self:
+            domain = {}
+            if self.etsi_teams_temporary == True:
+                if request.team_members_lines:
+                    task_list = []
+                    task_obj = self.env['hr.employee'].search([])
+                    if task_obj:
+                        for task in task_obj:
+                            if task.team_number_id == request.team_members_lines.team_number_id:
+                                task_list.append(task.team_number_id)
+                        if task_list:
+                            domain['etsi_teams_replace'] =  [('team_number_id', 'not in', task_list)]
+                        else:
+                            domain['etsi_teams_replace'] =  []
+
+                return {'domain': domain}
     
 
    
