@@ -273,28 +273,6 @@ class ProductAdjustment(models.Model):
     def check_unique_serial(self):
         check1 = self.etsi_product_ids.etsi_product_detail - self
         for rec2 in check1:
-
-            if self.etsi_serials == False:
-                pass
-            elif rec2.etsi_serials == self.etsi_serials:
-                check2 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials)
-                raise ValidationError(check2)
-
-    @api.constrains('etsi_macs')
-    def check_unique_mac(self):
-        check3 = self.etsi_product_ids.etsi_product_detail - self
-        for rec2 in check3:
-            if self.etsi_macs ==False:
-                pass
-            if rec2.etsi_macs == self.etsi_macs:
-                check4 = "Duplicate detected within the Table \n Mac Number: {}".format(rec2.etsi_macs)
-                raise ValidationError(check4)
-
-
-    @api.constrains('etsi_serials')
-    def check_unique_serial(self):
-        check1 = self.etsi_product_ids.etsi_product_detail - self
-        for rec2 in check1:
             if self.etsi_serials == False:
                 pass
             elif rec2.etsi_serials == self.etsi_serials:

@@ -20,8 +20,7 @@ class Team_issuance(models.Model):
 
     checker_box = fields.Boolean(string="To be issued")
 
-    issued_field = fields.Char(string="Issued")
-    # ,default="No"
+    issued_field = fields.Char(string="Issued",default="No")
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
 
     @api.multi
@@ -48,21 +47,18 @@ class Team_issuance(models.Model):
                     if search_first.etsi_status == 'used':
                         raise ValidationError("Serial is already used.")
                     else:
-                        try:
-                            search_status = self.env['stock.move'].search([('etsi_serials_field','=',rec.etsi_serials_field)])
 
-                            if search_status.issued_field == False:
-                                test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-                                rec.product_id = test.etsi_product_id.id
-                                rec.etsi_serials_field = test.etsi_serial
-                                rec.etsi_mac_field = test.etsi_mac  
-                                rec.etsi_smart_card_field = test.etsi_smart_card
-                            else:
-                                raise ValidationError("Serial is already on another process.")
+                        search_status = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field)])
 
-                        except:
-                            print("Serial entered is already used in another operation remove the duplicate operation")
-                            
+                        if search_status == 0:
+                            test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                            rec.product_id = test.etsi_product_id.id
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card
+                        else:
+                            raise ValidationError("Serial is already on another process.")
+
 
 
 
@@ -73,12 +69,21 @@ class Team_issuance(models.Model):
                     if search_first2.etsi_status == 'used':
                         raise ValidationError("Mac is already used.")
                     else:
-                        test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
-                        rec.product_id = test.etsi_product_id.id
 
-                        rec.etsi_serials_field = test.etsi_serial
-                        rec.etsi_mac_field = test.etsi_mac  
-                        rec.etsi_smart_card_field = test.etsi_smart_card
+                        search_status = self.env['stock.move'].search_count([('etsi_mac','=',rec.etsi_mac_field)])
+
+                        if search_status == 0:
+                            test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+                            rec.product_id = test.etsi_product_id.id
+
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card
+                        else:
+                            raise ValidationError("Mac is already on another process.")
+
+
+                        
 
             elif rec.etsi_smart_card_field != False:
                 if duplicate_count3 < 1:
@@ -87,13 +92,21 @@ class Team_issuance(models.Model):
                     if search_first3.etsi_status == 'used':
                         raise ValidationError("Smart Card is already used.")
                     else:
-                        test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
-                        rec.product_id = test.etsi_product_id.id
 
-                        rec.etsi_serials_field = test.etsi_serial
-                        rec.etsi_mac_field = test.etsi_mac  
-                        rec.etsi_smart_card_field = test.etsi_smart_card 
+                        search_status = self.env['stock.move'].search_count([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+
+                        if search_status == 0:
+                            test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+                            rec.product_id = test.etsi_product_id.id
+
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card 
             
+                        else:
+                            raise ValidationError("Smart Card is already on another process.")
+
+                    
 
     @api.constrains('etsi_serials_field')
     def testfunc(self):
@@ -128,10 +141,6 @@ class Team_issuance_stock_picking(models.Model):
     def do_transfer(self):
         res = super(Team_issuance_stock_picking, self).do_transfer()
 
-        picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Team Issuance')])
-        if self.picking_type_id.id == picking_checker2.id:
-            for rec in self.move_lines:
-                rec.issued_field = "No"
 
         picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
         if self.picking_type_id.id == picking_checker.id:

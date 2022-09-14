@@ -65,6 +65,14 @@
             <attribute name="invisible">1</attribute>
           </xpath>
 
+          <xpath expr="//sheet/group[1]/group[1]/field[@name='location_id']" position="attributes">
+            <attribute name="readonly">1</attribute>
+          </xpath>
+
+          <xpath expr="//sheet/group[1]/group[1]/field[@name='location_dest_id']" position="attributes">
+            <attribute name="readonly">1</attribute>
+          </xpath>
+
             </field>
     </record>
 

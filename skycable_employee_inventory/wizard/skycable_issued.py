@@ -107,6 +107,27 @@ class IssuedTransient(models.TransientModel):
         for line2 in lst:
             new_list.append((0,0,line2))
 
+
+        team_lst = []
+        for team_line in picking.etsi_teams_line_ids:
+            team_res = {
+                'team_members_lines': team_line.team_members_lines.id,
+                'etsi_teams_replace': team_line.etsi_teams_replace.id,
+                'etsi_teams_temporary': team_line.etsi_teams_temporary,
+            }
+
+            team_lst.append(team_res)
+
+        team_new_list = []
+        
+
+        for team_line2 in team_lst:
+            team_new_list.append((0,0,team_line2))
+
+
+
+
+
         get_all_data = self.env['stock.picking']
         # stock_immediate  = self.env['stock.immediate.transfer'].search([], limit=1).process()
         
@@ -119,6 +140,9 @@ class IssuedTransient(models.TransientModel):
             'move_lines': new_list,
             'location_id': picking_checker.default_location_src_id.id,
             'location_dest_id': picking_checker.default_location_dest_id.id,
+            'etsi_teams_id':  picking.etsi_teams_id.id,
+            'etsi_teams_line_ids':  team_new_list,
+            
             })
 
 
