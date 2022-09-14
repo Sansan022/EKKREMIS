@@ -135,6 +135,28 @@ class Team_issuance(models.Model):
             elif rec2.etsi_serials_field == self.etsi_serials_field:
                 check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
                 raise ValidationError(check6)
+    
+    @api.constrains('etsi_mac_field')
+    def testfunc(self):
+        check5 = self.picking_id.move_lines - self
+        for rec2 in check5:
+            if self.etsi_mac_field == False:
+                print("running")
+                pass
+            elif rec2.etsi_mac_field == self.etsi_mac_field:
+                check6 = "Duplicate detected within the Table \n Mac Number: {}".format(rec2.etsi_serials_field)
+                raise ValidationError(check6)
+    
+    @api.constrains('etsi_smart_card_field')
+    def testfunc(self):
+        check5 = self.picking_id.move_lines - self
+        for rec2 in check5:
+            if self.etsi_smart_card_field == False:
+                print("running")
+                pass
+            elif rec2.etsi_smart_card_field == self.etsi_smart_card_field:
+                check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
+                raise ValidationError(check6)
 
 class Team_issuance_stock_picking(models.Model):
     _inherit = 'stock.picking'
