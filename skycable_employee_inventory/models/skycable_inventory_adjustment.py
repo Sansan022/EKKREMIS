@@ -207,7 +207,7 @@ class ProductDetails(models.Model):
             etsi_serial_duplicate = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials)])
             etsi_mac_duplicate = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_macs)])
             if rec.etsi_serials == False and rec.etsi_macs == False:
-                check3 = "Product must have either Serial NUmber or Mac Number"
+                check3 = "Product must have either Serial Number or Mac Number"
                 raise ValidationError(check3)
             if etsi_serial_duplicate >= 1:
                 if etsi_mac_duplicate == False or etsi_serial_duplicate==False:
@@ -229,7 +229,7 @@ class ProductDetails(models.Model):
             etsi_serial_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_2)])
             etsi_smart_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_smart_card', '=', rec.etsi_smart_card_2)])
             if rec.etsi_serials_2 == False and rec.etsi_smart_card_2 == False:
-                check3 = "Product must have either Serial NUmber or Smart Card Number"
+                check3 = "Product must have either Serial Number or Smart Card Number"
                 raise ValidationError(check3)
             if etsi_serial_duplicate_2 >= 1:
                 if etsi_smart_duplicate_2 == False or etsi_serial_duplicate_2==False:

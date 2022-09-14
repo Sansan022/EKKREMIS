@@ -87,17 +87,18 @@ class Team_issuance(models.Model):
                         raise ValidationError("Mac is already used.")
                     else:
 
-                        search_status = self.env['stock.move'].search_count([('etsi_mac','=',rec.etsi_mac_field)])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                
+                        for moves in stock_moves:
+                            if moves.etsi_mac_field == rec.etsi_mac_field:
+                                raise ValidationError("Mac is already on another process.")
+                            else:
+                                test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+                                rec.product_id = test.etsi_product_id.id
+                                rec.etsi_serials_field = test.etsi_serial
+                                rec.etsi_mac_field = test.etsi_mac  
+                                rec.etsi_smart_card_field = test.etsi_smart_card
 
-                        if search_status == 0:
-                            test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
-                            rec.product_id = test.etsi_product_id.id
-
-                            rec.etsi_serials_field = test.etsi_serial
-                            rec.etsi_mac_field = test.etsi_mac  
-                            rec.etsi_smart_card_field = test.etsi_smart_card
-                        else:
-                            raise ValidationError("Mac is already on another process.")
 
 
                         
@@ -110,18 +111,17 @@ class Team_issuance(models.Model):
                         raise ValidationError("Smart Card is already used.")
                     else:
 
-                        search_status = self.env['stock.move'].search_count([('etsi_smart_card','=',rec.etsi_smart_card_field)])
-
-                        if search_status == 0:
-                            test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
-                            rec.product_id = test.etsi_product_id.id
-
-                            rec.etsi_serials_field = test.etsi_serial
-                            rec.etsi_mac_field = test.etsi_mac  
-                            rec.etsi_smart_card_field = test.etsi_smart_card 
-            
-                        else:
-                            raise ValidationError("Smart Card is already on another process.")
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                
+                        for moves in stock_moves:
+                            if moves.etsi_smart_card_field == rec.etsi_smart_card_field:
+                                raise ValidationError("Smart card is already on another process.")
+                            else:
+                                test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+                                rec.product_id = test.etsi_product_id.id
+                                rec.etsi_serials_field = test.etsi_serial
+                                rec.etsi_mac_field = test.etsi_mac  
+                                rec.etsi_smart_card_field = test.etsi_smart_card
 
                     
 
@@ -137,7 +137,7 @@ class Team_issuance(models.Model):
                 raise ValidationError(check6)
     
     @api.constrains('etsi_mac_field')
-    def testfunc(self):
+    def testfunc2(self):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_mac_field == False:
@@ -148,7 +148,7 @@ class Team_issuance(models.Model):
                 raise ValidationError(check6)
     
     @api.constrains('etsi_smart_card_field')
-    def testfunc(self):
+    def testfunc3(self):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_smart_card_field == False:
