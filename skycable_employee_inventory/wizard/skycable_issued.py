@@ -70,18 +70,12 @@ class IssuedTransient(models.TransientModel):
 
       
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-        sub = self.env['stock.picking']
+        # sub = self.env['stock.picking']
        
         if picking:
             for move in self.skycable_issued_subscriber_ids:
-                product_all_values=[]
-                product_all_values_new=[]
                 for move2 in picking.move_lines:
                     if move.skycable_issued_serial == move2.etsi_serials_field:
-
-                        move2.origin = move2.name
-                        move2.issued_field = "Yes"
-                        move2.subscriber_field = self.skycable_subscriber_id.id
                         move2.checker_box = False
                         
         Uom = self.env['product.uom'].search([], limit=1)
@@ -160,7 +154,17 @@ class IssuedTransient(models.TransientModel):
         # self.env['stock.immediate.transfer'].process()
         # runfunctiontest.do_transfer()
 
-        return
+        return {
+                    'name': _("Subscriber Issuance"),
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'stock.picking',
+                    'view_mode': 'form',
+                    'view_type': 'form',
+                    'res_id': runfunctiontest.id,
+                    # 'views': [(self.env.ref('survey.survey_form', False).id or False, 'form'), ],
+                    # 'context': {'show_mrf_number': True},
+                    'target': 'current',
+                }
 
 
 

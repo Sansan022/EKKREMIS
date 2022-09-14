@@ -24,6 +24,17 @@ class Team_issuance(models.Model):
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
 
     @api.multi
+    @api.onchange('checker_box')
+    def checker_change(self): 
+        for rec in self:
+            if rec.etsi_serials_field != False:
+                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel'])])
+                if search_data > 1:
+                    rec.checker_box = False
+                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+            
+
+    @api.multi
     @api.onchange('etsi_serials_field','etsi_mac_field','etsi_smart_card_field')
     def auto_fill_details_01(self): 
         self.ensure_one()
@@ -48,16 +59,22 @@ class Team_issuance(models.Model):
                         raise ValidationError("Serial is already used.")
                     else:
 
-                        search_status = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field)])
+                        # search_status = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field)])
 
-                        if search_status == 0:
-                            test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-                            rec.product_id = test.etsi_product_id.id
-                            rec.etsi_serials_field = test.etsi_serial
-                            rec.etsi_mac_field = test.etsi_mac  
-                            rec.etsi_smart_card_field = test.etsi_smart_card
-                        else:
-                            raise ValidationError("Serial is already on another process.")
+                        # if search_status == 0:
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                
+                        for moves in stock_moves:
+                            if moves.etsi_serials_field == rec.etsi_serials_field:
+                                raise ValidationError("Serial is already on another process.")
+                            else:
+                                test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                                rec.product_id = test.etsi_product_id.id
+                                rec.etsi_serials_field = test.etsi_serial
+                                rec.etsi_mac_field = test.etsi_mac  
+                                rec.etsi_smart_card_field = test.etsi_smart_card
+                        # else:
+                        #     raise ValidationError("Serial is already on another process.")
 
 
 
@@ -141,13 +158,19 @@ class Team_issuance_stock_picking(models.Model):
     def do_transfer(self):
         res = super(Team_issuance_stock_picking, self).do_transfer()
 
+        for check in self:
+            picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+            if self.picking_type_id.id == picking_checker.id:
+                for rec in self.move_lines:
+                    status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
+                    status_checker.etsi_status = "used"
 
-        picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
-        if self.picking_type_id.id == picking_checker.id:
-            for rec in self.move_lines:
-                status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
-                status_checker.etsi_status = "used"
-        else:
-            pass
+                    status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
+                    for records in status_checker2:
+                            records.issued_field = "Yes"
+                            records.subscriber_field = self.partner_id.id
+                            records.checker_box = False
+            else:
+                pass
 
         return res
