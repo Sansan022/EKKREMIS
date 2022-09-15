@@ -32,6 +32,8 @@ class IssuedTransient(models.TransientModel):
             print(picking.location_dest_id.name)
 
 
+
+
             for move in picking.move_lines:
                 if move.checker_box is True:
          
@@ -77,6 +79,9 @@ class IssuedTransient(models.TransientModel):
                 for move2 in picking.move_lines:
                     if move.skycable_issued_serial == move2.etsi_serials_field:
                         move2.checker_box = False
+                        
+
+#picking.origin = 'HELLO'
                         
         Uom = self.env['product.uom'].search([], limit=1)
         lst = []
@@ -124,20 +129,26 @@ class IssuedTransient(models.TransientModel):
 
         get_all_data = self.env['stock.picking']
         # stock_immediate  = self.env['stock.immediate.transfer'].search([], limit=1).process()
+
         
         
         picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
 
-        runfunctiontest = get_all_data.create({
-            'picking_type_id': picking_checker.id,
-            'partner_id': self.skycable_subscriber_id.id,
-            'move_lines': new_list,
-            'location_id': picking_checker.default_location_src_id.id,
-            'location_dest_id': picking_checker.default_location_dest_id.id,
-            'etsi_teams_id':  picking.etsi_teams_id.id,
-            'etsi_teams_line_ids':  team_new_list,
-            
-            })
+        if picking:
+        
+
+            runfunctiontest = get_all_data.create({
+                'picking_type_id': picking_checker.id,
+                'partner_id': self.skycable_subscriber_id.id,
+                'origin': picking.name,
+                'move_lines': new_list,
+                'location_id': picking_checker.default_location_src_id.id,
+                'location_dest_id': picking_checker.default_location_dest_id.id,
+                'etsi_teams_id':  picking.etsi_teams_id.id,
+                'etsi_teams_line_ids':  team_new_list,
+                
+                
+                })
 
 
         # testloop = self.env['stock.pack.operation'].browse(self.env.context.get('active_id'))
