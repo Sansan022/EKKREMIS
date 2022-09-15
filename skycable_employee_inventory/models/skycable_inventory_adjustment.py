@@ -59,6 +59,8 @@ class ProductDetails(models.Model):
         res = super(ProductDetails, self).create(vals)
         return res
 
+
+
     # WRITE VALIDATION
     @api.multi
     def write(self, vals):
@@ -72,52 +74,109 @@ class ProductDetails(models.Model):
                 if counter != 1:
                     raise ValidationError('Product must not exceed to more than 1!')
                 
-        # # VALIDATION: NO SERIAL DUPLICATE
-        # if 'etsi_product_detail'  in vals:
-        #     # Fetch product etail
-        #     for rec in vals['etsi_product_detail']:
-        #         # Get dictionary data
-        #         test = rec[2]
-        #         if test: # If test == True
-        #             # Search all data from database -> etsi.product.detail.line
-        #             search = self.env['etsi.product.detail.line'].search([]) 
-        #             # Fetch all data
-        #             for searched in search:
-        #                 # Validation: NO Duplicate serial number
-        #                 if test['etsi_serials'] in searched.etsi_serials:
-        #                     raise ValidationError('Serial number is already exists!')
-        #                 # Validation: NO Duplicate MAC ID
-        #                 if test['etsi_macs'] == searched.etsi_macs:
-        #                     raise ValidationError('MAC ID is already exists!')
-        
-        # # VALIDATION: NO SMART CARD DUPLICATE
-        # if 'etsi_product_detail_2' in vals:
-        #     o2m_datas = []
-        #     # fetch one2many datas
-        #     for data in self.etsi_product_detail_2:
-        #         print(data.etsi_serials_2)
-        #         # store the datas to list
-        #         o2m_datas.append(data.etsi_serials_2)
+        # VALIDATION FOR MODEM: NO SERIAL AND MAC ID DUPLICATE
+        if 'etsi_product_detail'  in vals:
+            # container of created datas
+            created_serial = []
+            created_mac = []
+            # container of updated datas
+            updated_serial = []
+            updated_mac = []
             
-        #     # validate within the table
+            # Search all data from database -> etsi.product.detail.line
+            search = self.env['etsi.product.detail.line'].search([]) 
+                
+            # Fetch product detail
+            for rec in vals['etsi_product_detail']:
+                # Get dictionary data
+                test = rec[2]
+                if rec[0] == 0: # If created data triggered
+                    if 'etsi_serials' in test:
+                        created_serial.append(test['etsi_serials'])
+                    if 'etsi_macs' in test:
+                        created_mac.append(test['etsi_macs'])
+                    
+                elif rec[0] == 1: # If edit / update data triggered
+                    if 'etsi_serials' in test:
+                        updated_serial.append(test['etsi_serials'])
+                    if 'etsi_macs' in test:
+                        updated_mac.append(test['etsi_macs'])
+                if test:
+                    if test['etsi_serials'] == test['etsi_macs']:
+                        raise ValidationError(_('Duplicate detected within the form serial and Mac id is the same'))
+
+                  # Fetch all data
+            for searched in search:
+                # Validation: NO Duplicate serial number
+                if searched.etsi_serials in updated_serial or searched.etsi_serials in created_serial:
+                    raise ValidationError('Serial number is already exists!')
+                # Validation: NO Duplicate MAC ID
+                if searched.etsi_macs in updated_mac or searched.etsi_macs in created_mac:
+                    raise ValidationError('Smart card is already exists!')
+                # Validation: NO Serial and MAC Id is the same
+                for val_serial in created_serial:
+                    if val_serial in created_card:
+                        raise ValidationError(_('Duplicate detected within the form serial and MAC id is the same'))
+                for val_serial2 in updated_serial:
+                    if val_serial2 in updated_card:
+                        raise ValidationError(_('Duplicate detected within the form serial and MAC id is the same'))
+
+          
+        # VALIDATION FOR CATV: NO SERIAL AND SMART CARD DUPLICATE
+        if 'etsi_product_detail_2' in vals:
+            # container of created datas
+            created_serial = []
+            created_card = []
+            # container of updated datas
+            updated_serial = []
+            updated_card = []
+            # Fetch product detail
+            for rec in vals['etsi_product_detail_2']:
+                # Search all data from database -> etsi.product.detail.line.two
+                search = self.env['etsi.product.detail.line.two'].search([]) 
+                # Get dictionary data
+                test = rec[2]
+                if rec[0] == 0: # If created data triggered
+                    if 'etsi_serials_2' in test:
+                        created_serial.append(test['etsi_serials_2'])
+                    if 'etsi_smart_card_2' in test:
+                        created_card.append(test['etsi_smart_card_2'])
+                    
+                elif rec[0] == 1: # If edit / update data triggered
+                    if 'etsi_serials_2' in test:
+                        updated_serial.append(test['etsi_serials_2'])
+                    if 'etsi_smart_card_2' in test:
+                        updated_card.append(test['etsi_smart_card_2'])
+                if test:
+                    if test['etsi_serials_2'] == test['etsi_smart_card_2']:
+                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
             
-        #     # Fetch product detail
-        #     # for rec in vals['etsi_product_detail_2']:
-        #     #     # Get dictionary data\
-        #     #     test = rec[2]
-        #     #     if test: # If test == True
-        #     #         # Search all data from database -> etsi.product.detail.line
-        #     #         search = self.env['etsi.product.detail.line.two'].search([]) 
-        #     #         # Fetch all data
-        #     #         for searched in search:
-        #     #             # Validation: NO Duplicate serial number
-        #     #             if test['etsi_serials_2'] in searched.etsi_serials_2:
-        #     #                 raise ValidationError('Serial number is already exists!', test['etsi_serials_2'])
-        #     #             # Validation: NO Duplicate Smart Card
-        #     #             if test['etsi_smart_card_2'] == searched.etsi_smart_card_2:
-        #     #                 raise ValidationError('Smart Card is already exists!')
-                        
-        #     # [0, False, {u'etsi_filter': u'partial', u'etsi_products': 3, u'etsi_macs': False, u'etsi_serials': u'121212121212'}]
+            # Fetch all data
+            for searched in search:
+                # Validation: NO Duplicate serial number
+                if searched.etsi_serials_2 in updated_serial or searched.etsi_serials_2 in created_serial:
+                    raise ValidationError('Serial number is already exists!')
+                # Validation: NO Duplicate Smart card
+                if searched.etsi_smart_card_2 in updated_card or searched.etsi_smart_card_2 in created_card:
+                    raise ValidationError('Smart card is already exists!')
+                # Validation: NO Serial and Smart card is the same
+                for val_serial in created_serial:
+                    if val_serial in created_card:
+                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
+                for val_serial2 in updated_serial:
+                    if val_serial2 in updated_card:
+                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
+
+  # VALIDATION FOR INVENTORY DETAILS, CAN'T BE EMPTY
+        if 'line_ids' in vals:
+            is_empty = True
+            for record in vals['line_ids']:
+                if record[0] != 2:
+                    is_empty = False
+            if is_empty == True:
+                raise ValidationError(('Inventory Details Table cant be Empty.'))
+            
+        return super(ProductDetails, self).write(vals)
 
 
         # VALIDATION FOR INVENTORY DETAILS, CAN'T BE EMPTY
@@ -201,48 +260,7 @@ class ProductDetails(models.Model):
         if self.user_has_groups('stock.group_tracking_lot'):
             res_filter.append(('pack', _('A Pack')))
         return res_filter
-    @api.constrains('etsi_product_detail')
-    def check_unique_check(self):
-        for rec in self.etsi_product_detail:
-            etsi_serial_duplicate = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials)])
-            etsi_mac_duplicate = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_macs)])
-            if rec.etsi_serials == False and rec.etsi_macs == False:
-                check3 = "Product must have either Serial Number or Mac Number"
-                raise ValidationError(check3)
-            if etsi_serial_duplicate >= 1:
-                if etsi_mac_duplicate == False or etsi_serial_duplicate==False:
-                    pass
-                else:
-                    check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials)
-                    raise ValidationError(check)
-            elif etsi_mac_duplicate >= 1:
-                if etsi_serial_duplicate == False or etsi_mac_duplicate==False:
-                    pass
-                else:
-                    check2 = "Duplicate detected within the database \n MAC Number: {}".format(rec.etsi_macs)
-                    raise ValidationError(check2)
-                
-
-    @api.constrains('etsi_product_detail_2')
-    def check_unique_check_2(self):
-        for rec in self.etsi_product_detail_2:
-            etsi_serial_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_2)])
-            etsi_smart_duplicate_2 = self.env['etsi.inventory'].search_count([('etsi_smart_card', '=', rec.etsi_smart_card_2)])
-            if rec.etsi_serials_2 == False and rec.etsi_smart_card_2 == False:
-                check3 = "Product must have either Serial Number or Smart Card Number"
-                raise ValidationError(check3)
-            if etsi_serial_duplicate_2 >= 1:
-                if etsi_smart_duplicate_2 == False or etsi_serial_duplicate_2==False:
-                    pass
-                else:
-                    check = "Duplicate detected within the database \n Serial Number: {}".format(rec.etsi_serials_2)
-                    raise ValidationError(check)
-            elif etsi_smart_duplicate_2 >= 1:
-                if etsi_serial_duplicate_2 == False or etsi_smart_duplicate_2==False:
-                    pass
-                else:
-                    check2 = "Duplicate detected within the database \n Smart Card Number: {}".format(rec.etsi_smart_card_2)
-                    raise ValidationError(check2)
+    
 class ProductAdjustment(models.Model):
     _name = 'etsi.product.detail.line'
     
@@ -268,26 +286,6 @@ class ProductAdjustment(models.Model):
         help="If you do an entire inventory, you can choose 'All Products' and it will prefill the inventory with the current stock.  If you only do some products  "
              "(e.g. Cycle Counting) you can choose 'Manual Selection of Products' and the system won't propose anything.  You can also let the "
              "system propose for a single product / lot /... ")
-    
-    @api.constrains('etsi_serials')
-    def check_unique_serial(self):
-        check1 = self.etsi_product_ids.etsi_product_detail - self
-        for rec2 in check1:
-            if self.etsi_serials == False:
-                pass
-            elif rec2.etsi_serials == self.etsi_serials:
-                check2 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials)
-                raise ValidationError(check2)
-
-    @api.constrains('etsi_macs')
-    def check_unique_mac(self):
-        check3 = self.etsi_product_ids.etsi_product_detail - self
-        for rec2 in check3:
-            if self.etsi_macs == False:
-                pass
-            elif rec2.etsi_macs == self.etsi_macs:
-                check4 = "Duplicate detected within the Table \n Mac Number: {}".format(rec2.etsi_macs)
-                raise ValidationError(check4)
 
 class ProductAdjustment_02(models.Model):
     _name = 'etsi.product.detail.line.two'
@@ -314,24 +312,4 @@ class ProductAdjustment_02(models.Model):
         help="If you do an entire inventory, you can choose 'All Products' and it will prefill the inventory with the current stock.  If you only do some products  "
              "(e.g. Cycle Counting) you can choose 'Manual Selection of Products' and the system won't propose anything.  You can also let the "
              "system propose for a single product / lot /... ")
-    
-    @api.constrains('etsi_serials_2')
-    def check_unique_serial_2(self):
-        check5 = self.etsi_product_ids_2.etsi_product_detail_2 - self
-        for rec2 in check5:
-            if self.etsi_serials_2 == False:
-                pass
-            elif rec2.etsi_serials_2 == self.etsi_serials_2:
-                check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_2)
-                raise ValidationError(check6)
-
-    @api.constrains('etsi_smart_card_2')
-    def check_unique_smart_card_2(self):
-        check7 = self.etsi_product_ids_2.etsi_product_detail_2 - self
-        for rec2 in check7:
-            if self.etsi_smart_card_2 == False:
-                pass
-            elif rec2.etsi_smart_card_2 == self.etsi_smart_card_2:
-                check8 = "Duplicate detected within the Table \n Smart Card: {}".format(rec2.etsi_smart_card_2)
-                raise ValidationError(check8)
-
+              

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
 
-    'name': "skycable_employee_inventory_system",
+    'name': "skycable_employee_inventory_system_nath3",
 
     'summary': """
         Created and modified by the Titans. Do not try to edit or you\'ll face the consequences and the wrath of titan. Goodluck to you!""",

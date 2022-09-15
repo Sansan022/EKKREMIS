@@ -3,6 +3,9 @@ import time
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import datetime
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
+from collections import Counter 
 
 class ProductTemplateInheritance(models.Model):
     _inherit = 'product.template'
@@ -61,7 +64,6 @@ class Product_Serial_SmartButton(models.Model):
     _name = 'etsi.inventory'
     # _rec_name = 'etsi_product_id'
 
-
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
@@ -88,6 +90,28 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     etsi_product_type = fields.Selection(related='etsi_product_name_product.internal_ref_name')
 
+
+
+
+# Onchange Validation for serial product and mac product
+    @api.onchange('etsi_serial_product', 'etsi_mac_product')
+    def onchangevalidation(self):
+
+        for rec in self:
+            if self.etsi_serial_product:
+                if self.etsi_serial_product in self.env['etsi.inventory'].search([]).mapped('etsi_serial'):
+                    
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(self.etsi_serial_product)
+                    raise ValidationError(check)
+
+            if self.etsi_mac_product:
+                if self.etsi_mac_product in self.env['etsi.inventory'].search([]).mapped('etsi_mac'):
+
+                    check = "Duplicate detected within the database \n MAC ID: {}".format(self.etsi_mac_product)
+                    raise ValidationError(check)
+
+
+
 class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
     _name = 'etsi.inventory.product_2'
@@ -103,6 +127,28 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
     etsi_product_type_2 = fields.Selection(related='etsi_product_name_product_2.internal_ref_name')
 
+ # Onchange Validation for serial product2 and smart card2
+    @api.onchange('etsi_serial_product_2', 'etsi_mac_product_2')
+    def onchangevalidation_2s(self):
+
+        for rec in self:
+
+            if self.etsi_serial_product_2:
+
+                if self.etsi_serial_product_2 in self.env['etsi.inventory'].search([]).mapped('etsi_serial'):
+
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(self.etsi_serial_product_2)
+                    raise ValidationError(check)
+
+            if self.etsi_smart_card_product_2:   
+                if self.etsi_smart_card_product_2 in self.env['etsi.inventory'].search([]).mapped('etsi_smart_card'):
+
+                    check = "Duplicate detected within the database \n Smart Card ID: {}".format(self.etsi_smart_card_product_2)
+                    raise ValidationError(check)
+
+
+
+
 class Inherit_Product_Quantity(models.TransientModel):
 
     _inherit='stock.change.product.qty'
@@ -114,6 +160,142 @@ class Inherit_Product_Quantity(models.TransientModel):
     new_quantity2 = fields.Float(string='New Quantity on Hand')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
+
+
+
+# Validation for serial number for modem within the table
+    
+    
+    @api.constrains('etsi_product_items')
+    def _check_exist_serial_in_line(self):
+
+        exist_serial_list = []
+        exist_mac_list = []
+        for search in self:
+            
+            for line in search.etsi_product_items:
+                if line.etsi_serial_product == False:
+                    raise ValidationError(_('Serial ID can not be blank'))
+                if line.etsi_serial_product:
+                    if line.etsi_serial_product in exist_serial_list:
+                        check = "Duplicate detected within the database \n Serial Number: {}".format(line.etsi_serial_product)
+                        raise ValidationError(check)
+                        # Raise Validation Error
+                    exist_serial_list.append(line.etsi_serial_product)
+            
+                if line.etsi_mac_product:
+                    if line.etsi_mac_product in exist_mac_list:
+                        check = "Duplicate detected within the database \n MAC ID : {}".format(line.etsi_mac_product)
+                        raise ValidationError(check)
+                    exist_mac_list.append(line.etsi_mac_product)
+
+                if  line.etsi_serial_product == line.etsi_mac_product :
+                    raise ValidationError(_('Serial ID is the same to MAC ID'))
+                    
+        for fetch_serial_list in exist_serial_list:
+            if fetch_serial_list in exist_mac_list:
+                check = "Duplicate detected within the form serial and mac id is the same \n : {}".format(fetch_serial_list)
+                raise ValidationError(check)
+                   
+  
+
+# Validation for Catv type
+  
+    @api.constrains('etsi_product_items_2')
+    def _check_exist_serial_in_line_catv(self):
+        exist_serial_list = []
+        exist_smart_card_list = []
+        for search in self:
+
+            for line in search.etsi_product_items_2:
+                if line.etsi_serial_product_2 == False:
+                    raise ValidationError(_('Serial ID can not be blank'))
+                if line.etsi_serial_product_2:
+                    if line.etsi_serial_product_2 in exist_serial_list:
+                        raise ValidationError(_('Serial ID already exists within the form.'))
+                    exist_serial_list.append(line.etsi_serial_product_2)
+                if line.etsi_smart_card_product_2:
+                    if line.etsi_smart_card_product_2 in exist_smart_card_list:
+                        raise ValidationError(_('Smart Card already exists within the form.'))
+                    exist_smart_card_list.append(line.etsi_smart_card_product_2) 
+                    
+        for fetch_serial_list in exist_serial_list:
+            if fetch_serial_list in exist_smart_card_list:
+                check = "Duplicate detected within the form serial and smart card id is the same \n : {}".format(fetch_serial_list)
+                raise ValidationError(check)
+
+# Database validation for serial number for catv5
+    @api.constrains('etsi_product_items')
+    def check_existing_serial_modem(self):
+        serials = []
+        mac = []
+        search_serials = self.env['etsi.inventory'].search([]).mapped('etsi_serial')
+        search_mac = self.env['etsi.inventory'].search([]).mapped('etsi_mac')
+        for rec_serial in search_serials:
+            serials.append(rec_serial)
+        for rec_map in search_mac: 
+            mac.append(rec_map)
+        for line in self.etsi_product_items:
+            if line.etsi_serial_product:
+                if line.etsi_serial_product in serials:
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(fetch_serial_list)
+
+        for line in self.etsi_product_items:
+            if line.etsi_mac_product:
+                if line.etsi_mac_product in mac:
+                    check = "Duplicate detected within the database \n  MAC ID: {}".format(line.etsi_mac_product)
+                    raise ValidationError(check)
+
+# Validation for serial number for catv5
+    @api.constrains('etsi_product_items_2')
+    def check_existing_serial_catv(self):
+        serials_2 = []
+        smart_card = []
+        search_serials_2 = self.env['etsi.inventory'].search([]).mapped('etsi_serial')
+        search_etsi_smart_card = self.env['etsi.inventory'].search([]).mapped('etsi_smart_card')
+        for rec_serial in search_serials_2:
+            serials_2.append(rec_serial)
+            for rec_smart_card in search_etsi_smart_card: 
+                smart_card.append(rec_smart_card)
+        for line_2 in self.etsi_product_items_2:
+            if line_2.etsi_serial_product_2:
+                if line_2.etsi_serial_product_2 in serials_2:
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(fetch_serial_list)
+                    raise ValidationError(check)
+            if line_2.etsi_smart_card_product_2:
+                if line_2.etsi_smart_card_product_2 in smart_card:
+                    check = "Duplicate detected within the database \n Serial Number: {}".format(line_2.etsi_smart_card_product_2)
+                    raise ValidationError(check)
+
+    @api.onchange('etsi_product_items')
+    def update_product_qty1(self):
+        count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+        
+        product = self.env['product.product'].browse(self.product_id.id)
+        warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+        
+        self.new_quantity = warehouse1_quantity
+        self.new_quantity2 = warehouse1_quantity
+
+        for record in self.etsi_product_items:
+            self.new_quantity += record.etsi_quantity
+            self.new_quantity2 = self.new_quantity 
+            
+   
+
+    @api.onchange('etsi_product_items_2')
+    def update_product_qty2(self):
+        count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+
+        product = self.env['product.product'].browse(self.product_id.id)
+        warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+
+        self.new_quantity = warehouse1_quantity
+        self.new_quantity2 = warehouse1_quantity
+
+        for record in self.etsi_product_items_2:
+            self.new_quantity += record.etsi_quantity_2
+            self.new_quantity2 = self.new_quantity 
 
     @api.onchange('etsi_product_items')
     def update_product_qty1(self):
@@ -166,11 +348,8 @@ class Inherit_Product_Quantity(models.TransientModel):
     @api.multi
     def change_product_qty(self):
         if self.internal_ref_name_2 == 'OTHERS':
-            print("HELLOOOOOO")
-            print("HELLOOOOOO")
-            print("HELLOOOOOO")
+            pass
         else:
-                
             """ Changes the Product Quantity by making a Physical Inventory. """
             Inventory = self.env['stock.inventory']
             for wizard in self:
@@ -195,8 +374,6 @@ class Inherit_Product_Quantity(models.TransientModel):
                         'etsi_products_2': line.etsi_product_name_product_2.id
                     }
                     lst2.append(res)
-
-                
                 new_lst = []
                 for x in lst:
                     new_lst.append((0, 0, x))
@@ -238,7 +415,6 @@ class Inherit_Product_Quantity(models.TransientModel):
                'theoretical_qty': th_qty,
                'prod_lot_id': self.lot_id.id,
         }
-
         return res
 
     # @api.multi
@@ -253,8 +429,6 @@ class Inherit_Product_Quantity(models.TransientModel):
     #         }
     #         lst.append(res[line])
     #     return lst
-
-
 
     # @api.multi
     # def change_product_qty(self):

@@ -6,21 +6,24 @@
         <field name="model">stock.return.picking</field>
         <field name="inherit_id" ref="stock.view_stock_return_picking_form"/>
         <field name="arch" type="xml">
-            <!-- <xpath expr="//group[1]" position="attributes">
+            <xpath expr="//group[2]" position="attributes">
                 <attribute name="string">Available Returns</attribute>
-            </xpath> -->
+            </xpath>
             <xpath expr="//group[2]" position="after">
                 <group name="serial_return" string="Return Items">
-                    <field name="serial_holder_id" >
+                    <field name="serial_holder_id" nolabel="1">
                         <tree editable="bottom">
-                            <field name="etsi_serial_product" />
-                            <field name="etsi_mac_product" />
-                            <field name="etsi_smart_card" />
+                            <field name="product_name" readonly="1" />
+                            <field name="etsi_serial_product" attrs="{'readonly': [('product_name','!=',False)]}" />
+                            <field name="etsi_mac_product" attrs="{'readonly': [('product_name','!=',False)]}" />
+                            <field name="etsi_smart_card" attrs="{'readonly': [('product_name','!=',False)]}" />
+                            <field name="issued_return" readonly="1" />
                         </tree>
                     </field>
                 </group>
             </xpath>
             <xpath expr="//group[2]/field[@name='product_return_moves']//tree/field[2]" position="after">
+                <field name="issued" />
                 <field name="etsi_serial_product" />
                 <field name="etsi_mac_product" />
                 <field name="etsi_smart_card" />
