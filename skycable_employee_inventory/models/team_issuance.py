@@ -63,16 +63,44 @@ class Team_issuance(models.Model):
 
                         # if search_status == 0:
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+
+
+
+                        # stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                        
+                        
+                        if stock_moves:
+                            for moves in stock_moves:
+                                if moves.etsi_serials_field == rec.etsi_serials_field:
+                                    raise ValidationError("Serial is already on another process.")
+                                else:
+                                    test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                                    rec.product_id = test.etsi_product_id.id
+                                    rec.etsi_serials_field = test.etsi_serial
+                                    rec.etsi_mac_field = test.etsi_mac  
+                                    rec.etsi_smart_card_field = test.etsi_smart_card
+                        else:
+                            test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                            rec.product_id = test.etsi_product_id.id
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card
+
+
                 
-                        for moves in stock_moves:
-                            if moves.etsi_serials_field == rec.etsi_serials_field:
-                                raise ValidationError("Serial is already on another process.")
-                            else:
-                                test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-                                rec.product_id = test.etsi_product_id.id
-                                rec.etsi_serials_field = test.etsi_serial
-                                rec.etsi_mac_field = test.etsi_mac  
-                                rec.etsi_smart_card_field = test.etsi_smart_card
+                        # for moves in stock_moves:
+                        #     if moves.etsi_serials_field == rec.etsi_serials_field:
+                        #         raise ValidationError("Serial is already on another process.")
+                        #     else:
+                        #         test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
+                        #         rec.product_id = test.etsi_product_id.id
+                        #         rec.etsi_serials_field = test.etsi_serial
+                        #         rec.etsi_mac_field = test.etsi_mac  
+                        #         rec.etsi_smart_card_field = test.etsi_smart_card
+
+
+
+                        ###############################
                         # else:
                         #     raise ValidationError("Serial is already on another process.")
 
