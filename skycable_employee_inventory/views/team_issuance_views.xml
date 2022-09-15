@@ -57,7 +57,7 @@
               <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
               <!-- ADDING ISSUE BUTTON -->
           <xpath expr="//header/button[@name='button_scrap']" position="after">
-            <button name="%(transient_issued_action)d" type="action" string="Issuee" states="done"  groups="base.group_user"/>
+            <button name="%(transient_issued_action)d" type="action" string="Issue" states="done"  groups="base.group_user"/>
           </xpath>
 
           <!-- HIDING SCRAP BUTTON -->
