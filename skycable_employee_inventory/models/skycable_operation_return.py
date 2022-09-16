@@ -22,6 +22,23 @@ class OperationReturn(models.TransientModel):
                         if issued.product_id != issued2.etsi_product_name_duplicate:
                             check = "Serial Number not found in available returns \n Serial Number: {}".format(issued2.etsi_serial_product_duplicate)
                             raise ValidationError(check)
+                        
+    # Return Items Validation
+    @api.multi
+    def create_returns(self):
+        counter = 0
+        inputted = []
+        for rec in self:
+            for return_moves in rec.product_return_moves:
+                for lines in rec.serial_holder_id:
+                    counter += 1
+                    
+                    if lines.etsi_serial_product != return_moves.etsi_serial_product:
+                        raise ValidationError('Serial Number are not available in returns!')
+            
+        if counter <= 0:
+            raise ValidationError('Return Items cannot be empty!')
+        # return super(OperationReturn, self).create_returns()
 
     @api.model
     def default_get(self, fields):
@@ -95,37 +112,6 @@ class OperationReturn(models.TransientModel):
                 res['location_id'] = location_id
             return res
 
-    # # Return Items
-    # @api.multi
-    # def create_returns(self):
-    #     product_ids = []
-    #     for items in self.serial_holder_id:
-    #         product_ids.append(items.product_name.id)
-    #         database = self.env['etsi.inventory']
-    #         search_value = database.search([('etsi_product_id','in', product_ids)])
-    #         for value in search_value:
-    #             print(value.etsi_status)
-    #             value.update({'etsi_status' : 'available'})
-    #     return super(OperationReturn, self).create_returns()
-
-    @api.onchange('product_return_moves')
-    def product_return(self):
-        
-        picking = self.env['stock.picking'].browse(self.env.context['active_id'])
-        print("Pciking Type", picking.name)
-        print("Pciking Type ID", picking.picking_type_id.id)
-        
-        for rec in self:
-            database =  self.env['stock.picking']
-            database2 = self.env['stock.picking.type']
-            search_value = database.search([])
-            search_value2 = database2.search([('name', 'like', 'Team Return')], limit=1)
-            for value in search_value:
-                print("stock.picking", value.picking_type_id)
-            for value2 in search_value2:
-                print("stock.picking.typessss", value2.id)
-
-
     @api.multi
     def _create_returns(self):
         picking = self.env['stock.picking'].browse(self.env.context['active_id'])
@@ -157,17 +143,13 @@ class OperationReturn(models.TransientModel):
                     database2 = self.env['stock.picking.type']            
                     search_value2 = database2.search([('name', 'like', 'Team Return') or ('name', 'like', 'Team Returns') ], limit=1).id
                     picking_type_id = search_value2
-                    print("Search Value 2", search_value2)
 
                 else:
                     # Number of Picking Type ID for Subscriber Return 
                     database3 = self.env['stock.picking.type']            
                     search_value3 = database3.search([('name', 'like', 'Subscriber Return')], limit=1).id
                     picking_type_id = search_value3
-                    print("Search Value 2", search_value3)                 
 
-
-        print("Ang picking type id ay ", picking_type_id)
         new_picking = picking.copy({
             'move_lines': [],
             'picking_type_id': picking_type_id,

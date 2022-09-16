@@ -28,7 +28,7 @@ class Team_issuance(models.Model):
     def checker_change(self): 
         for rec in self:
             if rec.etsi_serials_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel'])])
+                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel']),('picking_type_id.name','!=','Team Return'),('picking_type_id.name','!=','Subscriber Return')])
                 if search_data > 1:
                     rec.checker_box = False
                     return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
@@ -64,10 +64,7 @@ class Team_issuance(models.Model):
                         # if search_status == 0:
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
 
-
-
                         # stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
-                        
                         
                         if stock_moves:
                             for moves in stock_moves:
@@ -212,15 +209,33 @@ class Team_issuance_stock_picking(models.Model):
             picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
             if self.picking_type_id.id == picking_checker.id:
                 for rec in self.move_lines:
-                    status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
-                    status_checker.etsi_status = "used"
+                    if rec.etsi_serials_field != False:
+                        status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
+                        status_checker.etsi_status = "used"
 
-                    status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
-                    for records in status_checker2:
-                            records.issued_field = "Yes"
-                            records.subscriber_field = self.partner_id.id
-                            records.checker_box = False
+                        status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
+                        for records in status_checker2:
+                                records.issued_field = "Yes"
+                                records.subscriber_field = self.partner_id.id
+                                records.checker_box = False
+                    elif rec.etsi_mac_field != False:
+                        status_checker = self.env['etsi.inventory'].search([('etsi_mac', '=', rec.etsi_mac_field)])
+                        status_checker.etsi_status = "used"
+
+                        status_checker2 = self.env['stock.move'].search([('etsi_mac_field', '=', rec.etsi_mac_field)])
+                        for records in status_checker2:
+                                records.issued_field = "Yes"
+                                records.subscriber_field = self.partner_id.id
+                                records.checker_box = False
+                    elif rec.etsi_smart_card_field != False:
+                        status_checker = self.env['etsi.inventory'].search([('etsi_smart_card', '=', rec.etsi_smart_card_field)])
+                        status_checker.etsi_status = "used"
+
+                        status_checker2 = self.env['stock.move'].search([('etsi_smart_card_field', '=', rec.etsi_smart_card_field)])
+                        for records in status_checker2:
+                                records.issued_field = "Yes"
+                                records.subscriber_field = self.partner_id.id
+                                records.checker_box = False
             else:
                 pass
-
         return res

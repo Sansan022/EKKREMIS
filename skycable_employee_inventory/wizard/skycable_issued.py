@@ -13,28 +13,15 @@ class IssuedTransient(models.TransientModel):
 
     skycable_issued_subscriber_ids = fields.One2many(
         'stock.picking.issued.subscriber', 'skycable_issued_subscriber_id')
-    
-
-# .write
-# .create
 
     @api.model
     def default_get(self, fields):
-
         res = super(IssuedTransient, self).default_get(fields)
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         create_subscriber = self.env['stock.picking']
         product_all_values = []
         product_all_values2 = []
         if picking:
-            print(picking.location_dest_id.name)
-            print(picking.location_dest_id.name)
-            print(picking.location_dest_id.name)
-            print(picking.location_dest_id.name)
-
-
-
-
             for move in picking.move_lines:
                 if move.checker_box is True:
          
@@ -47,32 +34,13 @@ class IssuedTransient(models.TransientModel):
             if 'skycable_issued_subscriber_ids' in fields:
                 res.update({'skycable_issued_subscriber_ids':product_all_values})
 
-           
-
-        # if create_subscriber:
-        #     for subs in create_subscriber.move_lines:
-        #         product_all_values2.append((0,0,{
-        #             'skycable_issued_product_name':move.product_id.id,
-        #             'skycable_issued_serial' : move.etsi_serials_field,
-        #             'skycable_issued_mac':move.etsi_mac_field, 
-        #             'skycable_issued_card': move.etsi_smart_card_field
-        #         }))
-        
-
-
-
         return res
 
-
-
-
-
-    #edit ko pq to bukas -jaw
     @api.multi
     def validate_btn(self):
-
       
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+        picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
         # sub = self.env['stock.picking']
        
         if picking:
@@ -80,10 +48,7 @@ class IssuedTransient(models.TransientModel):
                 for move2 in picking.move_lines:
                     if move.skycable_issued_serial == move2.etsi_serials_field:
                         move2.checker_box = False
-                        
 
-#picking.origin = 'HELLO'
-                        
         Uom = self.env['product.uom'].search([], limit=1)
         lst = []
         for line in self.skycable_issued_subscriber_ids:
@@ -96,8 +61,7 @@ class IssuedTransient(models.TransientModel):
                 'subscriber_field': self.skycable_subscriber_id.id,
                 'issued_field': "Yes",
                 'product_uom': line.skycable_issued_product_id.product_tmpl_id.uom_id.id,
-
-
+                'picking_type_id': picking_checker.id,
             }
 
             lst.append(res)
@@ -124,20 +88,12 @@ class IssuedTransient(models.TransientModel):
         for team_line2 in team_lst:
             team_new_list.append((0,0,team_line2))
 
-
-
-
-
         get_all_data = self.env['stock.picking']
         # stock_immediate  = self.env['stock.immediate.transfer'].search([], limit=1).process()
-
-        
-        
         picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
 
         if picking:
         
-
             runfunctiontest = get_all_data.create({
                 'picking_type_id': picking_checker.id,
                 'partner_id': self.skycable_subscriber_id.id,
@@ -151,21 +107,8 @@ class IssuedTransient(models.TransientModel):
                 
                 })
 
-
-        # testloop = self.env['stock.pack.operation'].browse(self.env.context.get('active_id'))
-
-        # for move2 in picking.move_lines:
-
-
         runfunctiontest.action_assign()
-        # runfunctiontest.process()
-        # runfunctiontest.do_new_transfer()
-        # runfunctiontest.action_confirm()
-        # stock_immediate.process()
-        # stock_immediate.process()
-        # self.env['stock.immediate.transfer'].process()
-        # runfunctiontest.do_transfer()
-
+     
         return {
                     'name': _("Subscriber Issuance"),
                     'type': 'ir.actions.act_window',
@@ -177,9 +120,6 @@ class IssuedTransient(models.TransientModel):
                     # 'context': {'show_mrf_number': True},
                     'target': 'current',
                 }
-
-
-
 
 class SubscribeIssued(models.TransientModel):
     _name = 'stock.picking.issued.subscriber'
