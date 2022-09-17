@@ -109,10 +109,10 @@ class ProductDetails(models.Model):
             for searched in search:
                 # Validation: NO Duplicate serial number
                 if searched.etsi_serials in updated_serial or searched.etsi_serials in created_serial:
-                    raise ValidationError('Serial number is already exists!')
+                    raise ValidationError('Serial number already exists!')
                 # Validation: NO Duplicate MAC ID
                 if searched.etsi_macs in updated_mac or searched.etsi_macs in created_mac:
-                    raise ValidationError('Smart card is already exists!')
+                    raise ValidationError('Smart card already exists!')
                 # Validation: NO Serial and MAC Id is the same
                 for val_serial in created_serial:
                     if val_serial in created_card:
@@ -155,10 +155,10 @@ class ProductDetails(models.Model):
             for searched in search:
                 # Validation: NO Duplicate serial number
                 if searched.etsi_serials_2 in updated_serial or searched.etsi_serials_2 in created_serial:
-                    raise ValidationError('Serial number is already exists!')
+                    raise ValidationError('Serial number already exists!')
                 # Validation: NO Duplicate Smart card
                 if searched.etsi_smart_card_2 in updated_card or searched.etsi_smart_card_2 in created_card:
-                    raise ValidationError('Smart card is already exists!')
+                    raise ValidationError('Smart card already exists!')
                 # Validation: NO Serial and Smart card is the same
                 for val_serial in created_serial:
                     if val_serial in created_card:

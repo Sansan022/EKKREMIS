@@ -28,7 +28,7 @@ class Team_issuance(models.Model):
     def checker_change(self): 
         for rec in self:
             if rec.etsi_serials_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel']),('picking_type_id.name','!=','Team Return'),('picking_type_id.name','!=','Subscriber Return')])
+                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel'])('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
                 if search_data > 1:
                     rec.checker_box = False
                     return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
@@ -62,7 +62,7 @@ class Team_issuance(models.Model):
                         # search_status = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field)])
 
                         # if search_status == 0:
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
 
                         # stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
                         
@@ -112,7 +112,7 @@ class Team_issuance(models.Model):
                         raise ValidationError("Mac is already used.")
                     else:
 
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
                 
                         for moves in stock_moves:
                             if moves.etsi_mac_field == rec.etsi_mac_field:
@@ -136,7 +136,7 @@ class Team_issuance(models.Model):
                         raise ValidationError("Smart Card is already used.")
                     else:
 
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
                 
                         for moves in stock_moves:
                             if moves.etsi_smart_card_field == rec.etsi_smart_card_field:
@@ -206,7 +206,8 @@ class Team_issuance_stock_picking(models.Model):
         res = super(Team_issuance_stock_picking, self).do_transfer()
 
         for check in self:
-            picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+            # picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+            picking_checker = self.env['stock.picking.type'].search([('code', '=', 'outgoing'),('subscriber_checkbox', '=', True),('return_picking_type_id', '!=', False)])
             if self.picking_type_id.id == picking_checker.id:
                 for rec in self.move_lines:
                     if rec.etsi_serials_field != False:

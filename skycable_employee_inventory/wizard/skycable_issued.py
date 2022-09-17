@@ -40,7 +40,7 @@ class IssuedTransient(models.TransientModel):
     def validate_btn(self):
       
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-        picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+        picking_checker = self.env['stock.picking.type'].search([('code', '=', 'outgoing'),('subscriber_checkbox', '=', True),('return_picking_type_id', '!=', False)])
         # sub = self.env['stock.picking']
        
         if picking:
@@ -54,6 +54,7 @@ class IssuedTransient(models.TransientModel):
         for line in self.skycable_issued_subscriber_ids:
             res = {
                 'name':line.skycable_issued_product_id.product_tmpl_id.name,
+                'origin':line.skycable_issued_product_id.product_tmpl_id.name,
                 'product_id': line.skycable_issued_product_id.id,
                 'etsi_serials_field': line.skycable_issued_serial,
                 'etsi_mac_field': line.skycable_issued_mac,
@@ -90,7 +91,7 @@ class IssuedTransient(models.TransientModel):
 
         get_all_data = self.env['stock.picking']
         # stock_immediate  = self.env['stock.immediate.transfer'].search([], limit=1).process()
-        picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+        # picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
 
         if picking:
         
