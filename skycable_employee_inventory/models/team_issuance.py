@@ -28,7 +28,19 @@ class Team_issuance(models.Model):
     def checker_change(self): 
         for rec in self:
             if rec.etsi_serials_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel'])('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+                if search_data > 1:
+                    rec.checker_box = False
+                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+
+            elif rec.etsi_mac_field != False:
+                search_data = self.env['stock.move'].search_count([('etsi_mac_field','=',rec.etsi_mac_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+                if search_data > 1:
+                    rec.checker_box = False
+                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+            
+            elif rec.etsi_smart_card_field != False:
+                search_data = self.env['stock.move'].search_count([('etsi_smart_card_field','=',rec.etsi_smart_card_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
                 if search_data > 1:
                     rec.checker_box = False
                     return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
@@ -113,16 +125,26 @@ class Team_issuance(models.Model):
                     else:
 
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
-                
-                        for moves in stock_moves:
-                            if moves.etsi_mac_field == rec.etsi_mac_field:
-                                raise ValidationError("Mac is already on another process.")
-                            else:
-                                test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
-                                rec.product_id = test.etsi_product_id.id
-                                rec.etsi_serials_field = test.etsi_serial
-                                rec.etsi_mac_field = test.etsi_mac  
-                                rec.etsi_smart_card_field = test.etsi_smart_card
+
+
+                        if stock_moves:
+                            for moves in stock_moves:
+                                if moves.etsi_mac_field == rec.etsi_mac_field:
+                                    raise ValidationError("Mac is already on another process.")
+                                else:
+                                    test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+                                    rec.product_id = test.etsi_product_id.id
+                                    rec.etsi_serials_field = test.etsi_serial
+                                    rec.etsi_mac_field = test.etsi_mac  
+                                    rec.etsi_smart_card_field = test.etsi_smart_card
+                        else:
+                            test = database.search([('etsi_mac','=',rec.etsi_mac_field)])
+                            rec.product_id = test.etsi_product_id.id
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card
+
+
 
 
 
@@ -137,16 +159,23 @@ class Team_issuance(models.Model):
                     else:
 
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
-                
-                        for moves in stock_moves:
-                            if moves.etsi_smart_card_field == rec.etsi_smart_card_field:
-                                raise ValidationError("Smart card is already on another process.")
-                            else:
-                                test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
-                                rec.product_id = test.etsi_product_id.id
-                                rec.etsi_serials_field = test.etsi_serial
-                                rec.etsi_mac_field = test.etsi_mac  
-                                rec.etsi_smart_card_field = test.etsi_smart_card
+
+                        if stock_moves:
+                            for moves in stock_moves:
+                                if moves.etsi_smart_card_field == rec.etsi_smart_card_field:
+                                    raise ValidationError("Smart card is already on another process.")
+                                else:
+                                    test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+                                    rec.product_id = test.etsi_product_id.id
+                                    rec.etsi_serials_field = test.etsi_serial
+                                    rec.etsi_mac_field = test.etsi_mac  
+                                    rec.etsi_smart_card_field = test.etsi_smart_card
+                        else:
+                            test = database.search([('etsi_smart_card','=',rec.etsi_smart_card_field)])
+                            rec.product_id = test.etsi_product_id.id
+                            rec.etsi_serials_field = test.etsi_serial
+                            rec.etsi_mac_field = test.etsi_mac  
+                            rec.etsi_smart_card_field = test.etsi_smart_card
 
                     
 
