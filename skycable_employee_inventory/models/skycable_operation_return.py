@@ -11,6 +11,7 @@ class OperationReturn(models.TransientModel):
     _inherit = "stock.return.picking"
     
     serial_holder_id = fields.One2many('stock.return.picking.line.return.serial','serial_holder_ids', string="Return List")
+    picking_id = fields.Many2one("stock.picking")
     
     # Validation to check if the serial ID is the same from move_lines to serial_holder_id 
     @api.onchange('serial_holder_id')
@@ -22,7 +23,41 @@ class OperationReturn(models.TransientModel):
                         if issued.product_id != issued2.etsi_product_name_duplicate:
                             check = "Serial Number not found in available returns \n Serial Number: {}".format(issued2.etsi_serial_product_duplicate)
                             raise ValidationError(check)
+    
+    
+    
+    # @api.constrains('serial_holder_id')                
+    # @api.onchange('serial_holder_id')
+    # def check_other_serial(self):
+
+    #         list =[]
+    #         list2 =[]
+    #         lines =[]
+
+    #         for rec in self:
+    #             for issued in rec.product_return_moves:
+    #                 print("mga serials", issued.etsi_serial_product)
+    #                 list.append(issued.etsi_serial_product)
+                    
+    #             for issued2 in rec.serial_holder_id:
+    #                 if len(rec.serial_holder_id) == 0:
+    #                     raise ValidationError(('Product details table can not be empty.'))
+    #                 if issued2.etsi_serial_product:
+    #                     if issued2.etsi_serial_product not in list:
+    #                         print("mga serials1", issued2.etsi_serial_product)
+    #                         check = "Serial Number not found in available returns \n Serial Number: {}".format(issued2.etsi_serial_product)
+    #                         raise ValidationError(check)
                         
+    #                     print(list2)
+    #                     if issued2.etsi_serial_product in list2:
+    #                         print("Naulit na")
+    #                         check_duplicate = "Duplicate serial within the \n Serial Number: {}".format(issued2.etsi_serial_product)
+    #                         raise ValidationError(check_duplicate)
+                        
+    #                         # Mag auto fill ka na
+
+    #                     list2.append(issued2.etsi_serial_product)
+
     # Return Items Validation
     @api.multi
     def create_returns(self):
@@ -53,6 +88,9 @@ class OperationReturn(models.TransientModel):
             if picking.state != 'done':
                 raise UserError(_("You may only return Done pickings"))
             for move in picking.move_lines:
+                # Filtering of returned products, stupid
+                if move.issued_field == "Return":
+                    raise ValidationError("Can not be returned!")
                 if move.scrapped:
                     continue
                 if move.move_dest_id:
@@ -76,7 +114,7 @@ class OperationReturn(models.TransientModel):
                             'issued': move.issued_field,
                             'etsi_serial_product': move.etsi_serials_field, 
                             'etsi_smart_card': move.etsi_smart_card_field,
-                            'subscriber' : move.subscriber_field.id
+                            'subscriber' : move.subscriber_field.id,
                         }
                     ))
                 # If MODEM is selected
@@ -89,10 +127,22 @@ class OperationReturn(models.TransientModel):
                             'issued': move.issued_field,
                             'etsi_serial_product': move.etsi_serials_field, 
                             'etsi_mac_product': move.etsi_mac_field, 
-                            'subscriber' : move.subscriber_field.id
+                            'subscriber' : move.subscriber_field.id,
                         }
                     ))
-                
+                # If MODEM or Smart card does not exist
+                if not move.etsi_smart_card_field or move.etsi_mac_field:
+                    product_return_moves.append((
+                        0, 0, {
+                            'product_id': move.product_id.id, 
+                            'quantity': quantity, 
+                            'move_id': move.id, 
+                            'issued': move.issued_field,
+                            'etsi_serial_product': move.etsi_serials_field, 
+                            'subscriber' : move.subscriber_field.id,
+                        }
+                    ))
+            
             res = super(OperationReturn, self).default_get(fields)
 
             if not product_return_moves:
@@ -111,6 +161,7 @@ class OperationReturn(models.TransientModel):
                     location_id = picking.picking_type_id.return_picking_type_id.default_location_dest_id.id
                 res['location_id'] = location_id
             return res
+        
 
     @api.multi
     def _create_returns(self):
@@ -215,6 +266,7 @@ class OperationReturnLineTwo(models.TransientModel):
     etsi_smart_card = fields.Char(string="Smart Card")
     issued_return = fields.Char(string="Issued", default="Returned")
     subscriber = fields.Char("Subscriber")
+    picking_id = fields.Many2one("stock.picking")
 
     etsi_product_name_duplicate = fields.Many2one(related="product_name") 
     etsi_serial_product_duplicate = fields.Char(related="etsi_serial_product")
@@ -224,20 +276,36 @@ class OperationReturnLineTwo(models.TransientModel):
     @api.multi
     @api.onchange('etsi_serial_product')
     def onchange_auto_fill(self):
-        for rec in self:
-            database = self.env['etsi.inventory']
-            duplicate_count = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serial_product)])
-            search_first = database.search([('etsi_serial','=',rec.etsi_serial_product)])
-            if rec.etsi_serial_product == False:
-                pass
-            elif duplicate_count < 1:
-                raise ValidationError("Serial not found in the database.")
-            else:
-                test = database.search([('etsi_serial','=', rec.etsi_serial_product)])
-                rec.product_name = test.etsi_product_id.id
-                rec.etsi_serial_product = test.etsi_serial
-                rec.etsi_mac_product = test.etsi_mac
-                rec.etsi_smart_card = test.etsi_smart_card
+        # Validation 
+        # x = self.env['stock.move'].search([('etsi_serial','=',rec.etsi_serial_product)])
+        # for sarili in self:
+        #     for data in x:
+        #         if data.product_id.id == sarili.product_name:
+        pickings = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+       
+        # product_checker = False
+        # for picking in pickings:
+        #     for stock_move in picking.move_lines:
+        #         if stock_move.etsi_serials_field == self.etsi_serial_product:
+        #             product_checker = True
+        # if product_checker:
+        #     raise ValidationError("ok na tayo! char")
+    
+        # for rec in self:
+        #     database = self.env['etsi.inventory']
+        #     duplicate_count = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serial_product)])
+        #     search_first = database.search([('etsi_serial','=',rec.etsi_serial_product)])
+        #     if rec.etsi_serial_product == False:
+        #         pass
+        #     elif duplicate_count < 1:
+        #         raise ValidationError("Serial not found in the database.")
+        #     else:
+        #         test = database.search([('etsi_serial','=', rec.etsi_serial_product)])
+        #         rec.product_name = test.etsi_product_id.id
+        #         rec.etsi_serial_product = test.etsi_serial
+        #         rec.etsi_mac_product = test.etsi_mac
+        #         rec.etsi_smart_card = test.etsi_smart_card
+                
                 
 class TransferData(models.Model):
     _inherit = "stock.picking"   

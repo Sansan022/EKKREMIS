@@ -76,6 +76,14 @@ class ProductDetails(models.Model):
                 
         # VALIDATION FOR MODEM: NO SERIAL AND MAC ID DUPLICATE
         if 'etsi_product_detail'  in vals:
+            # Validation for empty table
+            is_empty = True
+            for record in vals['etsi_product_detail']:
+                if record[0] != 2:
+                    is_empty = False
+            if is_empty == True:
+                raise ValidationError(('Modem Table cant be Empty.'))
+            
             # container of created datas
             created_serial = []
             created_mac = []
@@ -85,7 +93,8 @@ class ProductDetails(models.Model):
             
             # Search all data from database -> etsi.product.detail.line
             search = self.env['etsi.product.detail.line'].search([]) 
-                
+            # count data
+            counter = 0
             # Fetch product detail
             for rec in vals['etsi_product_detail']:
                 # Get dictionary data
@@ -102,36 +111,69 @@ class ProductDetails(models.Model):
                     if 'etsi_macs' in test:
                         updated_mac.append(test['etsi_macs'])
                 if test:
-                    if test['etsi_serials'] == test['etsi_macs']:
-                        raise ValidationError(_('Duplicate detected within the form serial and Mac id is the same'))
+                    if 'etsi_serials' in test:
+                        # Check if the serial field is null
+                        if test['etsi_serials'] == False:
+                            raise ValidationError(_('Serial Number cannot be empty!'))
 
-                  # Fetch all data
+            # Fetch all data
             for searched in search:
                 # Validation: NO Duplicate serial number
                 if searched.etsi_serials in updated_serial or searched.etsi_serials in created_serial:
-                    raise ValidationError('Serial number already exists!')
+                    check = "Serial number already exists! \n Serial Number: {}".format(searched.etsi_serials)
+                    raise ValidationError(check)
                 # Validation: NO Duplicate MAC ID
-                if searched.etsi_macs in updated_mac or searched.etsi_macs in created_mac:
-                    raise ValidationError('Smart card already exists!')
+                if searched.etsi_macs == updated_mac or searched.etsi_macs in created_mac:
+                    if searched.etsi_macs == False:
+                        pass
+                    else:
+                        check = "MAC ID already exists! \n MAC ID: {}".format(searched.etsi_macs)
+                        raise ValidationError(check)
                 # Validation: NO Serial and MAC Id is the same
                 for val_serial in created_serial:
-                    if val_serial in created_card:
-                        raise ValidationError(_('Duplicate detected within the form serial and MAC id is the same'))
+                    if val_serial in created_mac:
+                        check = "Duplicate detected within the form Serial and MAC ID is the same \n Serial Number and MAC: {}".format(val_serial)
+                        raise ValidationError(check)
                 for val_serial2 in updated_serial:
-                    if val_serial2 in updated_card:
-                        raise ValidationError(_('Duplicate detected within the form serial and MAC id is the same'))
-
+                    # Within the database / Line one in O2M 
+                    # if Serial Number triggered
+                    if val_serial2 == searched.etsi_macs:
+                        check = "Duplicate detected within the form Serial and MAC ID is the same \n Serial Number and MAC: {}".format(val_serial2)
+                        raise ValidationError(check)
+                    if val_serial2 == searched.etsi_macs:
+                        check = "Duplicate detected within the form Serial and MAC ID is the same \n Serial Number and MAC: {}".format(val_serial2)
+                        raise ValidationError(check)
+                    # Within the table of O2M
+                    if val_serial2 in updated_mac:
+                        check = "Duplicate detected within the form Serial and MAC ID is the same \n Serial Number and MAC: {}".format(val_serial2)
+                        raise ValidationError(check)
+                # if MAC ID triggered
+                for valMac in updated_mac:
+                    if valMac == searched.etsi_serials:
+                        check = "Duplicate detected within the form Serial and MAC ID is the same \n Serial Number and MAC: {}".format(valMac)
+                        raise ValidationError(check)
           
         # VALIDATION FOR CATV: NO SERIAL AND SMART CARD DUPLICATE
         if 'etsi_product_detail_2' in vals:
+            # Validation for empty table
+            is_empty = True
+            for record in vals['etsi_product_detail_2']:
+                if record[0] != 2:
+                    is_empty = False
+            if is_empty == True:
+                raise ValidationError(('CATV Table cant be Empty.'))
+            
             # container of created datas
             created_serial = []
             created_card = []
             # container of updated datas
             updated_serial = []
             updated_card = []
+            # count data
+            counter = 0
             # Fetch product detail
             for rec in vals['etsi_product_detail_2']:
+                counter += 1
                 # Search all data from database -> etsi.product.detail.line.two
                 search = self.env['etsi.product.detail.line.two'].search([]) 
                 # Get dictionary data
@@ -141,43 +183,53 @@ class ProductDetails(models.Model):
                         created_serial.append(test['etsi_serials_2'])
                     if 'etsi_smart_card_2' in test:
                         created_card.append(test['etsi_smart_card_2'])
-                    
                 elif rec[0] == 1: # If edit / update data triggered
                     if 'etsi_serials_2' in test:
                         updated_serial.append(test['etsi_serials_2'])
                     if 'etsi_smart_card_2' in test:
                         updated_card.append(test['etsi_smart_card_2'])
                 if test:
-                    if test['etsi_serials_2'] == test['etsi_smart_card_2']:
-                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
-            
+                    if 'etsi_serials_2' in test:
+                        # Check if the serial field is null
+                        if test['etsi_serials_2'] == False:
+                            raise ValidationError(_('Serial Number cannot be empty!'))
+                        
             # Fetch all data
             for searched in search:
                 # Validation: NO Duplicate serial number
                 if searched.etsi_serials_2 in updated_serial or searched.etsi_serials_2 in created_serial:
-                    raise ValidationError('Serial number already exists!')
+                    check = "Serial number already exists! \n Serial Number: {}".format(searched.etsi_serials_2)
+                    raise ValidationError(check)
                 # Validation: NO Duplicate Smart card
                 if searched.etsi_smart_card_2 in updated_card or searched.etsi_smart_card_2 in created_card:
-                    raise ValidationError('Smart card already exists!')
+                    if searched.etsi_smart_card_2 == False:
+                        pass
+                    else:
+                        check = "Smart Card already exists! \n Smart Card: {}".format(searched.etsi_smart_card_2)
+                        raise ValidationError(check)
                 # Validation: NO Serial and Smart card is the same
+                # Create Data
                 for val_serial in created_serial:
+                    # Within the table
                     if val_serial in created_card:
-                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
+                        check = "Duplicate detected within the form Serial and Smart Card is the same \n Serial Number and Smart Card: {}".format(val_serial)
+                        raise ValidationError(check)
+                # Update Data
                 for val_serial2 in updated_serial:
+                    # Within the database / Line one in O2M 
+                    # if Serial Number triggered
+                    if val_serial2 == searched.etsi_smart_card_2:
+                        check = "Duplicate detected within the form Serial and Smart Card is the same \n Serial Number and Smart Card: {}".format(val_serial2)
+                        raise ValidationError(check)
+                    # Within the table of O2M
                     if val_serial2 in updated_card:
-                        raise ValidationError(_('Duplicate detected within the form serial and Smart card id is the same'))
-
-  # VALIDATION FOR INVENTORY DETAILS, CAN'T BE EMPTY
-        if 'line_ids' in vals:
-            is_empty = True
-            for record in vals['line_ids']:
-                if record[0] != 2:
-                    is_empty = False
-            if is_empty == True:
-                raise ValidationError(('Inventory Details Table cant be Empty.'))
-            
-        return super(ProductDetails, self).write(vals)
-
+                        check = "Duplicate detected within the form Serial and Smart Card is the same \n Serial Number and Smart Card: {}".format(val_serial2)
+                        raise ValidationError(check)
+                # if Smart Card triggered
+                for valCard in updated_card:
+                    if valCard == searched.etsi_serials_2:
+                        check = "Duplicate detected within the form Serial and Smart Card is the same \n Serial Number and Smart Card: {}".format(valCard)
+                        raise ValidationError(check)
 
         # VALIDATION FOR INVENTORY DETAILS, CAN'T BE EMPTY
         if 'line_ids' in vals:
@@ -185,10 +237,8 @@ class ProductDetails(models.Model):
             for record in vals['line_ids']:
                 if record[0] != 2:
                     is_empty = False
-
             if is_empty == True:
                 raise ValidationError(('Inventory Details Table cant be Empty.'))
-            
         return super(ProductDetails, self).write(vals)
 
     # overide actiondone
@@ -219,10 +269,8 @@ class ProductDetails(models.Model):
                     'etsi_product_id':line.etsi_products_2.id,
                     'etsi_product_name':line.etsi_products_2.id,
                     })
-
         elif self.filter2=='others':
             pass
-
             
         else:
             if len(self.etsi_product_detail) == 0 and len(self.etsi_product_detail_2) == 0:

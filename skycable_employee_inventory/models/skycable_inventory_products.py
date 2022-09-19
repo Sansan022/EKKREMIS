@@ -91,8 +91,6 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_product_type = fields.Selection(related='etsi_product_name_product.internal_ref_name')
 
 
-
-
 # Onchange Validation for serial product and mac product
     @api.onchange('etsi_serial_product', 'etsi_mac_product')
     def onchangevalidation(self):
@@ -164,8 +162,6 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 
 # Validation for serial number for modem within the table
-    
-    
     @api.constrains('etsi_product_items')
     def _check_exist_serial_in_line(self):
 
@@ -177,6 +173,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 if line.etsi_serial_product == False:
                     raise ValidationError(_('Serial ID can not be blank'))
                 if line.etsi_serial_product:
+                    
                     if line.etsi_serial_product in exist_serial_list:
                         check = "Duplicate detected within the table \n Serial Number: {}".format(line.etsi_serial_product)
                         raise ValidationError(check)
@@ -184,7 +181,9 @@ class Inherit_Product_Quantity(models.TransientModel):
                     exist_serial_list.append(line.etsi_serial_product)
             
                 if line.etsi_mac_product:
-                    if line.etsi_mac_product in exist_mac_list:
+                    if line.etsi_mac_product == False:
+                        pass
+                    elif line.etsi_mac_product in exist_mac_list:
                         check = "Duplicate detected within the table \n MAC ID : {}".format(line.etsi_mac_product)
                         raise ValidationError(check)
                     exist_mac_list.append(line.etsi_mac_product)
@@ -265,8 +264,10 @@ class Inherit_Product_Quantity(models.TransientModel):
                     check = "Duplicate detected within the database \n Serial Number: {}".format(fetch_serial_list)
                     raise ValidationError(check)
             if line_2.etsi_smart_card_product_2:
-                if line_2.etsi_smart_card_product_2 in smart_card:
-                    check = "Duplicate detected within the database \n Serial Number: {}".format(line_2.etsi_smart_card_product_2)
+                if line_2.etsi_smart_card_product_2 == False:
+                    pass
+                elif line_2.etsi_smart_card_product_2 in smart_card:
+                    check = "Duplicate detected within the database \n Smart Card: {}".format(line_2.etsi_smart_card_product_2)
                     raise ValidationError(check)
 
     @api.onchange('etsi_product_items')
@@ -282,8 +283,6 @@ class Inherit_Product_Quantity(models.TransientModel):
         for record in self.etsi_product_items:
             self.new_quantity += record.etsi_quantity
             self.new_quantity2 = self.new_quantity 
-            
-   
 
     @api.onchange('etsi_product_items_2')
     def update_product_qty2(self):

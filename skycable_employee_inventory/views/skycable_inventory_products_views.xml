@@ -232,7 +232,6 @@
           <field name="etsi_product_id"/>
           <field name="etsi_product_name" invisible='True'/>
           <field name="type_checker"/>
-          <field name="create_date" widget="date"/>
 
         </tree>
     </field>
@@ -251,7 +250,6 @@
           <field name="etsi_product_id"/>
           <field name="etsi_product_name" invisible='True'/>
           <field name="type_checker"/>
-          <field name="create_date" widget="date"/>
 
         </tree>
     </field>
