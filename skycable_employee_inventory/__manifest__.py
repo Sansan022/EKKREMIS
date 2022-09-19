@@ -48,5 +48,8 @@
         'views/skycable_employee_hr_manual_attendance.xml',
         'views/skycable_product_product.xml',
 
+        'views/sky_cable_inventory_products_view_all_serial.xml',
+        
+
     ]
 }
