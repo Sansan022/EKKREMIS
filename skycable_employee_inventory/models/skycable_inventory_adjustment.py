@@ -18,6 +18,46 @@ class ProductDetails(models.Model):
 
     # Inventory Adjustment Sequence 
     name = fields.Char(required=True, copy=False, readonly=True, default = lambda self : ('New'))
+
+    @api.multi
+    @api.onchange('line_ids')
+    def remove_connected(self):
+        checker1 =[]
+        result =[]
+        result2 =[]
+        for rec in self:
+            for checkdata in self.line_ids:
+                checker1.append(checkdata.product_id.id)
+
+            for record in self.line_ids:
+                for line in self.etsi_product_detail:
+                    if line.etsi_products.id not in checker1:
+                        pass
+                    else:
+                        result.append((
+                         0, 0, {
+                        'etsi_serials':line.etsi_serials,
+                        'etsi_macs': line.etsi_macs,
+                        'etsi_products': line.etsi_products.id,
+                        }))
+            
+            for record in self.line_ids:
+                for line in self.etsi_product_detail_2:
+                    if line.etsi_products_2.id not in checker1:
+                        pass
+                    else:
+                        result2.append((
+                         0, 0, {
+                        'etsi_serials_2':line.etsi_serials_2,
+                        'etsi_smart_card_2': line.etsi_smart_card_2,
+                        'etsi_products_2': line.etsi_products_2.id,
+                        }))
+            a = [ item for pos,item in enumerate(result) if result.index(item)==pos ]
+            b = [ item for pos,item in enumerate(result2) if result2.index(item)==pos ]
+
+            self.etsi_product_detail = a
+            self.etsi_product_detail_2 = b
+
     
     @api.depends('line_ids')
     def get_count_lineids2(self):
@@ -25,32 +65,100 @@ class ProductDetails(models.Model):
             count = len(self.line_ids)
             rec.lineidscount2 = count
 
-    @api.onchange('etsi_product_detail')
+    @api.multi
+    @api.onchange('etsi_product_detail','etsi_product_detail_2')
     def add_quantity_method(self): 
+        for rec in self:
+            test2 = []
+            test = []
 
-        for line in self.line_ids:
-            count = line.theoretical_qty
-            for line2 in self.etsi_product_detail:
-                if line.product_id.id == line2.etsi_products.id:
-                    count += 1
-            line.product_qty = count
-            for line3 in self.etsi_product_detail_2:
-                if line.product_id.id == line3.etsi_products_2.id:
-                    count += 1
-            line.product_qty = count
+            for line in self.line_ids:
+                if line not in test2:
+                    test2.append(line.product_id.id)
 
-    @api.onchange('etsi_product_detail_2')
-    def add_quantity_method2(self): 
-        for line in self.line_ids:
-            count = line.theoretical_qty
+
             for line2 in self.etsi_product_detail:
-                if line.product_id.id == line2.etsi_products.id:
-                    count += 1
-            line.product_qty = count
-            for line3 in self.etsi_product_detail_2:
-                if line.product_id.id == line3.etsi_products_2.id:
-                    count += 1
-            line.product_qty = count
+                test.append((
+                    0, 0, {
+                        'product_id': line2.etsi_products.id,
+                        'location_id': self.location_id.id,
+                        'company_id': self.company_id.id,
+                        'product_uom_id': line2.etsi_products.product_tmpl_id.uom_id.id,
+                        
+                    }
+                ))
+
+            for line2 in self.etsi_product_detail_2:
+                test.append((
+                    0, 0, {
+                        'product_id': line2.etsi_products_2.id,
+                        'location_id': self.location_id.id,
+                        'company_id': self.company_id.id,
+                        'product_uom_id': line2.etsi_products_2.product_tmpl_id.uom_id.id,
+                        
+                    }
+                ))
+
+            
+            removing_duplicate = [ item for pos,item in enumerate(test) if test.index(item)==pos ]
+
+
+            self.line_ids = removing_duplicate
+          
+
+            for line in self.line_ids:
+                count = line.theoretical_qty
+                for line2 in self.etsi_product_detail:
+                    if line.product_id.id == line2.etsi_products.id:
+                        count += 1
+                line.product_qty = count
+                for line3 in self.etsi_product_detail_2:
+                    if line.product_id.id == line3.etsi_products_2.id:
+                        count += 1
+                line.product_qty = count
+
+    # @api.onchange('etsi_product_detail_2')
+    # def add_quantity_method2(self):
+
+    #     for rec in self:
+    #         test2 = []
+    #         test = []
+
+    #         for line in self.line_ids:
+    #             if line not in test2:
+    #                 test2.append(line.product_id.id)
+
+
+    #         for line2 in self.etsi_product_detail_2:
+    #             test.append((
+    #                 0, 0, {
+    #                     'product_id': line2.etsi_products_2.id,
+    #                     'location_id': self.location_id.id,
+    #                     'company_id': self.company_id.id,
+    #                     'product_uom_id': line2.etsi_products_2.product_tmpl_id.uom_id.id,
+                        
+    #                 }
+    #             ))
+
+            
+    #         removing_duplicate = [ item for pos,item in enumerate(test) if test.index(item)==pos ]
+
+
+    #         self.line_ids = removing_duplicate
+
+        
+
+
+    #     for line in self.line_ids:
+    #         count = line.theoretical_qty
+    #         for line2 in self.etsi_product_detail:
+    #             if line.product_id.id == line2.etsi_products.id:
+    #                 count += 1
+    #         line.product_qty = count
+    #         for line3 in self.etsi_product_detail_2:
+    #             if line.product_id.id == line3.etsi_products_2.id:
+    #                 count += 1
+    #         line.product_qty = count
       
     # CREATE VALIDATION  
     @api.model
