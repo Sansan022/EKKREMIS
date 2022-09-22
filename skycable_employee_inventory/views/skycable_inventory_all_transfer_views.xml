@@ -10,16 +10,20 @@
       <field name="arch" type="xml">
 
         
+        
         <!--==========Smart Button for issuances=============-->
         <div name="button_box" position="inside">
+          <field name="etsi_subscriber" invisible="True"/>
+          <field name="etsi_team" invisible="True"/>
+
           <button class="oe_stat_button" type="object" name="get_subscriber_issuance" icon="fa-car" attrs="{'invisible':[('etsi_subscriber','=',True)]}" style="width: 6rem;">
             <field string="Subscriber &#xA; Issuance" name="etsi_subscriber_issuance" widget="statinfo"/>
           </button>
 
-          <button  class="oe_stat_button" type="object" name="get_team_issuance" icon="fa-car" attrs="{'invisible':[('etsi_subscriber','=',False)]}" style="width: 6rem;">
-            <field string="Teams &#xA; Issuance" name="etsi_team_issuance" widget="statinfo"/>
+          <button  class="oe_stat_button" type="object" name="get_team_issuance" icon="fa-car" attrs="{'invisible':[('etsi_team','=',True)]}" style="width: 6rem;">
+            <field string="Team &#xA; Issuance" name="etsi_team_issuance" widget="statinfo"/>
           </button>
-          <field name="etsi_subscriber" invisible="True"/>
+          
         </div>
         <!--========== End Smart Button for issuances=============-->
 
@@ -27,12 +31,16 @@
         <xpath expr="//button[@name='action_confirm']" position="attributes">
           <attribute name="invisible">1</attribute>
         </xpath>
-        
+
         <!-- hide other states -->
         <field name="state" position="replace">
           <field name="state" widget="statusbar" statusbar_visible="draft,done" />
         </field>
 
+        <!-- source document or origin connection -->
+        <field name="origin" position="after">
+          <field name="etsi_team_issuance_id" invisible="True"/>
+        </field>
 
         <!-- hide delivery type, procurement group, priority -->
         <field name="move_type" position="attributes">

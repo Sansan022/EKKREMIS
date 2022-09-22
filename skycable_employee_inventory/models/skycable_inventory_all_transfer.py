@@ -86,14 +86,27 @@ class EtsiTeams(models.Model):
     # Smartbutton functions
     etsi_subscriber_issuance = fields.Integer(compute='_subs_issuance_count')
     etsi_team_issuance = fields.Integer(compute="_team_issuance_count")
-    etsi_subscriber = fields.Boolean()
-    
-    @api.onchange('picking_type_id')
-    def _onchange_picking_type_id(self):
-        for rec in self:
-            if rec.picking_type_id.subscriber_checkbox == True:
-                rec.etsi_subscriber = rec.picking_type_id.subscriber_checkbox
+    etsi_subscriber = fields.Boolean(compute="_etsi_subscriber")
+    etsi_team = fields.Boolean(compute="_etsi_team")
+    etsi_team_issuance_id = fields.Many2one('stock.picking')
                 
+    @api.depends('picking_type_id')
+    def _etsi_subscriber(self):
+        for rec in self:
+            rec.etsi_subscriber = False
+            if rec.picking_type_id.code == 'outgoing':
+                if rec.picking_type_id.subscriber_checkbox == True and rec.picking_type_id.return_picking_type_id:
+                    rec.etsi_subscriber = True
+                    
+    @api.depends('picking_type_id')
+    def _etsi_team(self):
+        for rec in self:
+            rec.etsi_team = False
+            if rec.picking_type_id.code == 'internal':
+                if rec.picking_type_id.subscriber_checkbox == False and rec.picking_type_id.return_picking_type_id:
+                    rec.etsi_team = True
+    
+    
     
                 
     @api.multi
@@ -102,13 +115,14 @@ class EtsiTeams(models.Model):
             'name': 'Subscriber Issuance',
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
-            'view_mode': 'tree',
-            'domain': [('picking_type_id.code','=','outgoing')]
+            'view_mode': 'tree,form',
+            'domain': [('etsi_team_issuance_id','=',self.id)]
         }
+        
     def _subs_issuance_count(self): 
         data_obj = self.env['stock.picking']
         for data in self:       
-            list_data = data_obj.search([('partner_id','!=', False)])
+            list_data = data_obj.search([('etsi_team_issuance_id','=', data.id)])
             data.etsi_subscriber_issuance = len(list_data)     
         
     def get_team_issuance(self):
@@ -116,15 +130,19 @@ class EtsiTeams(models.Model):
             'name': 'Team Issuance',
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
-            'view_mode': 'tree',
-            'domain': [('picking_type_id.code','=','internal')]
-        } 
+            'view_mode': 'tree,form',
+            'domain': ([('name', '=',self.origin)])
+        }
+        
+        
     def _team_issuance_count(self): 
-        data_obj = self.env['stock.picking']
-        for data in self:       
-            list_data = data_obj.search([('partner_id','=', False)])
-            data.etsi_team_issuance = len(list_data)
-            
+       for rec in self:
+           rec.etsi_team_issuance = 0
+           if rec.etsi_team_issuance_id:
+               rec.etsi_team_issuance = 1
+
+
+
     # End Smartbutton functions
 
 
