@@ -13,7 +13,7 @@ class ProductTemplateInheritance(models.Model):
 
     description_txt = fields.Text(string="Description:")
     product_type = fields.Selection([('product','Product'),('material','Material')] , default ="product", string ="Product Type:")
-    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('modem', 'MODEM'), ('others', 'OTHERS')], string = "Internal Reference", default='catv5')
+    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('modem', 'MODEM'), ('others', 'OTHERS')], string = "Internal Reference", default='catv5',required="true")
     default_code = fields.Char(
         'Internal Reference', compute='_compute_default_code',
         inverse='_set_default_code', store=True,default='catv5')

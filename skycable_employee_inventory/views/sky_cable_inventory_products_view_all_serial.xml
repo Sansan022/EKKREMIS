@@ -56,7 +56,7 @@
 
 
     <menuitem id="view_all_serial_menu" name="View All Serials" action="View_all_serial_action" parent="stock.menu_stock_inventory_control"/>   
-
+    <menuitem name="Data Entry" action="stock.action_inventory_form" id="menu_action_inventory_form" parent="stock.menu_stock_inventory_control" sequence="30"/>
     <!-- <menuitem id="menu_stock_inventory_control" name="Inventory Control" parent="menu_stock_root" sequence="4"/>       -->
 
 

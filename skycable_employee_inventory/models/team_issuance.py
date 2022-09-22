@@ -181,6 +181,10 @@ class Team_issuance(models.Model):
 
     @api.constrains('etsi_serials_field')
     def testfunc(self):
+        for record in self.picking_id.move_lines:
+            if record.state == 'done':
+                raise ValidationError("You cannot add new item once the record is validated.")
+
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_serials_field == False:
@@ -192,6 +196,10 @@ class Team_issuance(models.Model):
     
     @api.constrains('etsi_mac_field')
     def testfunc2(self):
+        for record in self.picking_id.move_lines:
+            if record.state == 'done':
+                raise ValidationError("You cannot add new item once the record is validated.")
+
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_mac_field == False:
@@ -203,6 +211,10 @@ class Team_issuance(models.Model):
     
     @api.constrains('etsi_smart_card_field')
     def testfunc3(self):
+        for record in self.picking_id.move_lines:
+            if record.state == 'done':
+                raise ValidationError("You cannot add new item once the record is validated.")
+                
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_smart_card_field == False:
