@@ -25,7 +25,7 @@
                         </group>
                         <field name="team_members" >
                             <tree editable='bottom' >
-                                <field name="team_members_lines" />                     
+                                <field name="team_members_lines" required="1"/>                     
                             </tree>
                         </field>
                     </sheet>

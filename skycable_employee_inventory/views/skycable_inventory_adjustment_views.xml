@@ -37,7 +37,7 @@
                             <tree editable="bottom">
                                 <field name="etsi_serials" />
                                 <field name="etsi_macs" />
-                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','modem')]" />
+                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','modem')]"  widget='selection'/>
                                 <field name="etsi_filter" invisible='1' />
                                 <field name="type_checker" invisible='1' />
                             </tree>
@@ -51,7 +51,7 @@
                             <tree editable="bottom">
                                 <field name="etsi_serials_2" />
                                 <field name="etsi_smart_card_2" />
-                                <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','catv5')]" />
+                                <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','catv5')]"  widget='selection' />
                                 <field name="etsi_filter_2" invisible='1' />
                                 <field name="type_checker_2" invisible='1' />
                             </tree>

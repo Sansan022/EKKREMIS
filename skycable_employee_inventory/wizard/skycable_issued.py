@@ -96,6 +96,7 @@ class IssuedTransient(models.TransientModel):
         if picking:
         
             runfunctiontest = get_all_data.create({
+                'etsi_team_issuance_id': picking.id,
                 'picking_type_id': picking_checker.id,
                 'partner_id': self.skycable_subscriber_id.id,
                 'origin': picking.name,

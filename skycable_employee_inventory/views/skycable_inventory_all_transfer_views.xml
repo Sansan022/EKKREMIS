@@ -66,12 +66,17 @@
         <xpath expr="//sheet/notebook/page[3]" position="after">
           <page name="team" string="Teams">
             <group>
-              <field name="etsi_teams_id"  required="1"/>
-              <field name="etsi_teams_member_no"/>
+
+              
+              <field name="etsi_teams_id"  required="1" attrs="{'readonly':[('state', 'in', 'done')]}"
+              options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}"/>
+
+
+              <field name="etsi_teams_member_no" attrs="{'readonly':[('state', 'in', 'done')]}"/>
               <!-- <field name="etsi_teams_id2"/>
               <field name="team_members_con"/> -->
             </group>
-              <field name ="etsi_teams_line_ids"  >
+              <field name ="etsi_teams_line_ids"   attrs="{'readonly':[('state', 'in', 'done')]}">
                 <tree editable="bottom" create="false" delete="false">
                   <field name="team_members_lines" readonly="1" />
                   <field name="etsi_teams_replace" attrs="{'readonly':[('etsi_teams_temporary', '=', False)]}"/>

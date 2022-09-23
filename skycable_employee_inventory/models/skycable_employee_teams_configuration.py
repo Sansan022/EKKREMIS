@@ -92,6 +92,9 @@ class team_configuration_line(models.Model):
     #     if self.etsi_teams_temporary != True:
     #         if len(self.etsi_teams_replace) == 0:
     #             raise ValidationError("Please select a member.")
+   
+    
+    
     @api.model
     def create(self, vals):
         y = []
@@ -106,29 +109,34 @@ class team_configuration_line(models.Model):
         
         return res
 
-    # @api.multi
-    # def write(self, vals):
-    #     y = []
-    #     x = self.env['team.configuration'].search([]).mapped('team_members')
-    #     for rec in x:
-    #         y.append(rec.team_members_lines.id)
+    @api.multi
+    def write(self, vals):
+        y = []
+        x = self.env['team.configuration'].search([]).mapped('team_members')
+        for rec in x:
+            y.append(rec.team_members_lines.id)
 
-    #     res = super(team_configuration_line, self).write(vals)
+        res = super(team_configuration_line, self).write(vals)
 
-    #     if self.team_members_lines.id in y:
-    #         raise ValidationError("Invalid team member")
+        if self.team_members_lines.id in y:
+            raise ValidationError("Invalid team member")
         
-    #     return res
-
-    # #validation for team members, one team only
-    # @api.onchange('team_members_lines')
-    # def _check_team_members(self):
-    #     s = []
-    #     x = self.env['team.configuration'].search([]).mapped('team_members')
-    #     for rec in x:
-    #         s.append(rec.team_members_lines.id)
-    #     if self.team_members_lines.id in s:
-    #         raise ValidationError("Invalid team member")
+        return res
+   
+   
+   
+   
+   
+   
+    #validation for team members, one team only
+    @api.onchange('team_members_lines')
+    def _check_team_members(self):
+        s = []
+        x = self.env['team.configuration'].search([]).mapped('team_members')
+        for rec in x:
+            s.append(rec.team_members_lines.id)
+        if self.team_members_lines.id in s:
+            raise ValidationError("Invalid team member")
 
 
 class team_page(models.Model):

@@ -8,7 +8,7 @@
         <field name="name">serials.tree</field>
         <field name="model">etsi.inventory</field>
         <field name="arch" type="xml">
-            <tree string="Serial Tree" create="false" delete="false">
+            <tree string="Serial Tree" create="false" delete="false" edit="false">
 
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
@@ -49,12 +49,10 @@
         <field name="name">View_all_serial</field>
         <field name="res_model">etsi.inventory</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
         <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_used':0} </field>
 
     </record>
-
-
     <menuitem id="view_all_serial_menu" name="View All Serials" action="View_all_serial_action" parent="stock.menu_stock_inventory_control"/>   
 
     <!-- <menuitem id="menu_stock_inventory_control" name="Inventory Control" parent="menu_stock_root" sequence="4"/>       -->

@@ -89,7 +89,7 @@ class EtsiTeams(models.Model):
     etsi_subscriber = fields.Boolean(compute="_etsi_subscriber")
     etsi_team = fields.Boolean(compute="_etsi_team")
     etsi_team_issuance_id = fields.Many2one('stock.picking')
-                
+    
     @api.depends('picking_type_id')
     def _etsi_subscriber(self):
         for rec in self:
@@ -111,36 +111,43 @@ class EtsiTeams(models.Model):
                 
     @api.multi
     def get_subscriber_issuance(self):
+        context = dict(self.env.context or {})
+        context.update(create=False)
         return {
             'name': 'Subscriber Issuance',
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
+            'context': {'create':0},
             'domain': [('etsi_team_issuance_id','=',self.id)]
         }
-        
-    def _subs_issuance_count(self): 
+    
+    def _subs_issuance_count(self):
         data_obj = self.env['stock.picking']
         for data in self:       
             list_data = data_obj.search([('etsi_team_issuance_id','=', data.id)])
             data.etsi_subscriber_issuance = len(list_data)     
-        
+            
     def get_team_issuance(self):
+        context = dict(self.env.context or {})
+        context.update(create=False)
+        
         return {
             'name': 'Team Issuance',
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
+            'context': {'create':0},
             'domain': ([('name', '=',self.origin)])
         }
         
         
     def _team_issuance_count(self): 
        for rec in self:
-           rec.etsi_team_issuance = 0
-           if rec.etsi_team_issuance_id:
-               rec.etsi_team_issuance = 1
-
+            rec.etsi_team_issuance = 0
+            if rec.etsi_team_issuance_id:
+                rec.etsi_team_issuance = 1
+                
 
 
     # End Smartbutton functions
@@ -167,6 +174,41 @@ class EtsiTeamsReplace(models.Model):
             if len(self.etsi_teams_replace) == 0:
                 raise ValidationError("No Replaced Member selected!")
 
+
+    @api.model
+    def create(self, vals):
+        y = []
+        x = self.env['stock.picking'].search([]).mapped('etsi_teams_line_ids')
+        for rec in x:
+            y.append(rec.etsi_teams_replace.id)
+
+        res = super(EtsiTeamsReplace, self).create(vals)
+
+        if res.etsi_teams_replace:
+            if res.etsi_teams_replace.id in y:
+                raise ValidationError("duplicate")
+        
+        return res
+
+    @api.multi
+    def write(self, vals):
+        y = []
+        x = self.env['team.configuration'].search([]).mapped('team_members')
+        for rec in x:
+            y.append(rec.team_members_lines.id)
+
+        res = super(team_configuration_line, self).write(vals)
+
+        if res.etsi_teams_replace:
+            if self.etsi_teams_replace.id in y:
+                raise ValidationError("Invalid team member")
+        
+        return res
+
+
+
+
+
     @api.onchange('etsi_teams_temporary')
     def onchange_replaced_id(self):
         for request in self:
@@ -185,6 +227,11 @@ class EtsiTeamsReplace(models.Model):
                             domain['etsi_teams_replace'] =  []
 
                 return {'domain': domain}
-    
+            
+            
+    @api.onchange('etsi_teams_temporary')
+    def onchange_replaced_clear(self):
+        if self.etsi_teams_temporary is False:
+                self.etsi_teams_replace = ""
 
    
