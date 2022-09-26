@@ -58,7 +58,7 @@ class team_configuration(models.Model):
             rec.team_members_lines.write({'team_number_id': self.team_number})
             c.append(rec.team_members_lines.id)
             self.env['team.page.lines'].create({
-                'team_page_lines': rec.employee_id.id,
+                'team_page_lines': rec.team_members_lines.id,
                 'team_number_team': self.team_number,
                 'status': 'Permanent'
             })

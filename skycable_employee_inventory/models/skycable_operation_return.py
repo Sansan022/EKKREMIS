@@ -81,18 +81,18 @@ class OperationReturn(models.TransientModel):
                         }
                     ))
                 
-                if not move.etsi_smart_card_field or not move.etsi_mac_field:
-                    product_return_moves.append((
-                        0, 0, {
-                            'product_id': move.product_id.id, 
-                            'quantity': quantity, 
-                            'move_id': move.id, 
-                            'issued': move.issued_field,
-                            'etsi_serial_product': move.etsi_serials_field, 
-                            'subscriber' : move.subscriber_field.id,
-                            'active_ako' : move.picking_id.name
-                        }
-                    ))
+                # if not move.etsi_smart_card_field or not move.etsi_mac_field:
+                #     product_return_moves.append((
+                #         0, 0, {
+                #             'product_id': move.product_id.id, 
+                #             'quantity': quantity, 
+                #             'move_id': move.id, 
+                #             'issued': move.issued_field,
+                #             'etsi_serial_product': move.etsi_serials_field, 
+                #             'subscriber' : move.subscriber_field.id,
+                #             'active_ako' : move.picking_id.name
+                #         }
+                #     ))
                 
             res = super(OperationReturn, self).default_get(fields)
 
@@ -226,7 +226,7 @@ class OperationReturnLineTwo(models.TransientModel):
     etsi_mac_product_duplicate = fields.Char(related="etsi_mac_product")
     etsi_smart_card_duplicate = fields.Char(related="etsi_smart_card")
     
-    
+    @api.constrains('serial_holder_id')
     @api.multi 
     @api.onchange('etsi_serial_product')
     def onchange_val(self):
@@ -260,8 +260,8 @@ class OperationReturnLineTwo(models.TransientModel):
                                     if picking_data.picking_type_id.code == 'internal':
                                         if issued_moves.issued_field == "Yes":
                                             raise ValidationError("Already issued!")
-                                        elif search_issued2_count > 0:
-                                            raise ValidationError("This product is already on process!")
+                                        # elif search_issued2_count > 0:
+                                        #     raise ValidationError("This product is already on process!")
                                         elif issued_moves.issued_field == "Return":
                                             raise ValidationError("Product is already returned!")
                                         else:

@@ -13,11 +13,12 @@
                 <group name="serial_return" string="Return Items">
                     <field name="serial_holder_id" nolabel="1">
                         <tree editable="bottom">
-                            <field name="product_name" readonly="1" />
+                            <field name="product_name" readonly="1" required="1" />
                             <field name="etsi_serial_product" attrs="{'readonly': [('product_name','!=',False)]}" />
                             <field name="etsi_mac_product" attrs="{'readonly': [('product_name','!=',False)]}" />
                             <field name="etsi_smart_card" attrs="{'readonly': [('product_name','!=',False)]}" />
                             <field name="issued_return" readonly="1" />
+
                         </tree>
                     </field>
                 </group>
@@ -27,6 +28,7 @@
                 <field name="etsi_serial_product" />
                 <field name="etsi_mac_product" />
                 <field name="etsi_smart_card" />
+                <field name="active_ako"  invisible="1"/>
             </xpath>
             <xpath expr="//group[2]/field[@name='product_return_moves']//tree" position="attributes">
                 <attribute name="edit">0</attribute>

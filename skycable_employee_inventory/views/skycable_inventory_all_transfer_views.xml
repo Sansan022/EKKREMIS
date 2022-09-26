@@ -79,7 +79,7 @@
               <field name ="etsi_teams_line_ids"   attrs="{'readonly':[('state', 'in', 'done')]}">
                 <tree editable="bottom" create="false" delete="false">
                   <field name="team_members_lines" readonly="1" />
-                  <field name="etsi_teams_replace" attrs="{'readonly':[('etsi_teams_temporary', '=', False)]}"/>
+                  <field name="etsi_teams_replace" attrs="{'readonly':[('etsi_teams_temporary', '=', False)], 'required' :[(('etsi_teams_temporary','=',True))]}"/>
                   <field name="etsi_teams_temporary"/>
                 </tree>
               </field>

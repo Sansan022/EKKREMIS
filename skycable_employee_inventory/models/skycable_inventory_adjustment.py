@@ -208,12 +208,74 @@ class ProductDetails(models.Model):
                 # Get dictionary data
                 test = rec[2]
                 if rec[0] == 0: # If created data triggered
+                    serials = []
+                    smart = []
+                    # count existing serial and mac id in CATV
+                    search_data = self.env['etsi.product.detail.line.two'].search([]) # OR Statement
+                                                                                 
+                    for yawa in search_data:
+                        serials.append(yawa.etsi_serials_2)
+                        smart.append(yawa.etsi_smart_card_2)
+                    
+                    # Serial Duplicate
+                    if test['etsi_serials'] in serials:
+                        check = "Serial number already exists! \n Serial Number: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials'] in smart:
+                        check = "Smart card and Serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    # if smart card and MAC Id is the same
+                    if test['etsi_macs'] in smart:
+                        check = "Smart card and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_macs'])
+                        raise ValidationError(check)
+                    # if CATV serial and MAC Id is the same
+                    if test['etsi_macs'] in serials:
+                        check = "Serial and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_macs'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials'] in smart:
+                        check = "Smart card and serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    
+                    # append all data to existing list
                     if 'etsi_serials' in test:
                         created_serial.append(test['etsi_serials'])
                     if 'etsi_macs' in test:
                         created_mac.append(test['etsi_macs'])
                     
                 elif rec[0] == 1: # If edit / update data triggered
+                    serials = []
+                    smart = []
+                    # count existing serial and mac id in CATV
+                    search_data = self.env['etsi.product.detail.line.two'].search([]) # OR Statement
+                                                                                 
+                    for yawa in search_data:
+                        serials.append(yawa.etsi_serials_2)
+                        smart.append(yawa.etsi_smart_card_2)
+                    
+                    # Serial Duplicate
+                    if test['etsi_serials'] in serials:
+                        check = "Serial number already exists! \n Serial Number: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials'] in smart:
+                        check = "Smart card and Serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    # if smart card and MAC Id is the same
+                    if test['etsi_macs'] in smart:
+                        check = "Smart card and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_macs'])
+                        raise ValidationError(check)
+                    # if CATV serial and MAC Id is the same
+                    if test['etsi_macs'] in serials:
+                        check = "Serial and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_macs'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials'] in smart:
+                        check = "Smart card and serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials'])
+                        raise ValidationError(check)
+                    
+                    # append all data to existing list
                     if 'etsi_serials' in test:
                         updated_serial.append(test['etsi_serials'])
                     if 'etsi_macs' in test:
@@ -287,15 +349,79 @@ class ProductDetails(models.Model):
                 # Get dictionary data
                 test = rec[2]
                 if rec[0] == 0: # If created data triggered
+                    serials = []
+                    mac = []
+                    # search MODEM db
+                    search_data = self.env['etsi.product.detail.line'].search([])
+                                                                                 
+                    for yawa in search_data:
+                        serials.append(yawa.etsi_serials)
+                        mac.append(yawa.etsi_mac)
+                    
+                    # Serial Duplicate
+                    if test['etsi_serials_2'] in serials:
+                        check = "Serial number already exists! \n Serial Number: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    # if MAC and MODEM serial is the same
+                    if test['etsi_serials_2'] in mac:
+                        check = "MAC ID and serial number cannot be the same! \n Duplicate: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    # if smart card and MAC Id is the same
+                    if test['etsi_smart_card_2'] in mac:
+                        check = "MAC ID and Smart card cannot be the same! \n Duplicate: {}".format(test['etsi_smart_card_2'])
+                        raise ValidationError(check)
+                    # if CATV serial and MAC Id is the same
+                    if test['etsi_smart_card_2'] in serials:
+                        check = "Serial and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_smart_card_2'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials_2'] in mac:
+                        check = "Smart card and serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    
+                    # append all data to existing list
                     if 'etsi_serials_2' in test:
                         created_serial.append(test['etsi_serials_2'])
                     if 'etsi_smart_card_2' in test:
                         created_card.append(test['etsi_smart_card_2'])
+
                 elif rec[0] == 1: # If edit / update data triggered
+                    serials = []
+                    mac = []
+                    # search MODEM db
+                    search_data = self.env['etsi.product.detail.line'].search([])
+                                                                                 
+                    for yawa in search_data:
+                        serials.append(yawa.etsi_serials)
+                        mac.append(yawa.etsi_mac)
+                    
+                    # Serial Duplicate
+                    if test['etsi_serials_2'] in serials:
+                        check = "Serial number already exists! \n Serial Number: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    # if MAC and MODEM serial is the same
+                    if test['etsi_serials_2'] in mac:
+                        check = "MAC ID and serial number cannot be the same! \n Duplicate: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    # if smart card and MAC Id is the same
+                    if test['etsi_smart_card_2'] in mac:
+                        check = "MAC ID and Smart card cannot be the same! \n Duplicate: {}".format(test['etsi_smart_card_2'])
+                        raise ValidationError(check)
+                    # if CATV serial and MAC Id is the same
+                    if test['etsi_smart_card_2'] in serials:
+                        check = "Serial and MAC ID cannot be the same! \n Duplicate: {}".format(test['etsi_smart_card_2'])
+                        raise ValidationError(check)
+                    # if smart card and MODEM serial is the same
+                    if test['etsi_serials_2'] in mac:
+                        check = "Smart card and serial cannot be the same! \n Duplicate: {}".format(test['etsi_serials_2'])
+                        raise ValidationError(check)
+                    
+                    # append all data to existing list
                     if 'etsi_serials_2' in test:
                         updated_serial.append(test['etsi_serials_2'])
                     if 'etsi_smart_card_2' in test:
                         updated_card.append(test['etsi_smart_card_2'])
+                        
                 if test:
                     if 'etsi_serials_2' in test:
                         # Check if the serial field is null
