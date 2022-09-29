@@ -12,25 +12,29 @@ class ProductTemplateInheritance(models.Model):
     # _rec_name = 'etsi_product_id'
 
     description_txt = fields.Text(string="Description:")
-    product_type = fields.Selection([('product','Product'),('material','Material')] , default ="product", string ="Product Type:")
-    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('modem', 'MODEM'), ('others', 'OTHERS')], string = "Internal Reference", default='catv5',required="true")
+    # product_type = fields.Selection([('product','Product'),('material','Material')] , default ="product", string ="Product Type:")
+    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('broadband', 'BROADBAND'), ('drops', 'DROPS')], string = "Internal Reference", default='catv5',required="true")
+    
     default_code = fields.Char(
         'Internal Reference', compute='_compute_default_code',
         inverse='_set_default_code', store=True,default='catv5')
     product_count = fields.Integer(compute ='get_product_count')
 
+    product_units = fields.Selection([('pcs', 'Pieces'), ('bag', 'Bag of 50'),('cable_roll', 'Cable Roll'), ('cable_roll_used', 'Cable Roll (used)'),
+                                    ('_25foot', '25 Foot'), ('_5m_fiber', '5m Fiber '),('_5m_fiber_used', '5m Fiber (used)')])
+
     @api.onchange('internal_ref_name')
     def product_type_func(self):
         if self.internal_ref_name == 'catv5':
             self.default_code = 'CATV5'
-        elif self.internal_ref_name == 'others':
-            self.default_code = 'OTHERS'
+        elif self.internal_ref_name == 'drops':
+            self.default_code = 'DROPS'
         else:
-            self.default_code = 'MODEM'
+            self.default_code = 'BROADBAND'
 
     @api.multi
     def serial_location(self):
-        if self.internal_ref_name == 'modem':
+        if self.internal_ref_name == 'broadband':
             return {
                 'name': 'serials.tree',
                 'type': 'ir.actions.act_window',
@@ -91,6 +95,14 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_product_type = fields.Selection(related='etsi_product_name_product.internal_ref_name')
 
 
+    #ADDING NEW FIELDS
+    etsi_receive_date = fields.Date(string="Receive")
+    etsi_subscriber = fields.Char(string="Subscriber")
+    etsi_date_issued = fields.Date(string="Date Issued")
+    etsi_date_returned = fields.Date(string="Date Returned")
+    etsi_team = fields.Char(string="Team")
+
+
 # Onchange Validation for serial product and mac product
     @api.onchange('etsi_serial_product', 'etsi_mac_product')
     def onchangevalidation(self):
@@ -125,6 +137,13 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
     etsi_product_type_2 = fields.Selection(related='etsi_product_name_product_2.internal_ref_name')
 
+    #ADDING NEW FIELDS
+    etsi_receive_date2 = fields.Date(string="Receive")
+    etsi_subscriber2 = fields.Char(string="Subscriber")
+    etsi_date_issued2 = fields.Date(string="Date Issued")
+    etsi_date_returned2 = fields.Date(string="Date Returned")
+    etsi_team2 = fields.Char(string="Team")
+
  # Onchange Validation for serial product2 and smart card2
     @api.onchange('etsi_serial_product_2', 'etsi_smart_card_product_2')
     def onchangevalidation_2s(self):
@@ -158,10 +177,21 @@ class Inherit_Product_Quantity(models.TransientModel):
     new_quantity2 = fields.Float(string='New Quantity on Hand')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
+    employee_name = fields.Char(string='Employee Name', default=lambda self: self.env.user.name)
+    date_time = fields.Date(string="Date",default=datetime.now())
 
 
 
-# Validation for serial number for modem within the table
+    # getting the date format
+    
+    # @api.depends('date_time')
+    # def _depends_datetime_format(self):
+    #     self.date_time = "HT"
+    
+
+
+
+# Validation for serial number for broadband within the table
     @api.constrains('etsi_product_items')
     def _check_exist_serial_in_line(self):
 
@@ -227,7 +257,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 # Database validation for serial number for catv5
     @api.constrains('etsi_product_items')
-    def check_existing_serial_modem(self):
+    def check_existing_serial_broadband(self):
         serials = []
         mac = []
         search_serials = self.env['etsi.inventory'].search([]).mapped('etsi_serial')
@@ -329,7 +359,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 
     # def update_product_qty3(self):
-    #     if self.internal_ref_name_2 =='modem':
+    #     if self.internal_ref_name_2 =='broadband':
     #         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
     #         self.new_quantity = len(count)
     #         self.new_quantity2 = len(count)
@@ -348,7 +378,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
     @api.multi
     def change_product_qty(self):
-        if self.internal_ref_name_2 == 'OTHERS':
+        if self.internal_ref_name_2 == 'DROPS':
             pass
         else:
             """ Changes the Product Quantity by making a Physical Inventory. """

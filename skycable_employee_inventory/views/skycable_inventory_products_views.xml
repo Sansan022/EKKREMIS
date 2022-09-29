@@ -112,7 +112,8 @@
         <label for="can_be_expensed" position="attributes">
           <attribute name="invisible">1</attribute>
         </label>
-      
+
+
       </field>
     </record>  
       <!-- hide sales notetab invoice page -->
@@ -190,13 +191,26 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
+
+
+            <xpath expr="//notebook/page[1]/group/group[1]/field[1]" position="attributes">
+                <attribute name="string">Type</attribute>
+            </xpath>
                               
 
             <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
-                <field name="internal_ref_name"/>
+                <field name="internal_ref_name" string="Product Type"/>
             </xpath>
 
+
             <xpath expr="//notebook/page[1]/group/group[1]/field[3]" position="after">
+                <field 
+                    name="product_units" 
+                    string="Units" 
+                    attrs="{'invisible' : [('internal_ref_name', '!=', 'drops')], 'required' : [('internal_ref_name', '=', 'drops')]} "/>
+            </xpath>
+
+            <xpath expr="//notebook/page[1]/group/group[1]/field[4]" position="after">
                 <field name="description_txt"/>
             </xpath>
 
@@ -293,32 +307,77 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="attrs">{'invisible' : [('internal_ref_name_2', '!=', 'others')]}</attribute>
-                
-                
+                <attribute name="attrs">{'invisible' : [('internal_ref_name_2', '!=', 'drops')]}</attribute>
             </xpath>    
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
-                <field name="new_quantity2" readonly='True'/>
+                <field name="internal_ref_name_2" invisible='True'/>
             </xpath>
 
-            <xpath expr="//group/field[@name='new_quantity']" position="after">
-                <field name="internal_ref_name_2" invisible='True' />
+            <!-- RENAMAING PRODUCAT TO MATERIAL CODE -->
+            <xpath expr="//group/field[3]" position="attributes">
+                <attribute name="string">Material Code</attribute>
             </xpath>
+
+            <!-- CHANGE LOCATION TO REAFONLY -->
+            <xpath expr="//group/field[4]" position="attributes">
+                <attribute name="readonly">True</attribute>
+            </xpath>
+
+            <!-- ADDING EMPLOYEE NAME: THE WHO PUNCH THE PRODUCT -->
+            <xpath expr="//group/field[1]" position="before">
+                <field name="employee_name" required="True"/>
+            </xpath>
+
+            <!-- HIDING LOCATION -->
+            <xpath expr="//group/field[@name='location_id']" position="attributes">
+                
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+
+            <!-- ADDING DATETIME HERE: APPLICABLE IF NOT DROPS: THIS IS JUST FOR A DESIGN -->
+            <xpath expr="//group/field[@name='new_quantity']" position="after">
+                <field name="date_time" readonly="True" attrs="{'invisible' : [('internal_ref_name_2', '!=', 'drops')]}"/>   
+            </xpath>
+
+            
+            
 
 
             <xpath expr="//group" position="after">
+
+                <group>
+
+                    <group>
+                        <field name="new_quantity2" readonly='True'/>
+                    </group>
+                    <group>
+                    <!-- ADDING DATE TIME -->
+                     <field name="date_time" readonly="True" attrs="{'invisible' : [('internal_ref_name_2', '=', 'drops')]}"/>
+                    </group>
+
+                    
+                </group>
+                
                 <notebook>
                     <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">
                         <field name="etsi_product_items">
                             <tree editable="bottom">
                                 <field name="etsi_serial_product"/>
                                 <field name="etsi_mac_product" />
-                                <field name="etsi_status_product" />
+                                <field name="etsi_status_product" invisible="True"/>
                                 <field name="etsi_product_id_product" invisible='True'></field>
                                 <field name="etsi_product_name_product" invisible='True'></field>
                                 <field name="etsi_quantity" invisible='True'></field>
                                 <field name="etsi_product_type" invisible='True'></field>
+
+                                <!-- ADDING ADDITION FIELDS LIKE DATES -->
+                                <field name="etsi_receive_date" invisible="True"></field>
+                                <field name="etsi_subscriber" invisible="True" />
+                                <field name="etsi_date_issued" invisible="True" />
+                                <field name="etsi_date_returned" invisible="True" />
+                                <field name="etsi_team" invisible="True" />
                             </tree>
 
                         </field>
@@ -327,16 +386,24 @@
             </xpath>
 
             <xpath expr="//notebook/page" position="after">
-                <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','modem')]}">
+                <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','broadband')]}">
                     <field name="etsi_product_items_2">
                         <tree editable="bottom">
                             <field name="etsi_serial_product_2"/>
                             <field name="etsi_smart_card_product_2"/>
-                            <field name="etsi_status_product_2" />
+                            <field name="etsi_status_product_2" invisible="True"/>
                             <field name="etsi_product_id_product_2" invisible='True'></field>
                             <field name="etsi_product_name_product_2" invisible='True'></field>
                             <field name="etsi_quantity_2" invisible='True'></field>
                             <field name="etsi_product_type_2" invisible='True'></field>
+
+
+                            <!-- ADDING ADDITION FIELDS LIKE DATES -->
+                            <field name="etsi_receive_date2" invisible="True" />
+                            <field name="etsi_subscriber2" invisible="True" />
+                            <field name="etsi_date_issued2" invisible="True" />
+                            <field name="etsi_date_returned2" invisible="True" />
+                            <field name="etsi_team2" invisible="True" />
                         </tree>
 
                     </field>
@@ -346,16 +413,16 @@
 
 
             <xpath expr="//notebook" position="attributes">
-                <attribute name="attrs">{'invisible': [('internal_ref_name_2','=','others')]}</attribute>
+                <attribute name="attrs">{'invisible': [('internal_ref_name_2','=','drops')]}</attribute>
             </xpath>
 
             <!-- <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="attrs">{'invisible': [('internal_ref_name_2','!=','others')]}</attribute>
+                <attribute name="attrs">{'invisible': [('internal_ref_name_2','!=','drops')]}</attribute>
                 
             </xpath> -->
 
             <xpath expr="//group/field[@name='new_quantity2']" position="attributes">
-                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '==', 'others')]}</attribute>
+                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '==', 'drops')]}</attribute>
             </xpath>   
 
 
@@ -364,6 +431,24 @@
 
         </field>
     </record>
+
+
+    <!--RENAMING PLACEHOLDER AND NAME "PRODUCT NAME AS MATERIAL CODE"  -->
+    <record id="inherit_view_id_inherit_product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.view</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[2]/label[1]" position="attributes">
+                <attribute name="string">Material Code</attribute>
+            </xpath>
+            <xpath expr="//sheet/div[2]/h1/field[@name='name']" position="attributes">
+                <attribute name="placeholder">Material Code</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
 
 
 
