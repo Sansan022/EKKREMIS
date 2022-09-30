@@ -77,11 +77,12 @@ class Product_Serial_SmartButton(models.Model):
 
     type_checker = fields.Selection(related='etsi_product_id.internal_ref_name')
 
-    # etsi_receive_date2321321 = fields.Date(string="Receive")
-    # etsi_subscriber3 = fields.Char(string="Subscriber")
-    # etsi_date_issued = fields.Date(string="Date Issued")
-    # etsi_date_returned = fields.Date(string="Date Returned")
-    # etsi_team = fields.Char(string="Team")
+    etsi_receive_date_in = fields.Date(string="Receive")
+    etsi_subscriber_in = fields.Char(string="Subscriber")
+    etsi_date_issued_in = fields.Date(string="Date Issued")
+    etsi_date_returned_in = fields.Date(string="Date Returned")
+    etsi_team_in = fields.Char(string="Team")
+    etsi_punched_date_in = fields.Datetime("Punch Time")
 
 # update quantity on hand one2many content
 class Product_Quanty_On_Hand_Model(models.TransientModel):
@@ -101,11 +102,20 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
 
     #ADDING NEW FIELDS
-    etsi_receive_date = fields.Date(string="Receive")
+    # date_and
+    etsi_receive_date = fields.Date(string="Receive", default=datetime.now(), readonly=True)
     etsi_subscriber = fields.Char(string="Subscriber")
     etsi_date_issued = fields.Date(string="Date Issued")
     etsi_date_returned = fields.Date(string="Date Returned")
     etsi_team = fields.Char(string="Team")
+    etsi_punch_time = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
+
+    
+    # @api.depends('etsi_punch_time')
+    # def _depends_time_punch(self):
+    #     for rec in self:
+
+    
 
 
 # Onchange Validation for serial product and mac product
@@ -143,11 +153,12 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     etsi_product_type_2 = fields.Selection(related='etsi_product_name_product_2.internal_ref_name')
 
     #ADDING NEW FIELDS
-    etsi_receive_date2 = fields.Date(string="Receive")
+    etsi_receive_date2 = fields.Date(string="Receive", default=datetime.now(), readonly=True)
     etsi_subscriber2 = fields.Char(string="Subscriber")
     etsi_date_issued2 = fields.Date(string="Date Issued")
     etsi_date_returned2 = fields.Date(string="Date Returned")
     etsi_team2 = fields.Char(string="Team")
+    etsi_punch_time_2 = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
 
  # Onchange Validation for serial product2 and smart card2
     @api.onchange('etsi_serial_product_2', 'etsi_smart_card_product_2')
@@ -398,7 +409,32 @@ class Inherit_Product_Quantity(models.TransientModel):
                     res = {
                         'etsi_serials': line.etsi_serial_product,
                         'etsi_macs': line.etsi_mac_product,
-                        'etsi_products': line.etsi_product_name_product.id
+                        'etsi_products': line.etsi_product_name_product.id,
+                        'sky_receive_date': line.etsi_receive_date,
+                        'sky_time_punch': line.etsi_punch_time,
+                        'sky_subscriber': line.etsi_subscriber,
+                        'sky_date_issued':line.etsi_date_issued,
+                        'sky_date_returned': line.etsi_date_returned,
+                        'sky_team': line.etsi_team,
+
+
+# etsi_receive_date2 = fields.Date(string="Receive", default=datetime.now(), readonly=True)
+#     etsi_subscriber2 = fields.Char(string="Subscriber")
+#     etsi_date_issued2 = fields.Date(string="Date Issued")
+#     etsi_date_returned2 = fields.Date(string="Date Returned")
+#     etsi_team2 = fields.Char(string="Team")
+#     etsi_punch_time_2 = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
+
+
+
+
+    #                     sky_receive_date = fields.Date("Receive Date")
+    # sky_subscriber = fields.Char("Subscriber")
+    # sky_date_issued = fields.Date("Date Issued")
+    # sky_date_returned = fields.Date("Returned Date")
+    # sky_team = fields.Char("Team")
+    # sky_time_punch = fields.Datetime(string="Punch Time")
+                        
                     }
                     lst.append(res)
 
@@ -407,12 +443,18 @@ class Inherit_Product_Quantity(models.TransientModel):
                     res = {
                         'etsi_serials_2': line.etsi_serial_product_2,
                         'etsi_smart_card_2': line.etsi_smart_card_product_2,
-                        'etsi_products_2': line.etsi_product_name_product_2.id
+                        'etsi_products_2': line.etsi_product_name_product_2.id,
+                        'sky_receive_date_2': line.etsi_receive_date2,
+                        'sky_time_punch_2': line.etsi_punch_time_2,
+                        'sky_subscriber_2': line.etsi_subscriber2,
+                        'sky_date_issued_2':line.etsi_date_issued2,
+                        'sky_date_returned_2': line.etsi_date_returned2,
+                        'sky_team_2': line.etsi_team2,
                     }
                     lst2.append(res)
                 new_lst = []
                 for x in lst:
-                    new_lst.append((0, 0, x))
+                    new_ls33t.append((0, 0, x))
 
                 new_lst2 = []
                 for x in lst2:

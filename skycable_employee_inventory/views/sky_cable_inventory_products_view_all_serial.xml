@@ -19,6 +19,16 @@
                 <field name="type_checker"/>
                 <field name="create_date" widget="date"/>
 
+                <!-- ADDING NEW FIELDS -->
+                <field name="etsi_subscriber_in" />
+                <field name="etsi_receive_date_in" />
+                <field name="etsi_date_issued_in" />
+                <field name="etsi_date_returned_in" />
+                <field name="etsi_team_in" />
+                <field name="etsi_punched_date_in" />
+
+
+
                 <!-- <search>
                     <filter name="filter_type_CATV" string="CATV" domain="[('etsi_serial','=','catv5')]"/>
                 </search> -->
@@ -35,7 +45,7 @@
         <field name="arch" type="xml">
             <search string="etsi_search">
                 <filter name="filter_type_CATV" string="CATV" domain="[('type_checker','=','catv5')]"/>
-                <filter name="filter_type_MODEM" string="MODEM" domain="[('type_checker','=','modem')]"/>
+                <filter name="filter_type_MODEM" string="BROADBAND" domain="[('type_checker','=','broadband')]"/>
                 <separator/>
                 <group>
                 <filter name="filter_type_available" string="Available" domain="[('etsi_status','=','available')]"/>

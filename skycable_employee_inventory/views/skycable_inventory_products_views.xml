@@ -373,11 +373,13 @@
                                 <field name="etsi_product_type" invisible='True'></field>
 
                                 <!-- ADDING ADDITION FIELDS LIKE DATES -->
-                                <field name="etsi_receive_date" invisible="True"></field>
-                                <field name="etsi_subscriber" invisible="True" />
-                                <field name="etsi_date_issued" invisible="True" />
-                                <field name="etsi_date_returned" invisible="True" />
-                                <field name="etsi_team" invisible="True" />
+                                <field name="etsi_receive_date" invisible='1'></field>
+                                <field name="etsi_subscriber" invisible='1' />
+                                <field name="etsi_date_issued" invisible='1' />
+                                <field name="etsi_date_returned" invisible='1' />
+                                <field name="etsi_team" invisible='1' />
+                                <field name="etsi_punch_time" />
+
                             </tree>
 
                         </field>
@@ -399,11 +401,13 @@
 
 
                             <!-- ADDING ADDITION FIELDS LIKE DATES -->
-                            <field name="etsi_receive_date2" invisible="True" />
-                            <field name="etsi_subscriber2" invisible="True" />
-                            <field name="etsi_date_issued2" invisible="True" />
-                            <field name="etsi_date_returned2" invisible="True" />
-                            <field name="etsi_team2" invisible="True" />
+                            <field name="etsi_receive_date2" invisible='1'/>
+                            <field name="etsi_subscriber2" invisible='1'/>
+                            <field name="etsi_date_issued2" invisible='1'/>
+                            <field name="etsi_date_returned2" invisible='1'/>
+                            <field name="etsi_team2" invisible='1'/>
+                            <field name="etsi_punch_time_2" />
+
                         </tree>
 
                     </field>

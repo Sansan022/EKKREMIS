@@ -32,21 +32,31 @@
                 </xpath>
 
                 <xpath expr="//sheet/notebook/page[1]" position="after">
-                    <page name="MODEM" string="MODEM" attrs="{'invisible': [('filter2','=','catv5')]}">
+                    <page name="BROADBAND" string="BROADBAND" attrs="{'invisible': [('filter2','=','catv5')]}">
                         <field name="etsi_product_detail" context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': ['|',('state','=','done')]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials" />
                                 <field name="etsi_macs" />
-                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','modem')]"  widget='selection'/>
+                                <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','broadband')]"  widget='selection'/>
                                 <field name="etsi_filter" invisible='1' />
                                 <field name="type_checker" invisible='1' />
+                                <field name="sky_receive_date" invisible='1' />
+                                <field name="sky_subscriber" invisible='1' />
+                                <field name="sky_date_issued" invisible='1' />
+                                <field name="sky_date_returned" invisible='1' />
+                                <field name="sky_team" invisible='1'/>
+                                <field name="sky_time_punch"/>
+
+
+
+         
                             </tree>
                         </field>
                     </page>
                 </xpath>
 
                 <xpath expr="//sheet/notebook/page[2]" position="after">
-                    <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','modem')]}">
+                    <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','broadband')]}">
                         <field name="etsi_product_detail_2" context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': ['|',('state','=','done')]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials_2" />
@@ -54,6 +64,12 @@
                                 <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','catv5')]"  widget='selection' />
                                 <field name="etsi_filter_2" invisible='1' />
                                 <field name="type_checker_2" invisible='1' />
+                                <field name="sky_receive_date_2" invisible='1' />
+                                <field name="sky_subscriber_2" invisible='1' />
+                                <field name="sky_date_issued_2" invisible='1' />
+                                <field name="sky_date_returned_2" invisible='1' />
+                                <field name="sky_team_2" invisible='1' />
+                                <field name="sky_time_punch_2"/>
                             </tree>
                         </field>
                     </page>

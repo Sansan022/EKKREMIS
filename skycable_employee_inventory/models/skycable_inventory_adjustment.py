@@ -39,7 +39,14 @@ class ProductDetails(models.Model):
                         'etsi_serials':line.etsi_serials,
                         'etsi_macs': line.etsi_macs,
                         'etsi_products': line.etsi_products.id,
+                        'sky_receive_date':line.sky_receive_date,
+                        'sky_subscriber': line.sky_subscriber,
+                        'sky_date_issued': line.sky_date_issued,
+                        'sky_date_returned': line.sky_date_returned,
+                        'sky_team': line.sky_team,
+                        'sky_time_punch': line.sky_time_punch,
                         }))
+
             
             for record in self.line_ids:
                 for line in self.etsi_product_detail_2:
@@ -51,6 +58,14 @@ class ProductDetails(models.Model):
                         'etsi_serials_2':line.etsi_serials_2,
                         'etsi_smart_card_2': line.etsi_smart_card_2,
                         'etsi_products_2': line.etsi_products_2.id,
+                        'sky_receive_date_2': line.sky_receive_date_2,
+                        'sky_subscriber': line.sky_subscriber_2,
+                        'sky_date_issued': line.sky_date_issued_2,
+                        'sky_date_returned': line.sky_date_returned_2,
+                        'sky_team': line.sky_team_2,
+                        'sky_time_punch_2': line.sky_time_punch_2,
+
+                    
                         }))
             a = [ item for pos,item in enumerate(result) if result.index(item)==pos ]
             b = [ item for pos,item in enumerate(result2) if result2.index(item)==pos ]
@@ -482,6 +497,24 @@ class ProductDetails(models.Model):
         if len(self.line_ids) == 0:
             raise ValidationError(('Inventory details table can not be empty.'))
 
+
+
+
+    #         etsi_receive_date_in = fields.Date(string="Receive")
+    # etsi_subscriber_in = fields.Char(string="Subscriber")
+    # etsi_date_issued_in = fields.Date(string="Date Issued")
+    # etsi_date_returned_in = fields.Date(string="Date Returned")
+    # etsi_team_in = fields.Char(string="Team")
+    # etsi_punched_date_in = fields.Char("Punch Time") 
+
+    # sky_receive_date = fields.Date("Receive Date")
+    # sky_subscriber = fields.Char("Subscriber")
+    # sky_date_issued = fields.Date("Date Issued")
+    # sky_date_returned = fields.Date("Returned Date")
+    # sky_team = fields.Char("Team")
+    # sky_time_punch = fields.Datetime(string="Punch Time")
+
+
         if self.filter2 == 'broadband':
             if len(self.etsi_product_detail) == 0:
                 raise ValidationError(('Product details table can not be empty.'))
@@ -492,6 +525,12 @@ class ProductDetails(models.Model):
                     # 'etsi_status':line.etsi_status,
                     'etsi_product_id':line.etsi_products.id,
                     'etsi_product_name':line.etsi_products.id,
+                    'etsi_receive_date_in':line.sky_receive_date,
+                    'etsi_subscriber_in': line.sky_subscriber,
+                    'etsi_date_issued_in': line.sky_date_issued,
+                    'etsi_date_returned_in': line.sky_date_returned,
+                    'etsi_team_in': line.sky_team,
+                    'etsi_punched_date_in': line.sky_time_punch,
                     })
         elif self.filter2 == 'catv5':
             if len(self.etsi_product_detail_2) == 0:
@@ -502,6 +541,13 @@ class ProductDetails(models.Model):
                     'etsi_smart_card':line.etsi_smart_card_2,
                     'etsi_product_id':line.etsi_products_2.id,
                     'etsi_product_name':line.etsi_products_2.id,
+
+                    'etsi_receive_date_in':line.sky_receive_date_2,
+                    'etsi_subscriber_in': line.sky_subscriber_2,
+                    'etsi_date_issued_in': line.sky_date_issued_2,
+                    'etsi_date_returned_in': line.sky_date_returned_2,
+                    'etsi_team_in': line.sky_team_2,
+                    'etsi_punched_date_in': line.sky_time_punch_2,
                     
                     })
         elif self.filter2=='drops':
@@ -517,6 +563,12 @@ class ProductDetails(models.Model):
                         'etsi_mac':line.etsi_macs,
                         'etsi_product_id':line.etsi_products.id,
                         'etsi_product_name':line.etsi_products.id,
+                        'etsi_receive_date_in':line.sky_receive_date,
+                        'etsi_subscriber_in': line.sky_subscriber,
+                        'etsi_date_issued_in': line.sky_date_issued,
+                        'etsi_date_returned_in': line.sky_date_returned,
+                        'etsi_team_in': line.sky_team,
+                        'etsi_punched_date_in': line.sky_time_punch,
                         })
                 for line in self.etsi_product_detail_2:
                     self.env['etsi.inventory'].create(
@@ -524,6 +576,13 @@ class ProductDetails(models.Model):
                         'etsi_smart_card':line.etsi_smart_card_2,
                         'etsi_product_id':line.etsi_products_2.id,
                         'etsi_product_name':line.etsi_products_2.id,
+                        'etsi_receive_date_in':line.sky_receive_date_2,
+                        'etsi_subscriber_in': line.sky_subscriber_2,
+                        'etsi_date_issued_in': line.sky_date_issued_2,
+                        'etsi_date_returned_in': line.sky_date_returned_2,
+                        'etsi_team_in': line.sky_team_2,
+                        'etsi_punched_date_in': line.sky_time_punch_2,
+
                         })
         return res
 
@@ -554,6 +613,16 @@ class ProductAdjustment(models.Model):
     etsi_products = fields.Many2one('product.product', string="Products", required=True)
     type_checker = fields.Selection(related='etsi_products.internal_ref_name')
 
+
+
+    # ADDING NEW FIELDS
+    sky_receive_date = fields.Date("Receive Date")
+    sky_subscriber = fields.Char("Subscriber")
+    sky_date_issued = fields.Date("Date Issued")
+    sky_date_returned = fields.Date("Returned Date")
+    sky_team = fields.Char("Team")
+    sky_time_punch = fields.Datetime(string="Punch Time")
+
     @api.model
     def _selection_filter(self):
         res_filter = [
@@ -578,6 +647,14 @@ class ProductAdjustment_02(models.Model):
     etsi_smart_card_2 = fields.Char(string="Smart Card")
     etsi_products_2 = fields.Many2one('product.product', string="Products", required=True)
     type_checker_2 = fields.Selection(related='etsi_products_2.internal_ref_name')
+    # ADDING NEW FIELDS
+    sky_receive_date_2 = fields.Date("Receive Date")
+    sky_subscriber_2 = fields.Char("Subscriber")
+    sky_date_issued_2 = fields.Date("Date Issued")
+    sky_date_returned_2 = fields.Date("Returned Date")
+    sky_team_2 = fields.Char("Team")
+    sky_time_punch_2 = fields.Datetime(string="Punch Time")
+
 
     @api.model
     def _selection_filter(self):
