@@ -77,8 +77,13 @@ class Product_Serial_SmartButton(models.Model):
 
     type_checker = fields.Selection(related='etsi_product_id.internal_ref_name')
 
-# update quantity on hand one2many content
+    # etsi_receive_date2321321 = fields.Date(string="Receive")
+    # etsi_subscriber3 = fields.Char(string="Subscriber")
+    # etsi_date_issued = fields.Date(string="Date Issued")
+    # etsi_date_returned = fields.Date(string="Date Returned")
+    # etsi_team = fields.Char(string="Team")
 
+# update quantity on hand one2many content
 class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     _name = 'etsi.inventory.product'

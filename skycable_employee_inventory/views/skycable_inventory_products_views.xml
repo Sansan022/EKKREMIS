@@ -337,9 +337,9 @@
 
 
             <!-- ADDING DATETIME HERE: APPLICABLE IF NOT DROPS: THIS IS JUST FOR A DESIGN -->
-            <xpath expr="//group/field[@name='new_quantity']" position="after">
+            <!-- <xpath expr="//group/field[@name='new_quantity']" position="after">
                 <field name="date_time" readonly="True" attrs="{'invisible' : [('internal_ref_name_2', '!=', 'drops')]}"/>   
-            </xpath>
+            </xpath> -->
 
             
             
@@ -354,7 +354,7 @@
                     </group>
                     <group>
                     <!-- ADDING DATE TIME -->
-                     <field name="date_time" readonly="True" attrs="{'invisible' : [('internal_ref_name_2', '=', 'drops')]}"/>
+                     <field name="date_time" readonly="True"/>
                     </group>
 
                     

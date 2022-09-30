@@ -482,7 +482,7 @@ class ProductDetails(models.Model):
         if len(self.line_ids) == 0:
             raise ValidationError(('Inventory details table can not be empty.'))
 
-        if self.filter2 == 'modem':
+        if self.filter2 == 'broadband':
             if len(self.etsi_product_detail) == 0:
                 raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail:
@@ -502,8 +502,9 @@ class ProductDetails(models.Model):
                     'etsi_smart_card':line.etsi_smart_card_2,
                     'etsi_product_id':line.etsi_products_2.id,
                     'etsi_product_name':line.etsi_products_2.id,
+                    
                     })
-        elif self.filter2=='others':
+        elif self.filter2=='drops':
             pass
             
         else:
