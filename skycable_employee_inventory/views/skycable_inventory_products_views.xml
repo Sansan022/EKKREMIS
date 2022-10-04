@@ -175,12 +175,30 @@
         <field name="inherit_id" ref="purchase.view_product_supplier_inherit" />
         <field name="arch" type="xml">
     
-        <xpath expr="//group[@name='group_standard_price']" position="attributes">
+        <!-- <xpath expr="//group[@name='group_standard_price']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>   -->
+        <xpath expr="//group[@name='group_standard_price']/field[1]" position="attributes">
             <attribute name="invisible">1</attribute>
         </xpath>  
-            <xpath expr="//group[@name='group_standard_price']/field[8]" position="attributes">
+        <xpath expr="//group[@name='group_standard_price']/label" position="attributes">
             <attribute name="invisible">1</attribute>
         </xpath>  
+        <xpath expr="//group[@name='group_standard_price']/div" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>  
+
+        <xpath expr="//group[@name='group_standard_price']/field[7]" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath> 
+
+        <xpath expr="//group[@name='group_standard_price']/field[8]" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>  
+
+        <xpath expr="//group[@name='group_standard_price']/field[6]" position="attributes">
+                <attribute name="attrs">{'invisible' : ['|',('internal_ref_name', '=', 'catv5'),('internal_ref_name', '=', 'broadband')]}</attribute>
+            </xpath> 
 
         </field>
     </record>
@@ -202,15 +220,7 @@
                 <field name="internal_ref_name" string="Product Type"/>
             </xpath>
 
-
             <xpath expr="//notebook/page[1]/group/group[1]/field[3]" position="after">
-                <field 
-                    name="product_units" 
-                    string="Units" 
-                    attrs="{'invisible' : [('internal_ref_name', '!=', 'drops')], 'required' : [('internal_ref_name', '=', 'drops')]} "/>
-            </xpath>
-
-            <xpath expr="//notebook/page[1]/group/group[1]/field[4]" position="after">
                 <field name="description_txt"/>
             </xpath>
 
@@ -325,8 +335,8 @@
             </xpath>
 
             <!-- ADDING EMPLOYEE NAME: THE WHO PUNCH THE PRODUCT -->
-            <xpath expr="//group/field[1]" position="before">
-                <field name="employee_name" required="True"/>
+            <xpath expr="//group/field[6]" position="after">
+                <field name="employee_name" required="True" readonly="True"/>
             </xpath>
 
             <!-- HIDING LOCATION -->
@@ -342,23 +352,15 @@
             </xpath> -->
 
             
-            
+            <xpath expr="//group/field[7]" position="after">
+                <field name="new_quantity2" readonly='True'/>
+            </xpath>
+            <xpath expr="//group/field[8]" position="after">
+                <field name="date_time" />
+            </xpath>
 
 
             <xpath expr="//group" position="after">
-
-                <group>
-
-                    <group>
-                        <field name="new_quantity2" readonly='True'/>
-                    </group>
-                    <group>
-                    <!-- ADDING DATE TIME -->
-                     <field name="date_time" readonly="True"/>
-                    </group>
-
-                    
-                </group>
                 
                 <notebook>
                     <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">

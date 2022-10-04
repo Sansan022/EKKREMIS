@@ -17,7 +17,7 @@
                 <field name="etsi_product_id"/>
                 <field name="etsi_product_name" invisible='True'/>
                 <field name="type_checker"/>
-                <field name="create_date" widget="date"/>
+                <!-- <field name="create_date" widget="date"/> -->
 
                 <!-- ADDING NEW FIELDS -->
                 <field name="etsi_subscriber_in" />

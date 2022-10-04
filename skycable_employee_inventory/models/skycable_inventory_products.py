@@ -20,9 +20,6 @@ class ProductTemplateInheritance(models.Model):
         inverse='_set_default_code', store=True,default='catv5')
     product_count = fields.Integer(compute ='get_product_count')
 
-    product_units = fields.Selection([('pcs', 'Pieces'), ('bag', 'Bag of 50'),('cable_roll', 'Cable Roll'), ('cable_roll_used', 'Cable Roll (used)'),
-                                    ('_25foot', '25 Foot'), ('_5m_fiber', '5m Fiber '),('_5m_fiber_used', '5m Fiber (used)')])
-
     @api.onchange('internal_ref_name')
     def product_type_func(self):
         if self.internal_ref_name == 'catv5':
@@ -103,7 +100,7 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     #ADDING NEW FIELDS
     # date_and
-    etsi_receive_date = fields.Date(string="Receive", default=datetime.now(), readonly=True)
+    etsi_receive_date = fields.Date(string="Receive", related='etsi_product_id_product.date_time', required=True)
     etsi_subscriber = fields.Char(string="Subscriber")
     etsi_date_issued = fields.Date(string="Date Issued")
     etsi_date_returned = fields.Date(string="Date Returned")
@@ -153,7 +150,7 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     etsi_product_type_2 = fields.Selection(related='etsi_product_name_product_2.internal_ref_name')
 
     #ADDING NEW FIELDS
-    etsi_receive_date2 = fields.Date(string="Receive", default=datetime.now(), readonly=True)
+    etsi_receive_date2 = fields.Date(string="Receive", related='etsi_product_id_product_2.date_time', required="True")
     etsi_subscriber2 = fields.Char(string="Subscriber")
     etsi_date_issued2 = fields.Date(string="Date Issued")
     etsi_date_returned2 = fields.Date(string="Date Returned")
@@ -194,7 +191,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Char(string='Employee Name', default=lambda self: self.env.user.name)
-    date_time = fields.Date(string="Date",default=datetime.now())
+    date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
 
 
 

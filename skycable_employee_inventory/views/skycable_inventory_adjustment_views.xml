@@ -23,7 +23,11 @@
                     <attribute name="readonly">1</attribute>
                 </xpath>
                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_id']" position="attributes">
-                    <attribute name="readonly">0</attribute>
+                    <attribute name="invisible">0</attribute>
+                </xpath>
+                <!-- set domain to catv5 or broadband -->
+                <xpath expr="//sheet/group/group[2]/field[@name='product_id']" position="attributes">
+                    <attribute name="domain">['|',('internal_ref_name','=','catv5'),('internal_ref_name','=','broadband'),('type','=','product')]</attribute>
                 </xpath>
 
                 <!-- filter selection -->
