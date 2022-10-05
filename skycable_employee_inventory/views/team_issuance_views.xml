@@ -23,17 +23,20 @@
                   <field name="etsi_serials_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
                   <field name="etsi_mac_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
                   <field name="etsi_smart_card_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
-
                   <!-- duplicate -->
                   <field name="etsi_serials_field_duplicate" invisible="True"/>
                   <field name="etsi_mac_field_duplicate" invisible="True"/>
                   <field name="etsi_smart_card_field_duplicate" invisible="True"/>
 
-                  <field name="checker_box" attrs="{'invisible': [('state','!=','done')],'readonly': [('issued_field','!=','No')]}"/>
+                  <!-- <field name="checker_box" attrs="{'invisible': [('state','!=','done')],'readonly': [('issued_field','!=','No')]}"/> -->
                   <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
                   <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
 
 
+              </xpath>
+
+              <xpath expr="//tree/field[@name='state']" position="after">
+                  <button name="open_view_wizard" string="Convert" type="object"/>
               </xpath>
 
               <xpath expr="//tree/field[@name='product_id_duplicate']" position="attributes">

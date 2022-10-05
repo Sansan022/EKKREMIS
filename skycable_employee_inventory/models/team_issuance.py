@@ -23,27 +23,27 @@ class Team_issuance(models.Model):
     issued_field = fields.Char(string="Issued",default="No")
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
 
-    @api.multi
-    @api.onchange('checker_box')
-    def checker_change(self): 
-        for rec in self:
-            if rec.etsi_serials_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
-                if search_data > 1:
-                    rec.checker_box = False
-                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+    # @api.multi
+    # @api.onchange('checker_box')
+    # def checker_change(self): 
+    #     for rec in self:
+    #         if rec.etsi_serials_field != False:
+    #             search_data = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+    #             if search_data > 1:
+    #                 rec.checker_box = False
+    #                 return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
 
-            elif rec.etsi_mac_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_mac_field','=',rec.etsi_mac_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
-                if search_data > 1:
-                    rec.checker_box = False
-                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+    #         elif rec.etsi_mac_field != False:
+    #             search_data = self.env['stock.move'].search_count([('etsi_mac_field','=',rec.etsi_mac_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+    #             if search_data > 1:
+    #                 rec.checker_box = False
+    #                 return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
             
-            elif rec.etsi_smart_card_field != False:
-                search_data = self.env['stock.move'].search_count([('etsi_smart_card_field','=',rec.etsi_smart_card_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
-                if search_data > 1:
-                    rec.checker_box = False
-                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
+    #         elif rec.etsi_smart_card_field != False:
+    #             search_data = self.env['stock.move'].search_count([('etsi_smart_card_field','=',rec.etsi_smart_card_field),('state','not in',['cancel']),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+    #             if search_data > 1:
+    #                 rec.checker_box = False
+    #                 return {'warning': {'title': ('FlexERP Warning'), 'message': ('Data Selected is already existing in subscriber issuance.'),},}
             
 
     @api.multi
@@ -52,7 +52,13 @@ class Team_issuance(models.Model):
         self.ensure_one()
         for rec in self:
             database = self.env['etsi.inventory']
-            # database2 = self.env['stock.move'].search([], limit=1)
+            database2 = self.env['product.template']
+
+            drop_name = database2.search([('name','=',rec.etsi_serials_field)])
+
+            product = self.env['product.product'].browse(drop_name.id)
+            warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+
 
             duplicate_count = self.env['etsi.inventory'].search_count([('etsi_serial', '=', rec.etsi_serials_field)])
             duplicate_count2 = self.env['etsi.inventory'].search_count([('etsi_mac', '=', rec.etsi_mac_field)])
@@ -64,20 +70,25 @@ class Team_issuance(models.Model):
 
 
             if rec.etsi_serials_field != False:
-                if duplicate_count < 1:
+                if drop_name:
+                    if drop_name.internal_ref_name == 'drops':
+                        if warehouse1_quantity <= 0:
+                            raise ValidationError("No stock available.")
+                        else:
+                            rec.product_id = drop_name.id
+                            rec.etsi_serials_field = False
+                    else:
+                        raise ValidationError("Serial not found in the database.")
+
+                elif duplicate_count < 1:
                     raise ValidationError("Serial not found in the database.")
                 else:
                     if search_first.etsi_status == 'used':
                         raise ValidationError("Serial is already used.")
                     else:
 
-                        # search_status = self.env['stock.move'].search_count([('etsi_serials_field','=',rec.etsi_serials_field)])
-
-                        # if search_status == 0:
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
 
-                        # stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
-                        
                         if stock_moves:
                             for moves in stock_moves:
                                 if moves.etsi_serials_field == rec.etsi_serials_field:
@@ -94,25 +105,6 @@ class Team_issuance(models.Model):
                             rec.etsi_serials_field = test.etsi_serial
                             rec.etsi_mac_field = test.etsi_mac  
                             rec.etsi_smart_card_field = test.etsi_smart_card
-
-
-                
-                        # for moves in stock_moves:
-                        #     if moves.etsi_serials_field == rec.etsi_serials_field:
-                        #         raise ValidationError("Serial is already on another process.")
-                        #     else:
-                        #         test = database.search([('etsi_serial','=',rec.etsi_serials_field)])
-                        #         rec.product_id = test.etsi_product_id.id
-                        #         rec.etsi_serials_field = test.etsi_serial
-                        #         rec.etsi_mac_field = test.etsi_mac  
-                        #         rec.etsi_smart_card_field = test.etsi_smart_card
-
-
-
-                        ###############################
-                        # else:
-                        #     raise ValidationError("Serial is already on another process.")
-
 
 
 
@@ -144,11 +136,7 @@ class Team_issuance(models.Model):
                             rec.etsi_mac_field = test.etsi_mac  
                             rec.etsi_smart_card_field = test.etsi_smart_card
 
-
-
-
-
-                        
+      
 
             elif rec.etsi_smart_card_field != False:
                 if duplicate_count3 < 1:

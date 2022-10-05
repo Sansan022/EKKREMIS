@@ -451,7 +451,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                     lst2.append(res)
                 new_lst = []
                 for x in lst:
-                    new_ls33t.append((0, 0, x))
+                    new_lst.append((0, 0, x))
 
                 new_lst2 = []
                 for x in lst2:

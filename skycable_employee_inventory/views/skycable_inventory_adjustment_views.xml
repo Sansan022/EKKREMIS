@@ -99,7 +99,7 @@
                 </xpath>
 
                 <xpath expr="//sheet/notebook[1]//tree" position="attributes">
-                    <attribute name="create">false</attribute>
+                    <attribute name="create">true</attribute>
                 </xpath>
 
 
