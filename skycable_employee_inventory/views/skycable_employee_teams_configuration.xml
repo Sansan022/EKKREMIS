@@ -10,6 +10,20 @@
             <field name="context">{}</field>
         </record>
 
+        <!-- search view -->
+        <record id="team_configuration_view_search" model="ir.ui.view">
+            <field name="name">team_configuration.view.search</field>
+            <field name="model">team.configuration</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <filter name="1-man team" string="1-man Team" domain="[('teamType', '=', 'one_man')]" />
+                    <filter name="1-man team" string="1-man Team" domain="[('teamType', '=', 'one_man')]" context="{'group_by': 'teamType'}" />
+                    <filter name="2-man team" string="2-man Team" domain="[('teamType', '=', 'two_man')]" />
+                    <filter name="2-man team" string="2-man Team" domain="[('teamType', '=', 'two_man')]" context="{'group_by': 'teamType'}" />
+                </search>
+            </field>
+        </record>
+
         <!-- view form -->
         <record id="team_configuration_view_form" model="ir.ui.view">
             <field name="name">team.configuration.view.form</field>
@@ -21,11 +35,12 @@
                     </header> -->
                     <sheet>
                         <group>
-                            <field name="team_number" />
+                            <field name="team_number"/>
+                            <field name="teamType" required="1" string="Team Type"/>
                         </group>
-                        <field name="team_members" >
+                        <field name="team_members">
                             <tree editable='bottom' >
-                                <field name="team_members_lines" required="1"/>                     
+                                <field name="team_members_lines" string="Team Member" required="1"/>                     
                             </tree>
                         </field>
                     </sheet>
@@ -41,6 +56,7 @@
                 <tree string="team configuration">
                     <field name="team_number" />
                     <field name="team_members" />
+                    <field name="teamType" string="Team Type"/>
                 </tree>
             </field>
         </record>
@@ -54,13 +70,14 @@
               <xpath expr="//notebook/page[5]" position="after">
                   <page name="teams_page" string="Teams">
                   <group name="name" string="Team Number">
-                    <field name="team_number_id" string="Team number" />
+                    <field name="team_number_id" string="Team Code" />
                   </group>
                     <field name="history" string="History">
                         <tree editable="bottom" >
-                            <field name="team_number_team"/>
+                            <field name="team_number_team" string="Team Code"/>
                             <field name="transaction_number"/>
                             <field name="status"/>
+                            <field name="teamTypeHistory" string="Team Type"/>
                         </tree>
                     </field>
                   </page>
@@ -69,13 +86,19 @@
             </field>
       </record>
         
+    <menuitem
+        id="team_config"
+        name="Teams"
+        web_icon="skycable_employee_inventory,static/img/teams_icon.png"
+        sequence="10"/>
+  
 
       <menuitem
         id="team_configuration_menu"
         name="Teams"
         action="team_configuration_action"
         groups=""
-        parent="hr.menu_hr_root"
+        parent="team_config"
         sequence=""/>
 
     </data>

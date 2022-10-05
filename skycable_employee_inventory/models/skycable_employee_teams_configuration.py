@@ -8,14 +8,28 @@ class team_configuration(models.Model):
     _name = 'team.configuration'
     _rec_name = 'team_number'
 
-    team_number= fields.Char(string='Team number', required=True, copy=False, default='New') 
+    team_number= fields.Char(string='Team Code', required=True, copy=False, default='New') 
     team_members = fields.One2many('team.configuration.line','team_members_lines1')
-
+    teamType = fields.Selection([
+        ('one_man', "1-man Team"),
+        ('two_man', "2-man Team"),
+    ], default='one_man')
 
     # check if team number already exist
     _sql_constraints = [
     ('team_number', 'UNIQUE(team_number)', 'The team number already Exists!'),
 ]
+
+     # check the length of team 
+    @api.constrains('team_members')
+    def _limitTeamMembers(self):
+        if self.teamType == 'two_man': 
+            if len(self.team_members) > 2:
+                raise ValidationError("Exceed the maximum number of member(2).")
+        
+        if self.teamType == 'one_man': 
+            if len(self.team_members) > 1:
+                raise ValidationError("Exceed the maximum number of member(1).")
 
     @api.constrains('team_members')
     def _check_team_members_line(self):
@@ -38,6 +52,7 @@ class team_configuration(models.Model):
             'team_page_lines': rec.team_members_lines.id,
             'team_number_team': res.team_number,
             'status': 'permanent',
+            'teamTypeHistory': self.teamType,
             })
             
             
@@ -60,7 +75,8 @@ class team_configuration(models.Model):
             self.env['team.page.lines'].create({
                 'team_page_lines': rec.team_members_lines.id,
                 'team_number_team': self.team_number,
-                'status': 'Permanent'
+                'status': 'Permanent',
+                'teamTypeHistory': self.teamType,
             })
 
         for element in b:
@@ -84,17 +100,7 @@ class team_configuration_line(models.Model):
 
     team_members_lines = fields.Many2one('hr.employee')
     team_members_lines1 = fields.Many2one('team.configuration')
-    # etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Team")
-    # etsi_teams_temporary = fields.Boolean(string="Temporary Team")
-
-    # @api.constrains('etsi_teams_replace','etsi_teams_temporary')
-    # def check(self):
-    #     if self.etsi_teams_temporary != True:
-    #         if len(self.etsi_teams_replace) == 0:
-    #             raise ValidationError("Please select a member.")
-   
-    
-    
+ 
     @api.model
     def create(self, vals):
         y = []
@@ -105,7 +111,7 @@ class team_configuration_line(models.Model):
         res = super(team_configuration_line, self).create(vals)
 
         if res.team_members_lines.id in y:
-            raise ValidationError("Invalid team member")
+            raise ValidationError("Selecting same employee is not allowed!")
         
         return res
 
@@ -136,7 +142,7 @@ class team_configuration_line(models.Model):
         for rec in x:
             s.append(rec.team_members_lines.id)
         if self.team_members_lines.id in s:
-            raise ValidationError("Invalid team member")
+            raise ValidationError("Employee already part of a team!")
 
 
 class team_page(models.Model):
@@ -167,13 +173,7 @@ class team_page_lines(models.Model):
     team_number_team = fields.Char()
     transaction_number = fields.Char()
     status = fields.Char()
-
-    # for additional field on stock picking
-# class team_replaced_team(models.Model):
-#     _inherit = "stock.picking"
-#     _rec_name = 'etsi_teams_replace'
-
-#     etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Team")
-#     etsi_teams_temporary = fields.Boolean(string="Temporary Team")
-
-    
+    teamTypeHistory = fields.Selection([
+        ('one_man', "1-man Team"),
+        ('two_man', "2-man Team"),
+    ], default='one_man')
