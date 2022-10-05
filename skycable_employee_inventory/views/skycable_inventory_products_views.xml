@@ -317,7 +317,9 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="attrs">{'invisible' : [('internal_ref_name_2', '!=', 'drops')]}</attribute>
+                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '!=', 'drops'),('internal_ref_name_2', '!=', 'others')]}</attribute>
+
+                <!-- {'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]} -->
             </xpath>    
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
@@ -336,7 +338,7 @@
 
             <!-- ADDING EMPLOYEE NAME: THE WHO PUNCH THE PRODUCT -->
             <xpath expr="//group/field[6]" position="after">
-                <field name="employee_name" required="True" readonly="True"/>
+                <field name="employee_name" required="True"/>
             </xpath>
 
             <!-- HIDING LOCATION -->
@@ -419,7 +421,8 @@
 
 
             <xpath expr="//notebook" position="attributes">
-                <attribute name="attrs">{'invisible': [('internal_ref_name_2','=','drops')]}</attribute>
+                <!-- <attribute name="attrs">{'invisible': [('internal_ref_name_2','=','drops')]}</attribute> -->
+                <attribute name="attrs">{'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]}</attribute>
             </xpath>
 
             <!-- <xpath expr="//group/field[@name='new_quantity']" position="attributes">
@@ -428,7 +431,7 @@
             </xpath> -->
 
             <xpath expr="//group/field[@name='new_quantity2']" position="attributes">
-                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '==', 'drops')]}</attribute>
+                <attribute name="attrs">{'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]}</attribute>
             </xpath>   
 
 

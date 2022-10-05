@@ -165,6 +165,19 @@ class Team_issuance(models.Model):
                             rec.etsi_mac_field = test.etsi_mac  
                             rec.etsi_smart_card_field = test.etsi_smart_card
 
+    @api.onchange('product_uom_qty')
+    def check_stock_available(self):
+        for rec in self:
+            product = self.env['product.product'].browse(rec.product_id.id)
+            warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+            if rec.product_uom_qty != False and rec.product_id.id != False:
+                if rec.product_uom_qty > warehouse1_quantity:
+                    rec.product_uom_qty = 1
+                    return {'warning': {'title': ('FlexERP Warning'), 'message': ('No stock available.'),},}
+            else:
+                pass
+            
+
                     
 
     @api.constrains('etsi_serials_field')

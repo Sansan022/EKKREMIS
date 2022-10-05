@@ -13,7 +13,7 @@ class ProductTemplateInheritance(models.Model):
 
     description_txt = fields.Text(string="Description:")
     # product_type = fields.Selection([('product','Product'),('material','Material')] , default ="product", string ="Product Type:")
-    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('broadband', 'BROADBAND'), ('drops', 'DROPS')], string = "Internal Reference", default='catv5',required="true")
+    internal_ref_name = fields.Selection([('catv5', 'CATV5'), ('broadband', 'BROADBAND'), ('drops', 'DROPS'), ('others', 'OTHERS')], string = "Internal Reference", default='catv5',required="true")
     
     default_code = fields.Char(
         'Internal Reference', compute='_compute_default_code',
@@ -26,6 +26,8 @@ class ProductTemplateInheritance(models.Model):
             self.default_code = 'CATV5'
         elif self.internal_ref_name == 'drops':
             self.default_code = 'DROPS'
+        elif self.internal_ref_name == 'others':
+            self.default_code = 'OTHERS'
         else:
             self.default_code = 'BROADBAND'
 
@@ -80,6 +82,7 @@ class Product_Serial_SmartButton(models.Model):
     etsi_date_returned_in = fields.Date(string="Date Returned")
     etsi_team_in = fields.Char(string="Team")
     etsi_punched_date_in = fields.Datetime("Punch Time")
+    etsi_employee_in = fields.Char("Employee")
 
 # update quantity on hand one2many content
 class Product_Quanty_On_Hand_Model(models.TransientModel):
@@ -391,7 +394,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
     @api.multi
     def change_product_qty(self):
-        if self.internal_ref_name_2 == 'DROPS':
+        if self.internal_ref_name_2 == 'DROPS' or self.internal_ref_name_2 == 'OTHERS':
             pass
         else:
             """ Changes the Product Quantity by making a Physical Inventory. """
@@ -400,6 +403,10 @@ class Inherit_Product_Quantity(models.TransientModel):
                 product = wizard.product_id.with_context(location=wizard.location_id.id, lot_id=wizard.lot_id.id)
                 line_data = wizard._prepare_inventory_line()
                 # line_data2 = wizard._prepare_product_line()
+
+
+               
+                
 
                 lst = []
                 for line in self.etsi_product_items:
@@ -458,6 +465,8 @@ class Inherit_Product_Quantity(models.TransientModel):
                     new_lst2.append((0, 0, x))
 
 
+
+
                 if wizard.product_id.id and wizard.lot_id.id:
                     inventory_filter = 'none'
                 elif wizard.product_id.id:
@@ -473,6 +482,8 @@ class Inherit_Product_Quantity(models.TransientModel):
                     'line_ids': [(0, 0, line_data)],
                     'etsi_product_detail': new_lst,
                     'etsi_product_detail_2': new_lst2,
+                    'employee_name_inv': self.employee_name,
+                    'receive_date_inv': self.date_time,
                 })
                 inventory.action_done()
         return {'type': 'ir.actions.act_window_close'}
