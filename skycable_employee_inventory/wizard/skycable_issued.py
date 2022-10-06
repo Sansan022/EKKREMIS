@@ -156,9 +156,39 @@ class ValidationProcess(models.TransientModel):
             else:
                 pack.unlink()
         return self.pick_id.do_transfer()
-   
-        
 
+class functionWizard(models.Model):
+    _inherit = 'stock.move'
+
+    def testing1212(self):
+        return {
+
+            'name': 'Convert Transient',
+            'res_model': 'stock.move.test',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'view_id': self.env.ref('skycable_employee_inventory.stock_move_test_transient').id,
+            'context': {'default_matcode':self.product_id.id}
+            
+            # 'test':self.id
+            
+        }
+
+class convert_transient(models.TransientModel):
+    _name='stock.move.test'
+
+    matcode = fields.Many2one('product.product' , string="Material Code:",readonly="True")
+    currentquantity = fields.Integer(string="Current Quantity",compute='_get_current_quantity',readonly="True")
+    employeename = fields.Char(string="Employee Name", default=lambda self: self.env.user.name)
+
+    @api.multi
+    @api.depends('currentquantity','matcode')
+    def _get_current_quantity(self):
+        product = self.env['product.product'].browse(self.matcode.id)
+        current = product.with_context({'location' : 'WH/Stock'}).qty_available
+        self.currentquantity = current
 
  
  

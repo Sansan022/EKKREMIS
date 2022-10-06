@@ -17,8 +17,8 @@ class ProductDetails(models.Model):
     filter2 = fields.Selection(related='product_id.internal_ref_name')
 
 
-    employee_name_inv = fields.Char(String="Employee Name")
-    receive_date_inv = fields.Date(String="Received Date")
+    employee_name_inv = fields.Char(String="Employee Name", default=lambda self: self.env.user.name)
+    receive_date_inv = fields.Date(String="Received Date", default=fields.Datetime.now)
     
 
     # Inventory Adjustment Sequence 
@@ -334,7 +334,7 @@ class ProductAdjustment_02(models.Model):
     etsi_products_2 = fields.Many2one('product.product', string="Products", required=True)
     type_checker_2 = fields.Selection(related='etsi_products_2.internal_ref_name')
     # ADDING NEW FIELDS
-    sky_receive_date_2 = fields.Date("Receive Date")
+    sky_receive_date_2 = fields.Date("Receive Date", related='etsi_product_ids_2.receive_date_inv')
     sky_subscriber_2 = fields.Char("Subscriber")
     sky_date_issued_2 = fields.Date("Date Issued")
     sky_date_returned_2 = fields.Date("Returned Date")

@@ -71,7 +71,7 @@ class Team_issuance(models.Model):
 
             if rec.etsi_serials_field != False:
                 if drop_name:
-                    if drop_name.internal_ref_name == 'drops':
+                    if drop_name.internal_ref_name == 'drops' or drop_name.internal_ref_name == 'others':
                         if warehouse1_quantity <= 0:
                             raise ValidationError("No stock available.")
                         else:
@@ -250,6 +250,7 @@ class Team_issuance_stock_picking(models.Model):
         for check in self:
             # picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
             picking_checker = self.env['stock.picking.type'].search([('code', '=', 'outgoing'),('subscriber_checkbox', '=', True),('return_picking_type_id', '!=', False)])
+            
             if self.picking_type_id.id == picking_checker.id:
                 for rec in self.move_lines:
                     if rec.etsi_serials_field != False:

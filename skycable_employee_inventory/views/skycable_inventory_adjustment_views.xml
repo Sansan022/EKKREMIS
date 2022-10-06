@@ -20,7 +20,7 @@
                 </xpath>
                 <!-- READONLY FOR REAL QUANTITY INSIDE ONE2MANY (stock.inventory.line) -->
                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_qty']" position="attributes">
-                    <attribute name="readonly">1</attribute>
+                    <attribute name="readonly">0</attribute>
                 </xpath>
                 <xpath expr="//sheet/notebook[1]/page[1]//tree/field[@name='product_id']" position="attributes">
                     <attribute name="invisible">0</attribute>
@@ -44,7 +44,7 @@
                                 <field name="etsi_products" attrs="{'readonly': [('etsi_filter','=','product')]}" domain="[('type','=','product'),('internal_ref_name','=','broadband')]"  widget='selection'/>
                                 <field name="etsi_filter" invisible='1' />
                                 <field name="type_checker" invisible='1' />
-                                <field name="sky_receive_date"  />
+                                <field name="sky_receive_date" invisible='1' />
                                 <field name="sky_subscriber" invisible='1' />
                                 <field name="sky_date_issued" invisible='1' />
                                 <field name="sky_date_returned" invisible='1' />
@@ -68,7 +68,7 @@
                                 <field name="etsi_products_2" domain="[('type','=','product'),('internal_ref_name','=','catv5')]"  widget='selection' />
                                 <field name="etsi_filter_2" invisible='1' />
                                 <field name="type_checker_2" invisible='1' />
-                                <field name="sky_receive_date_2" />
+                                <field name="sky_receive_date_2" invisible='1' />
                                 <field name="sky_subscriber_2" invisible='1' />
                                 <field name="sky_date_issued_2" invisible='1' />
                                 <field name="sky_date_returned_2" invisible='1' />
@@ -82,12 +82,12 @@
 
 
                 <xpath expr="//sheet/group/group[1]/field[2]" position="after">
-                    <field name="employee_name_inv"/>
+                    <field name="employee_name_inv" string = "Employee name" attrs="{'readonly': [('state','=','done')]}"/>
                 </xpath>
 
                 
                 <xpath expr="//sheet/group/group[2]/field[1]" position="after">
-                    <field name="receive_date_inv" string = "Received Date"/>
+                    <field name="receive_date_inv" string = "Received Date" attrs="{'readonly': [('state','=','done')]}"/>
                 </xpath>
 
 

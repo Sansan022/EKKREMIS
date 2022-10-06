@@ -44,6 +44,42 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
+
+
+
+
+
+        <!-- <record id="testing1212" model="ir.actions.act_window">
+            <field name="name">testing:</field>
+            <field name="res_model">stock.move.test</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record> -->
+
+
+        <record id="stock_move_test_transient" model="ir.ui.view">
+            <field name="name">stock.move.test.transient</field>
+            <field name="model">stock.move.test</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="matcode"/>
+                            <field name="currentquantity"/>
+                            <field name="employeename"/>
+                        </group>
+
+
+                        <footer>
+                            <!-- <button name="validate_btn" type="object" string="Validate" class="btn-primary"/> -->
+                            <button string="Cancel" class="btn-default" special="cancel" />
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
         
     
     </data>
