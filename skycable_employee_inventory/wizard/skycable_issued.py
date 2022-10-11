@@ -185,15 +185,37 @@ class convert_transient(models.TransientModel):
     current_unit = fields.Char(readonly=True, string="Current Units", related='matcode.product_tmpl_id.uom_id.name')
 
 
-    drops_type_convert_to = fields.Many2one('product.template', domain=[('drops_reference_id', '=', 'Nails')])
+    sky_drops_reference_wiz = fields.Char(related='matcode.product_tmpl_id.drops_reference_id.drops_references')
+
+    # NEXT LINE IS OUR MATERIAL CODE 
+    drops_type_convert_to = fields.Many2one('product.template')
+
     quantity_you_want_to_convert = fields.Float(required=True)
 
+
+    initial_current_quantity= fields.Float(compute='_get_initial_current_quantity')    
+    converted_units = fields.Char(required=True)
+
+
+
     @api.multi
-    @api.depends('currentquantity','matcode')
+    @api.depends('currentquantity','matcode' )
     def _get_current_quantity(self):
         product = self.env['product.product'].browse(self.matcode.id)
         current = product.with_context({'location' : 'WH/Stock'}).qty_available
         self.currentquantity = current
+
+    @api.depends('initial_current_quantity', 'drops_type_convert_to')
+    def _get_initial_current_quantity(self):
+        product = self.env['product.product'].browse(self.drops_type_convert_to.id)
+        current = product.with_context({'location' : 'WH/Stock'}).qty_available
+        self.initial_current_quantity = current
+
+
+    
+
+
+
 
  
  

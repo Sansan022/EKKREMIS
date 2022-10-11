@@ -38,7 +38,9 @@
               <xpath expr="//tree/field[@name='state']" position="after">
                   <!-- <button name="open_view_wizard" string="Convert" type="action"/> -->
                   <!-- transient_issued_action2 -->
+                  
                   <button name="testing1212" type="object" string="Convert" state="draft" attrs="{'invisible': [('etsi_serials_field','!=',False)]}"/>
+                  
               </xpath>
 
               <xpath expr="//tree/field[@name='product_id_duplicate']" position="attributes">

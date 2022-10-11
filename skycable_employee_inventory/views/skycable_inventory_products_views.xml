@@ -227,7 +227,7 @@
 
             <!-- ADDING DROPS REFERENCE, NAILS, -->
             <xpath expr="//notebook/page[1]/group/group[2]/field[4]" position="after">
-                <field name="drops_reference_id" string="Drops Type"/>
+                <field name="drops_reference_id" string="Drops Type" attrs="{'invisible' : ['|',('internal_ref_name', '=', 'catv5'),('internal_ref_name', '=', 'broadband')]}" />
             </xpath>
 
         </field>

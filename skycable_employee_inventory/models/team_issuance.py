@@ -22,6 +22,8 @@ class Team_issuance(models.Model):
 
     issued_field = fields.Char(string="Issued",default="No")
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
+    
+    # drops_references_issuance = fields.Char()
 
     # @api.multi
     # @api.onchange('checker_box')
@@ -77,6 +79,8 @@ class Team_issuance(models.Model):
                         else:
                             rec.product_id = drop_name.id
                             rec.etsi_serials_field = False
+
+                        
                     else:
                         raise ValidationError("Serial not found in the database.")
 

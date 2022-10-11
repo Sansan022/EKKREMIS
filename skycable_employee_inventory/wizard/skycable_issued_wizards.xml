@@ -71,10 +71,22 @@
                         </group>
 
 
-                        <group>
-                                <field name="drops_type_convert_to" string="Convert To: "/>    
-                                <field name ="quantity_you_want_to_convert" string="New Quantity"/>
+                            <group>
+                                <field name="drops_type_convert_to" 
+                                        string="Convert To: " 
+                                        domain="[('drops_reference_id', '=', sky_drops_reference_wiz), ('id', '!=', matcode)]"/>  
+                                
+                                
+                                <field name="initial_current_quantity" string="Current Quantituy" readonly="True"/>  
+                                <field name= "converted_units"  string = "Units"/>                                
+                                <field name = "sky_drops_reference_wiz" invisible="True"/>
                             </group>
+
+                            <group>
+                                
+                                <field name ="quantity_you_want_to_convert" string="Quantity to convert: " />
+                            </group>
+
 
 
                         <footer>
