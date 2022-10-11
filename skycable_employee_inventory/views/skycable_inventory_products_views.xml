@@ -216,12 +216,18 @@
             </xpath>
                               
 
-            <xpath expr="//notebook/page[1]/group/group[1]/field[2]" position="after">
+            <xpath expr="//notebook/page[1]/group/group[1]/field[@name='categ_id']" position="after">
                 <field name="internal_ref_name" string="Product Type"/>
             </xpath>
 
             <xpath expr="//notebook/page[1]/group/group[1]/field[3]" position="after">
                 <field name="description_txt"/>
+            </xpath>
+
+
+            <!-- ADDING DROPS REFERENCE, NAILS, -->
+            <xpath expr="//notebook/page[1]/group/group[2]/field[4]" position="after">
+                <field name="drops_reference_id" string="Drops Type"/>
             </xpath>
 
         </field>

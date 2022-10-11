@@ -64,10 +64,17 @@
                 <form string="">
                     <sheet>
                         <group>
+                            <field name="employeename"/>
                             <field name="matcode"/>
                             <field name="currentquantity"/>
-                            <field name="employeename"/>
+                            <field name="current_unit"/>
                         </group>
+
+
+                        <group>
+                                <field name="drops_type_convert_to" string="Convert To: "/>    
+                                <field name ="quantity_you_want_to_convert" string="New Quantity"/>
+                            </group>
 
 
                         <footer>

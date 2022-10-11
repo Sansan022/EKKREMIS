@@ -20,6 +20,12 @@ class ProductTemplateInheritance(models.Model):
         inverse='_set_default_code', store=True,default='catv5')
     product_count = fields.Integer(compute ='get_product_count')
 
+    #DELETE THIS FIELDS FOR TEST ONLY
+    # drops_reference = fields.Char()
+    # end of deletion
+
+    drops_reference_id = fields.Many2one('etsi.product.drops.reference')
+
     @api.onchange('internal_ref_name')
     def product_type_func(self):
         if self.internal_ref_name == 'catv5':
@@ -59,9 +65,15 @@ class ProductTemplateInheritance(models.Model):
             rec.product_count = count
 
 
+#REFERENCE OF DROPS MANY2ONE
+class Product_drops_reference(models.Model):
+    _name = 'etsi.product.drops.reference'
+    _rec_name = 'drops_references'
+
+    drops_references=fields.Char(string="Drops type")
+
 
 # serial smart button content
-
 class Product_Serial_SmartButton(models.Model):
 
     _name = 'etsi.inventory'
@@ -83,6 +95,10 @@ class Product_Serial_SmartButton(models.Model):
     etsi_team_in = fields.Char(string="Team")
     etsi_punched_date_in = fields.Datetime("Punch Time")
     etsi_employee_in = fields.Char("Employee")
+
+
+    # ADDING FIELDS FOR DROPS REFERENCE
+    etsi_drops_references_in = fields.Char(string="Drop Types")
 
 # update quantity on hand one2many content
 class Product_Quanty_On_Hand_Model(models.TransientModel):
@@ -195,6 +211,8 @@ class Inherit_Product_Quantity(models.TransientModel):
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Char(string='Employee Name', default=lambda self: self.env.user.name)
     date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
+    # drops_reference_wiz = fields.Char(default=lambda self: self.)
+    
 
 
 
