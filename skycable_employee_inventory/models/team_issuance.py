@@ -20,7 +20,7 @@ class Team_issuance(models.Model):
 
     checker_box = fields.Boolean(string="To be issued")
 
-    issued_field = fields.Char(string="Issued",default="No")
+    issued_field = fields.Char(string="Issued", default="No")
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
     
     # drops_references_issuance = fields.Char()
