@@ -74,10 +74,10 @@
                             <group>
                                 <field name="drops_type_convert_to" 
                                         string="Convert To: " 
-                                        domain="[('drops_reference_id', '=', sky_drops_reference_wiz), ('id', '!=', matcode)]"/>  
+                                        domain="[('drops_reference_id', '=', sky_drops_reference_wiz), ('id', '!=', matcode),('internal_ref_name','=','drops')]"/>  
                                 
                                 
-                                <field name="initial_current_quantity" string="Current Quantituy" readonly="True"/>  
+                                <field name="initial_current_quantity" string="Current Quantity" readonly="True"/>  
                                 <field name= "converted_units"  string = "Units"/>                                
                                 <field name = "sky_drops_reference_wiz" invisible="True"/>
                             </group>
@@ -90,7 +90,7 @@
 
 
                         <footer>
-                            <!-- <button name="validate_btn" type="object" string="Validate" class="btn-primary"/> -->
+                            <button name="convert_btn" type="object" string="Validate" class="btn-primary"/>
                             <button string="Cancel" class="btn-default" special="cancel" />
                         </footer>
                     </sheet>

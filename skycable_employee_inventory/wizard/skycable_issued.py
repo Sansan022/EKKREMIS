@@ -182,21 +182,18 @@ class convert_transient(models.TransientModel):
     matcode = fields.Many2one('product.product' , string="Material Code:",readonly="True")
     currentquantity = fields.Integer(string="Current Quantity",compute='_get_current_quantity',readonly="True")
     employeename = fields.Char(string="Employee Name", default=lambda self: self.env.user.name)
-    current_unit = fields.Char(readonly=True, string="Current Units", related='matcode.product_tmpl_id.uom_id.name')
+    current_unit = fields.Char(readonly=True, string="Units", related='matcode.product_tmpl_id.uom_id.name')
 
 
     sky_drops_reference_wiz = fields.Char(related='matcode.product_tmpl_id.drops_reference_id.drops_references')
 
     # NEXT LINE IS OUR MATERIAL CODE 
     drops_type_convert_to = fields.Many2one('product.template')
+    initial_current_quantity= fields.Float(compute='_get_initial_current_quantity')    
+    converted_units = fields.Char(related='drops_type_convert_to.uom_id.name',readonly=True)
+
 
     quantity_you_want_to_convert = fields.Float(required=True)
-
-
-    initial_current_quantity= fields.Float(compute='_get_initial_current_quantity')    
-    converted_units = fields.Char(required=True)
-
-
 
     @api.multi
     @api.depends('currentquantity','matcode' )
@@ -214,6 +211,12 @@ class convert_transient(models.TransientModel):
 
     
 
+    @api.multi
+    def convert_btn(self):
+        if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert != 0):
+            print("nath")
+        else:
+            raise UserError(("Invalid Input."))
 
 
 
