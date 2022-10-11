@@ -185,7 +185,7 @@ class convert_transient(models.TransientModel):
     current_unit = fields.Char(readonly=True, string="Current Units", related='matcode.product_tmpl_id.uom_id.name')
 
 
-    drops_type_convert_to = fields.Many2one('product.template', domain=[('drops_reference', '=', 'nails')])
+    drops_type_convert_to = fields.Many2one('product.template', domain=[('drops_reference_id', '=', 'Nails')])
     quantity_you_want_to_convert = fields.Float(required=True)
 
     @api.multi
