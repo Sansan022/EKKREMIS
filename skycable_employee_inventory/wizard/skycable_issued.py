@@ -214,7 +214,40 @@ class convert_transient(models.TransientModel):
     @api.multi
     def convert_btn(self):
         if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert != 0):
-            print("nath")
+            # product01
+            if(self.matcode.product_tmpl_id.uom_id.uom_type == 'reference'):
+                product01_uom_value = 1
+            elif(self.matcode.product_tmpl_id.uom_id.uom_type == 'bigger'):
+                product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor_inv
+            else:
+                product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor
+
+            # product02
+            if(self.drops_type_convert_to.uom_id.uom_type == 'reference'):
+                product02_uom_value = 1
+            elif(self.drops_type_convert_to.uom_id.uom_type == 'bigger'):
+                product02_uom_value = self.drops_type_convert_to.uom_id.factor_inv
+            else:
+                product02_uom_value = self.drops_type_convert_to.uom_id.factor
+            
+            if(product01_uom_value < product02_uom_value):
+                availabletoconvert = self.quantity_you_want_to_convert/product02_uom_value
+                
+                if(int(availabletoconvert) <= 0):
+                    print("error")
+                else:
+                    convertedvalue = int(availabletoconvert) * product02_uom_value
+                    product01newvalue = self.currentquantity - convertedvalue
+
+                    print("product01 new value:" , product01newvalue)
+                    print("value will be added to product02:" , int(availabletoconvert))
+            else:
+                print("error")
+
+
+            
+
+            # print(self.matcode.product_tmpl_id.uom_id.category_id.id)
         else:
             raise UserError(("Invalid Input."))
 
