@@ -1,6 +1,7 @@
-
+import math
 from odoo import models, fields, api,_
 from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 class IssuedTransient(models.TransientModel):
     # _inherit ='stock.immediate.transfer'
@@ -188,12 +189,12 @@ class convert_transient(models.TransientModel):
     sky_drops_reference_wiz = fields.Char(related='matcode.product_tmpl_id.drops_reference_id.drops_references')
 
     # NEXT LINE IS OUR MATERIAL CODE 
-    drops_type_convert_to = fields.Many2one('product.template')
-    initial_current_quantity= fields.Float(compute='_get_initial_current_quantity')    
+    drops_type_convert_to = fields.Many2one('product.template' , required=True)
+    initial_current_quantity= fields.Integer(compute='_get_initial_current_quantity')    
     converted_units = fields.Char(related='drops_type_convert_to.uom_id.name',readonly=True)
 
 
-    quantity_you_want_to_convert = fields.Float(required=True)
+    quantity_you_want_to_convert = fields.Integer(required=True)
 
     @api.multi
     @api.depends('currentquantity','matcode' )
@@ -213,7 +214,7 @@ class convert_transient(models.TransientModel):
 
     @api.multi
     def convert_btn(self):
-        if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert != 0):
+        if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0 and self.quantity_you_want_to_convert <= self.currentquantity):
             # product01
             if(self.matcode.product_tmpl_id.uom_id.uom_type == 'reference'):
                 product01_uom_value = 1
@@ -232,9 +233,13 @@ class convert_transient(models.TransientModel):
             
             if(product01_uom_value < product02_uom_value):
                 availabletoconvert = self.quantity_you_want_to_convert/product02_uom_value
+                availabletoconvertchecker = availabletoconvert% 1
                 
                 if(int(availabletoconvert) <= 0):
-                    print("error")
+                    raise ValidationError("error")
+
+                if(availabletoconvertchecker != 0):
+                    raise ValidationError("Invalid Input.")
                 else:
                     convertedvalue = int(availabletoconvert) * product02_uom_value
                     product01newvalue = self.currentquantity - convertedvalue
@@ -242,6 +247,50 @@ class convert_transient(models.TransientModel):
                     print("product01 new value:" , product01newvalue)
                     print("product02 new value:" , product02newvalue)
                     print("value added to product02:" , int(availabletoconvert))
+
+
+                Inventory = self.env['stock.inventory']
+                for wizard in self:
+                        
+                    loc_id = self.env['stock.location'].search([('usage', '=', "internal"),("name","=","Stock")])
+
+
+                    lst = []
+                    lst.append((
+                        0, 0, {
+                            'product_id': self.matcode.id,
+                            'location_id': loc_id.id,
+                            'company_id': self.matcode.product_tmpl_id.company_id.id,
+                            'product_uom_id': self.matcode.product_tmpl_id.uom_id.id,
+                            'product_qty':product01newvalue,
+                            
+                        }
+                    ))
+
+                    lst.append((
+                        0, 0, {
+                            'product_id': self.drops_type_convert_to.id,
+                            'location_id': loc_id.id,
+                            'company_id': self.drops_type_convert_to.company_id.id,
+                            'product_uom_id': self.drops_type_convert_to.uom_id.id,
+                            'product_qty':product02newvalue,
+                            
+                        }
+                    ))
+
+                    inventory = Inventory.create({
+                        
+                        # 'location_id': self.matcode.product_tmpl_id.location_id.id,
+                        'filter': 'partial',
+                        'filter2':'drops',
+                        'line_ids': lst,
+                        
+                    })
+                    inventory.action_done()
+            # return {'type': 'ir.actions.act_window_close'}
+
+
+
             else:
                 availabletoconvert = self.quantity_you_want_to_convert * product01_uom_value
 
@@ -254,4 +303,46 @@ class convert_transient(models.TransientModel):
                     print("product01 new value:" , product01newvalue)
                     print("product02 new value:" , product02newvalue)
                     print("value added to product02:" , int(convertedvalue))
+
+                    Inventory = self.env['stock.inventory']
+                for wizard in self:
+                        
+                    loc_id = self.env['stock.location'].search([('usage', '=', "internal"),("name","=","Stock")])
+
+
+                    lst = []
+                    lst.append((
+                        0, 0, {
+                            'product_id': self.matcode.id,
+                            'location_id': loc_id.id,
+                            'company_id': self.matcode.product_tmpl_id.company_id.id,
+                            'product_uom_id': self.matcode.product_tmpl_id.uom_id.id,
+                            'product_qty':product01newvalue,
+                            
+                        }
+                    ))
+
+                    lst.append((
+                        0, 0, {
+                            'product_id': self.drops_type_convert_to.id,
+                            'location_id': loc_id.id,
+                            'company_id': self.drops_type_convert_to.company_id.id,
+                            'product_uom_id': self.drops_type_convert_to.uom_id.id,
+                            'product_qty':product02newvalue,
+                            
+                        }
+                    ))
+
+                    inventory = Inventory.create({
+                        
+                        # 'location_id': self.matcode.product_tmpl_id.location_id.id,
+                        'filter': 'partial',
+                        'filter2':'drops',
+                        'line_ids': lst,
+                        
+                    })
+                    inventory.action_done()
+            
+        else:
+            raise ValidationError("invalid inputyy")
                 

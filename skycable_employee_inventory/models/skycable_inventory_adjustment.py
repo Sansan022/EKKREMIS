@@ -196,8 +196,8 @@ class ProductDetails(models.Model):
             raise ValidationError(('Inventory details table can not be empty.'))
 
         if self.filter2 == 'broadband':
-            if len(self.etsi_product_detail) == 0:
-                raise ValidationError(('Product details table can not be empty.'))
+            # if len(self.etsi_product_detail) == 0:
+            #     raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail:
                 self.env['etsi.inventory'].create(
                     {'etsi_serial': line.etsi_serials,
@@ -214,8 +214,8 @@ class ProductDetails(models.Model):
                     'etsi_employee_in': self.employee_name_inv,
                     })
         elif self.filter2 == 'catv5':
-            if len(self.etsi_product_detail_2) == 0:
-                raise ValidationError(('Product details table can not be empty.'))
+            # if len(self.etsi_product_detail_2) == 0:
+            #     raise ValidationError(('Product details table can not be empty.'))
             for line in self.etsi_product_detail_2:
                 self.env['etsi.inventory'].create(
                     {'etsi_serial': line.etsi_serials_2,
@@ -238,38 +238,37 @@ class ProductDetails(models.Model):
             pass
             
         else:
-            if len(self.etsi_product_detail) == 0 and len(self.etsi_product_detail_2) == 0:
-                raise ValidationError(('Product details table can not be empty.'))
-            else:
-                for line in self.etsi_product_detail:
-                    self.env['etsi.inventory'].create(
-                        {'etsi_serial': line.etsi_serials,
-                        'etsi_mac':line.etsi_macs,
-                        'etsi_product_id':line.etsi_products.id,
-                        'etsi_product_name':line.etsi_products.id,
-                        'etsi_receive_date_in':line.sky_receive_date,
-                        'etsi_subscriber_in': line.sky_subscriber,
-                        'etsi_date_issued_in': line.sky_date_issued,
-                        'etsi_date_returned_in': line.sky_date_returned,
-                        'etsi_team_in': line.sky_team,
-                        'etsi_punched_date_in': line.sky_time_punch,
-                        'etsi_employee_in': self.employee_name_inv,
-                        })
-                for line in self.etsi_product_detail_2:
-                    self.env['etsi.inventory'].create(
-                        {'etsi_serial': line.etsi_serials_2,
-                        'etsi_smart_card':line.etsi_smart_card_2,
-                        'etsi_product_id':line.etsi_products_2.id,
-                        'etsi_product_name':line.etsi_products_2.id,
-                        'etsi_receive_date_in':line.sky_receive_date_2,
-                        'etsi_subscriber_in': line.sky_subscriber_2,
-                        'etsi_date_issued_in': line.sky_date_issued_2,
-                        'etsi_date_returned_in': line.sky_date_returned_2,
-                        'etsi_team_in': line.sky_team_2,
-                        'etsi_punched_date_in': line.sky_time_punch_2,
-                        'etsi_employee_in': self.employee_name_inv,
+            # if len(self.etsi_product_detail) == 0 and len(self.etsi_product_detail_2) == 0:
+            #     raise ValidationError(('Product details table can not be empty.'))
+            for line in self.etsi_product_detail:
+                self.env['etsi.inventory'].create(
+                    {'etsi_serial': line.etsi_serials,
+                    'etsi_mac':line.etsi_macs,
+                    'etsi_product_id':line.etsi_products.id,
+                    'etsi_product_name':line.etsi_products.id,
+                    'etsi_receive_date_in':line.sky_receive_date,
+                    'etsi_subscriber_in': line.sky_subscriber,
+                    'etsi_date_issued_in': line.sky_date_issued,
+                    'etsi_date_returned_in': line.sky_date_returned,
+                    'etsi_team_in': line.sky_team,
+                    'etsi_punched_date_in': line.sky_time_punch,
+                    'etsi_employee_in': self.employee_name_inv,
+                    })
+            for line in self.etsi_product_detail_2:
+                self.env['etsi.inventory'].create(
+                    {'etsi_serial': line.etsi_serials_2,
+                    'etsi_smart_card':line.etsi_smart_card_2,
+                    'etsi_product_id':line.etsi_products_2.id,
+                    'etsi_product_name':line.etsi_products_2.id,
+                    'etsi_receive_date_in':line.sky_receive_date_2,
+                    'etsi_subscriber_in': line.sky_subscriber_2,
+                    'etsi_date_issued_in': line.sky_date_issued_2,
+                    'etsi_date_returned_in': line.sky_date_returned_2,
+                    'etsi_team_in': line.sky_team_2,
+                    'etsi_punched_date_in': line.sky_time_punch_2,
+                    'etsi_employee_in': self.employee_name_inv,
 
-                        })
+                    })
         return res
 
     # ******    HIDE RADIO BUTTONS (WIDGET): ALL PRODUCTS AND ONE PRODUCT CATEGORY
