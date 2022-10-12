@@ -238,21 +238,20 @@ class convert_transient(models.TransientModel):
                 else:
                     convertedvalue = int(availabletoconvert) * product02_uom_value
                     product01newvalue = self.currentquantity - convertedvalue
-
+                    product02newvalue = self.initial_current_quantity + int(availabletoconvert)
                     print("product01 new value:" , product01newvalue)
-                    print("value will be added to product02:" , int(availabletoconvert))
+                    print("product02 new value:" , product02newvalue)
+                    print("value added to product02:" , int(availabletoconvert))
             else:
-                print("error")
+                availabletoconvert = self.quantity_you_want_to_convert * product01_uom_value
 
-
-            
-
-            # print(self.matcode.product_tmpl_id.uom_id.category_id.id)
-        else:
-            raise UserError(("Invalid Input."))
-
-
-
- 
- 
-
+                if(int(availabletoconvert) <= 0):
+                    print("error")
+                else:
+                    convertedvalue = int(availabletoconvert) / product02_uom_value
+                    product01newvalue = self.currentquantity - self.quantity_you_want_to_convert
+                    product02newvalue = self.initial_current_quantity + convertedvalue
+                    print("product01 new value:" , product01newvalue)
+                    print("product02 new value:" , product02newvalue)
+                    print("value added to product02:" , int(convertedvalue))
+                
