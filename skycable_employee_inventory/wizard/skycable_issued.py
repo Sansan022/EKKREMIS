@@ -239,12 +239,12 @@ class convert_transient(models.TransientModel):
                 availabletoconvertchecker = availabletoconvert2%1
 
                 if(int(availabletoconvert)>self.currentquantity):
-                    raise ValidationError("erroree")
+                    raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nYou only need: " + str(self.currentquantity / 50) + " (Bag of 50)")
                 if(int(availabletoconvert2) <= 0):
-                    raise ValidationError("error")
+                    raise ValidationError("Error: Invalid quantity inserted")
 
                 if(availabletoconvertchecker != 0):
-                    raise ValidationError("Invalid Input.")
+                    raise ValidationError("Error: Inserted quantity is less than the current quantity. \nThe minimum quantity is 1")
                 
                 else:
                     product01newvalue = self.currentquantity - int(availabletoconvert)
@@ -291,16 +291,16 @@ class convert_transient(models.TransientModel):
             
 
 
-            else:
+            elif(product01_uom_value > product02_uom_value):
                 availabletoconvert = self.quantity_you_want_to_convert / product01_uom_value
                 availabletoconvertchecker = availabletoconvert % 1
 
                 if(availabletoconvertchecker!=0):
-                    raise ValidationError("erroree")
+                    raise ValidationError("Error: Inserted quantity is less than the current quantity. \nThe minimum quantity is 50")
                 if(int(availabletoconvert) <= 0):
-                    raise ValidationError("erroree")
+                    raise ValidationError("Error: Invalid quantity inserted")
                 if(int(availabletoconvert)>self.currentquantity):
-                    raise ValidationError("error22ee")
+                    raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nQuantity to convert must not exceed to: " + str(self.currentquantity * 50) + " Piece(s)")
                 else:
                     convertedvalue = int(availabletoconvert) / product02_uom_value
                     product01newvalue = self.currentquantity - availabletoconvert
@@ -343,7 +343,9 @@ class convert_transient(models.TransientModel):
                         
                     })
                     inventory.action_done()
-            
+
+            else:
+                raise ValidationError("ERROR!!! You can convert same material code.")
             picking = self.env['stock.move'].browse(self.env.context.get('active_id'))
 
             if picking:
@@ -357,5 +359,5 @@ class convert_transient(models.TransientModel):
                         picking.unlink()
 
         else:
-            raise ValidationError("invalid inputyy")
+            raise ValidationError("Invalid quantity input")
                 
