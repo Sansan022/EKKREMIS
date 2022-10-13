@@ -24,11 +24,11 @@
         'wizard/skycable_issued_wizards.xml',
         # 'security/ir.model.access.csv',
         'data/skycable_inventory_adjustment_sequence.xml',
+        'data/skycable_employee_configuration_sequence.xml',
         'views/skycable_inventory_all_transfer_views.xml',
         'views/skycable_inventory_adjustment_views.xml',
         'views/skycable_inventory_operation_type_views.xml',
         'views/skycable_inventory_products_views.xml',
-        'views/skycable_employee_configuration_sequence.xml',
         'views/skycable_employee_teams_configuration.xml',
         'views/skycable_contact_configuration.xml',
         # Phase 3
