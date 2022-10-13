@@ -30,9 +30,6 @@
             <field name="model">team.configuration</field>
             <field name="arch" type="xml">
                 <form string="team configuration">
-                    <!-- <header>
-                        <button string="Confirm" type="object" name="history" class="oe_highlight" />
-                    </header> -->
                     <sheet>
                         <group>
                             <field name="team_number" readonly="1"/>
