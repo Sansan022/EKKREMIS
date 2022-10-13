@@ -50,6 +50,14 @@
         'views/skycable_product_product.xml',
         'views/skycable_inventory_internal_search.xml',
         'views/sky_cable_inventory_products_view_all_serial.xml',
+
+        # REPORTS
+        'reports/report_team_issuance.xml',
+        'reports/team_issuance.xml',
+        'reports/team_configuration_file.xml',
+
+ 
+
         
 
     ]
