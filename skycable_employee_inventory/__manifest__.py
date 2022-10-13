@@ -24,7 +24,6 @@
         'wizard/skycable_issued_wizards.xml',
         # 'security/ir.model.access.csv',
         'data/skycable_inventory_adjustment_sequence.xml',
-        'data/team_configuration_sequence.xml',
         'views/skycable_inventory_all_transfer_views.xml',
         'views/skycable_inventory_adjustment_views.xml',
         'views/skycable_inventory_operation_type_views.xml',

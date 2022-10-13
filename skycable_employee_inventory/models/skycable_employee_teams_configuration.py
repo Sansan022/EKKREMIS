@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
-from odoo import models, fields, api, _
+from openerp import api, fields, models
 from odoo.exceptions import ValidationError
-
+from datetime import datetime
 
 class team_configuration(models.Model):
     _name = 'team.configuration'
@@ -15,24 +14,18 @@ class team_configuration(models.Model):
         ('two_man', "2-man Team"),
     ], default='one_man')
 
-    # check if team number already exist
-    _sql_constraints = [
-    ('team_number', 'UNIQUE(team_number)', 'The team number already Exists!'),
-]
 
      # check the length of team 
-    @api.constrains('team_members')
-    def _limitTeamMembers(self):
+    @api.constrains('team_members','teamType')
+    def _validations(self):
         if self.teamType == 'two_man': 
-            if len(self.team_members) > 2:
-                raise ValidationError("Exceed the maximum number of member(2).")
+            if len(self.team_members) > 2 or len(self.team_members) < 2:
+                raise ValidationError("Wrong number of members.")
         
         if self.teamType == 'one_man': 
             if len(self.team_members) > 1:
                 raise ValidationError("Exceed the maximum number of member(1).")
-
-    @api.constrains('team_members')
-    def _check_team_members_line(self):
+        
         if len(self.team_members) == 0:
             raise ValidationError('Invalid, Empty team members!')
 
@@ -45,50 +38,73 @@ class team_configuration(models.Model):
 
         for rec in res.team_members:
             rec.team_members_lines.write({'team_number_id': res.team_number})
-
-
-
             self.env['team.page.lines'].create({
             'team_page_lines': rec.team_members_lines.id,
             'team_number_team': res.team_number,
             'status': 'permanent',
-            'teamTypeHistory': self.teamType,
+            'teamTypeHistory': res.teamType,
+            'createdDateHistory': datetime.today(),
             })
             
-            
-
         return res
 
     @api.multi
     def write(self, values):
         res = super(team_configuration, self).write(values)
+
         b = []
         c = []
         temp3 = []
-        a = self.env['hr.employee'].search([('team_number_id','=',self.team_number)])   
+        temp4 = []
+        
+        a = self.env['hr.employee'].search(
+            [('team_number_id','=',self.team_number)])   
+       
         for recs in a:
             b.append(recs.id)
 
-        for rec in self.team_members:
-            rec.team_members_lines.write({'team_number_id': self.team_number})
-            c.append(rec.team_members_lines.id)
-            self.env['team.page.lines'].create({
-                'team_page_lines': rec.team_members_lines.id,
-                'team_number_team': self.team_number,
-                'status': 'Permanent',
-                'teamTypeHistory': self.teamType,
-            })
+        for record in self.team_members:
+            c.append(record.team_members_lines.id)
+
+        for rec in c:
+            if rec not in b:
+                temp4.append(rec)
+
+
+        if 'teamType' in values:
+            for rec in self.team_members:
+                rec.team_members_lines.write({'team_number_id': self.team_number})
+                c.append(rec.team_members_lines.id)
+                self.env['team.page.lines'].create({
+                    'team_page_lines': rec.team_members_lines.id,
+                    'team_number_team': self.team_number,
+                    'status': 'permanent',
+                    'teamTypeHistory': self.teamType,
+                    'createdDateHistory': datetime.today(),
+                    })
+        elif 'team_members' in values:
+            for rec1 in temp4:
+                self.env['hr.employee'].search([('id', '=', rec1)]).write({'team_number_id': self.team_number})
+                self.env['team.page.lines'].create({
+                    'team_page_lines': rec1,
+                    'team_number_team': self.team_number,
+                    'status': 'permanent',
+                    'teamTypeHistory': self.teamType,
+                    'createdDateHistory': datetime.today()
+                })
 
         for element in b:
             if element not in c:
                 temp3.append(element)
-
+                
         for removed in temp3:
             self.env['hr.employee'].search([('id','=',removed)]).write({'team_number_id': ''}) 
             self.env['team.page.lines'].create({
                 'team_page_lines': removed,
                 'team_number_team': self.team_number,
-                'status': 'Removed'
+                'status': 'removed',
+                 'teamTypeHistory': self.teamType,
+                 'createdDateHistory': datetime.today(),
             })
       
         return res
@@ -96,7 +112,7 @@ class team_configuration(models.Model):
                         
 class team_configuration_line(models.Model):
     _name = 'team.configuration.line'
-    # _rec_name = 'team_members_lines'
+    _rec_name = 'team_members_lines'
 
     team_members_lines = fields.Many2one('hr.employee')
     team_members_lines1 = fields.Many2one('team.configuration')
@@ -128,12 +144,7 @@ class team_configuration_line(models.Model):
             raise ValidationError("Invalid team member")
         
         return res
-   
-   
-   
-   
-   
-   
+
     #validation for team members, one team only
     @api.onchange('team_members_lines')
     def _check_team_members(self):
@@ -147,33 +158,26 @@ class team_configuration_line(models.Model):
 
 class team_page(models.Model):
     _inherit = 'hr.employee'
-    # _rec_name = 'team_number_id'
 
     history = fields.One2many('team.page.lines', 'team_page_lines')
     team_number_id = fields.Char(readonly=True)
 
-    # @api.onchange('team_number_id')
-    # def _onchange_team_number(self):
-    #     lines = []
-    #     for rec in self.history:
-    #         for line in rec.team_page_lines:
-    #             vals = {
-    #                 'team_number': 12,
-    #             }
-    #             lines.append((0,0, vals))
-    #         rec.history = lines
-    #         print('---->',lines)
-
       
 class team_page_lines(models.Model):  
     _name = 'team.page.lines'
-    # _rec_name = 'team_page_lines'
+    _rec_name = 'team_page_lines'
 
     team_page_lines = fields.Many2one('hr.employee')
     team_number_team = fields.Char()
     transaction_number = fields.Char()
-    status = fields.Char()
+    status = fields.Selection([
+        ('permanent', 'Permanent'),
+        ('temporary', 'Temporary'),
+        ('removed', 'Removed')
+    ], default='permanent')
     teamTypeHistory = fields.Selection([
         ('one_man', "1-man Team"),
         ('two_man', "2-man Team"),
-    ], default='one_man')
+    ])
+    createdDateHistory = fields.Date()
+    replaced_by = fields.Char()
