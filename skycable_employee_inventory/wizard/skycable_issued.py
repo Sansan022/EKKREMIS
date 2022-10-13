@@ -214,7 +214,7 @@ class convert_transient(models.TransientModel):
 
     @api.multi
     def convert_btn(self):
-        if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0 and self.quantity_you_want_to_convert <= self.currentquantity):
+        if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0):
             # product01
             if(self.matcode.product_tmpl_id.uom_id.uom_type == 'reference'):
                 product01_uom_value = 1
@@ -232,22 +232,23 @@ class convert_transient(models.TransientModel):
                 product02_uom_value = self.drops_type_convert_to.uom_id.factor
             
             if(product01_uom_value < product02_uom_value):
-                availabletoconvert = self.quantity_you_want_to_convert/product02_uom_value
-                availabletoconvertchecker = availabletoconvert% 1
-                
-                if(int(availabletoconvert) <= 0):
+
+
+                availabletoconvert = self.quantity_you_want_to_convert*product02_uom_value
+                availabletoconvert2 = availabletoconvert/product02_uom_value
+                availabletoconvertchecker = availabletoconvert2%1
+
+                if(int(availabletoconvert)>self.currentquantity):
+                    raise ValidationError("erroree")
+                if(int(availabletoconvert2) <= 0):
                     raise ValidationError("error")
 
                 if(availabletoconvertchecker != 0):
                     raise ValidationError("Invalid Input.")
+                
                 else:
-                    convertedvalue = int(availabletoconvert) * product02_uom_value
-                    product01newvalue = self.currentquantity - convertedvalue
-                    product02newvalue = self.initial_current_quantity + int(availabletoconvert)
-                    print("product01 new value:" , product01newvalue)
-                    print("product02 new value:" , product02newvalue)
-                    print("value added to product02:" , int(availabletoconvert))
-
+                    product01newvalue = self.currentquantity - int(availabletoconvert)
+                    product02newvalue = self.initial_current_quantity + int(availabletoconvert2)
 
                 Inventory = self.env['stock.inventory']
                 for wizard in self:
@@ -280,31 +281,32 @@ class convert_transient(models.TransientModel):
 
                     inventory = Inventory.create({
                         
-                        # 'location_id': self.matcode.product_tmpl_id.location_id.id,
+
                         'filter': 'partial',
                         'filter2':'drops',
                         'line_ids': lst,
                         
                     })
                     inventory.action_done()
-            # return {'type': 'ir.actions.act_window_close'}
-
+            
 
 
             else:
-                availabletoconvert = self.quantity_you_want_to_convert * product01_uom_value
+                availabletoconvert = self.quantity_you_want_to_convert / product01_uom_value
+                availabletoconvertchecker = availabletoconvert % 1
 
+                if(availabletoconvertchecker!=0):
+                    raise ValidationError("erroree")
                 if(int(availabletoconvert) <= 0):
-                    print("error")
+                    raise ValidationError("erroree")
+                if(int(availabletoconvert)>self.currentquantity):
+                    raise ValidationError("error22ee")
                 else:
                     convertedvalue = int(availabletoconvert) / product02_uom_value
-                    product01newvalue = self.currentquantity - self.quantity_you_want_to_convert
-                    product02newvalue = self.initial_current_quantity + convertedvalue
-                    print("product01 new value:" , product01newvalue)
-                    print("product02 new value:" , product02newvalue)
-                    print("value added to product02:" , int(convertedvalue))
+                    product01newvalue = self.currentquantity - availabletoconvert
+                    product02newvalue = self.initial_current_quantity + self.quantity_you_want_to_convert
 
-                    Inventory = self.env['stock.inventory']
+                Inventory = self.env['stock.inventory']
                 for wizard in self:
                         
                     loc_id = self.env['stock.location'].search([('usage', '=', "internal"),("name","=","Stock")])
@@ -335,7 +337,6 @@ class convert_transient(models.TransientModel):
 
                     inventory = Inventory.create({
                         
-                        # 'location_id': self.matcode.product_tmpl_id.location_id.id,
                         'filter': 'partial',
                         'filter2':'drops',
                         'line_ids': lst,
@@ -343,6 +344,18 @@ class convert_transient(models.TransientModel):
                     })
                     inventory.action_done()
             
+            picking = self.env['stock.move'].browse(self.env.context.get('active_id'))
+
+            if picking:
+
+
+                for move2 in picking:
+                    product = self.env['product.product'].browse(move2.product_id.id)
+                    current = product.with_context({'location' : 'WH/Stock'}).qty_available
+
+                    if(current <= 0):
+                        picking.unlink()
+
         else:
             raise ValidationError("invalid inputyy")
                 
