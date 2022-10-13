@@ -296,7 +296,7 @@ class convert_transient(models.TransientModel):
                 availabletoconvertchecker = availabletoconvert % 1
 
                 if(availabletoconvertchecker!=0):
-                    raise ValidationError("Error: Inserted quantity is less than the current quantity. \nThe minimum quantity is 50")
+                    raise ValidationError("Error: Inserted quantity is not applicable. \nIt must be divisible by 50")
                 if(int(availabletoconvert) <= 0):
                     raise ValidationError("Error: Invalid quantity inserted")
                 if(int(availabletoconvert)>self.currentquantity):
