@@ -63,16 +63,17 @@
           <attribute name="string">Service Date</attribute>
         </field>
 
-        <xpath expr="//sheet/notebook/page[3]" position="after">
+        <xpath expr="//sheet/notebook/page[1]" position="after">
           <page name="team" string="Teams">
             <group>
 
               
+              <field name="etsi_teams_member_no" attrs="{'readonly':[('state', 'in', 'done')]}"/>
+              <field name="etsi_teams_member_name" attrs="{'readonly':[('state', 'in', 'done')]}"/>
               <field name="etsi_teams_id"  required="1" attrs="{'readonly':[('state', 'in', 'done')]}"
               options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}"/>
 
 
-              <field name="etsi_teams_member_no" attrs="{'readonly':[('state', 'in', 'done')]}"/>
               <!-- <field name="etsi_teams_id2"/>
               <field name="team_members_con"/> -->
             </group>

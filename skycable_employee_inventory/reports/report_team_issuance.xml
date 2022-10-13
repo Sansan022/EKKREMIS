@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <template id="external_layout_barcode_right" inherit_id="report.external_layout" primary="True">
+            <xpath expr="//t[@t-call='report.external_layout_header']" position="attributes">
+                <attribute name="t-call">stock.external_layout_header_barcode_right</attribute>
+            </xpath>
+        </template>
+
+        <template id="external_layout_header_barcode_right" inherit_id="report.external_layout_header" primary="True">
+            <xpath expr="//div[@name='company_address']" position="after">
+                <div class="col-xs-4 pull-right mt8" name="right_box">
+                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 600, 100)" style="width:300px;height:50px;"/>
+                    <p>  <span t-field="o.name"/></p>
+                </div>
+            </xpath>
+        </template>
+
+        <template id="report_view">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="stock.external_layout_barcode_right">
+                    <link rel="stylesheet" href="/skycable_employee_inventory/static/src/style.css"/>
+                        <div class="page">
+                            <h1 class="text-center">Team Issuance Reports</h1>
+                            <br/>
+
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            
+                            <br/>
+                            <br/>
+                            <h3> Transaction Number:<spant t-field="o.name"/></h3>
+
+
+
+                            <table class="table table-condensed"  style=" border: 1px solid; ">
+                            
+                                <thead  style=" border: 1px solid; ">
+                                        <th><strong>MATL. CODE</strong></th>
+                                        <th><strong>SERIAL NO.</strong></th>
+                                        <th><strong>MAC ID no</strong></th>
+                                        <th><strong>SMART CARD</strong></th>
+                                        <th><strong>ISSUED</strong></th>
+                                </thead>
+
+                                <tbody  style=" border: 1px solid; ">
+                                    <tr t-foreach='o.move_lines' t-as='line'>
+                                        <td>
+                                            <span t-field="line.product_id" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.etsi_serials_field" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.etsi_mac_field" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.etsi_smart_card_field" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.issued_field" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                            <br/>
+
+                            <table class="table table-condensed" style=" border: 1px solid; ">
+                            
+                                <thead  style=" border: 1px solid; ">
+                                        <th><strong>Team code</strong></th>
+                                        <th><strong>Employee name</strong></th>
+                                </thead>
+
+                                <tbody  style=" border: 1px solid; ">
+                                    <tr t-foreach='o.etsi_teams_line_ids' t-as='line'>
+                                        <td>
+                                            <span t-field="o.etsi_teams_id" />
+                                        </td>
+                                        <td>
+                                             <t t-if="line.etsi_teams_temporary == True">
+                                                 <span t-field="line.etsi_teams_replace" />
+                                             </t>
+                                             <t t-if="line.etsi_teams_temporary == False">
+                                                 <span t-field="line.team_members_lines" />
+                                             </t>
+                                           
+
+                                            <!-- #replaceTeam team etsi_teams_replace -->
+                                            <!-- #boolean etsi_teams_temporary -->
+                                            <!-- #temporary team team_members_lines -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/> <br/>
+                            <br/> <br/>
+                            <h5 class="text-right">RELEASE BY:__________________</h5>
+                            <h5 class="text-right">SIGNATURE:___________________</h5>
+                            <br/> <br/>
+                            <h5 class="text-right"> RECIEVE BY:__________________</h5>
+                            <h5 class="text-right"> SIGNATURE:__________________</h5>
+                       
+                            <p t-field="o.note"/>
+                            
+                            <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
+                                <p><strong>Source Location:</strong>    <span t-field="o.location_id"/></p>
+                                <p><strong>Destination Location:</strong>    <span t-field="o.location_dest_id"/></p>
+                                <p><strong>Team code:</strong>    <span t-field="o.etsi_teams_id"/></p>
+                            </div> 
+                      
+
+                            
+                            <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
+                                <p><strong>Date:</strong>  <span t-field="o.date"/></p>
+                                <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
+                                <p><strong>State:</strong>   <span t-field="o.state"/></p>
+                             </div>
+                        </div>
+
+                    </t>
+                 </t>
+             </t>
+        </template>
+    </data>
+</odoo>

@@ -11,9 +11,34 @@ class EtsiTeams(models.Model):
     _rec_name = "etsi_teams_id"
     etsi_teams_id = fields.Many2one('team.configuration', string="Teams Number")
     etsi_teams_member_no = fields.Char(string="Employee Number")
+    etsi_teams_member_name = fields.Char(string="Employee Name")
     etsi_teams_line_ids = fields.One2many(
     'team.replace','etsi_teams_replace_line', string='Team Members') 
     
+    
+    # @api.multi
+    # @api.onchange('etsi_teams_member_name')
+    # def auto_fill_details_01_name(self): 
+    #     for rec in self:
+            
+    #         database_name = self.env['hr.employee'].search([('first_name','=',rec.etsi_teams_member_name)])
+    #         database2_name = self.env['team.configuration'].search([('team_number','=',database_name.team_number_id)])
+    #         rec.etsi_teams_id = database2_name.id  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @api.multi
     @api.onchange('etsi_teams_member_no')
     def auto_fill_details_01(self): 
@@ -69,7 +94,9 @@ class EtsiTeams(models.Model):
                 'team_page_lines':  line.team_members_lines.id,
                 'team_number_team': self.etsi_teams_id.team_number,
                 'transaction_number': self.name,
-                'status': 'Permanent',
+                 
+                'status': 'permanent',
+                'createdDateHistory': datetime.today(),
                 })
             else:
                 # for rec in self.team_configuration_id:
@@ -78,7 +105,10 @@ class EtsiTeams(models.Model):
                 'team_page_lines':  line.etsi_teams_replace.id,
                 'team_number_team': self.etsi_teams_id.team_number,
                 'transaction_number': self.name,
-                'status': 'Temporary',
+                'status': 'temporary',
+                
+                'createdDateHistory': datetime.today(),
+                'replaced_by': line.team_members_lines.name,
                     })
         return res
     
