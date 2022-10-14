@@ -82,7 +82,7 @@ class Product_Serial_SmartButton(models.Model):
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
-    etsi_status = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
+    etsi_status = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used')], string="Status", default='available', readonly=True)
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Many2one('product.product',string="Product")
 

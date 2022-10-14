@@ -42,6 +42,9 @@
         </field>
     </record>
 
+    <!-- <act_window name="Reverse Transfer" id="act_stock_return_pickings"
+        res_model="stock.picking.transfer"
+        view_mode="form" target="new"/> -->
 
     <!-- Team Return -->
     <record id="operation_team_return_form" model="ir.ui.view">
@@ -64,7 +67,10 @@
                                 <field name="issued" />
                                 <field name="quantity" />
                                 <field name="product_uom" /> 
-                                <field name="active_ako" />
+                                <field name="active_ako"  invisible ="1"/>
+                                <field name = "active_name" invisible ="1"/>
+                                <field name="transfer_checker" />
+                                <field name="teams" attrs="{'readonly': True}"  />
                             </tree>
                         </field>
                          
@@ -83,9 +89,47 @@
                                 <field name="quantity" />
                                 <field name="product_uom" /> 
                                 <field name ="damage_checker" />
+                                <field name="transfer_checker" attrs="{'readonly': True}" />
+                                <field name="teams" attrs="{'readonly': True}" />
                             </tree>
                         </field> 
                     </group>
+                
+                    
+
+                    <notebook>
+                        <!-- <page string="Form">
+                            <group string="Subscriber Issuance Form">        
+                                <group>
+                                    <field name="form_type" widget='radio' options="{'horizontal': true}"/>
+                                    <field name="job_number" />
+                                </group>
+                                <group>
+                                    <field name="subs_type" />
+                                    <field name="comp_date" />
+                                </group>
+                                <field name="form_num" />
+                            </group>
+                        </page> -->
+                        <page string="Installed Items">
+                            <field name="installed_list_move_holder" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id" readonly="1" required="1" />
+                                    <field name="etsi_serial_product" />
+                                    <field name="etsi_mac_product" />
+                                    <field name="etsi_smart_card" />
+                                    <field name="issued" readonly="1" />
+                                    <field name="quantity" readonly="1" />
+                                    <field name="product_uom" readonly="1" /> 
+                                    
+                                    <field name="job_number" />
+                                    <field name = "subs_type"/>
+                                    <field name = "comp_date"/>
+                                    <field name = "form_type"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>    
                 </sheet>
 
                 <!-- Return Button -->
@@ -111,9 +155,25 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+             <!-- Subscriber Issuance Form -->
+             <!-- <xpath expr="//notebook/page[2]" position="after">
+                <page string="Details">
+                    <group string="Subscriber Issuance Form">        
+                        <group>
+                            <field name="form_type" widget='radio' options="{'horizontal': true}"/>
+                            <field name="job_number" />
+                        </group>
+                        <group>
+                            <field name="subs_type" />
+                            <field name="comp_date" />
+                        </group>
+                        <field name="form_num" />
+                    </group>
+                </page>
+            </xpath> -->
             <!-- Add One2many Field for return page -->
             <xpath expr="//notebook/page[2]" position="after">
-                <page string="Returnss">
+                <page string="Returns">
                     <group name="name_group" >
                         <field name="return_list" string="Return List"  nolabel="1">
                             <tree editable="bottom">
@@ -124,7 +184,8 @@
                                 <field name="quantity" />
                                 <field name="issued" />
                                 <field name="product_uom" /> 
-                                <field name="active_ako" />
+                                <field name="active_ako" invisible ="1"/>
+                                <field name = "active_name" invisible ="1"/>
                                 <field name="transfer_checker" />
                                 <field name="teams" attrs="{'readonly': [('transfer_checker','=', False)], 'required': [('transfer_checker','=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                             </tree>
@@ -133,15 +194,14 @@
                 </page>
             </xpath>
             <xpath expr="//header/button[8]" position="replace">
-                <button name="%(return_item_action)d" string="Returns" state="draft"  type="action" groups="base.group_user"/>
+                <button name="%(return_item_action)d" string="Return" state="draft"  type="action" groups="base.group_user"/>
             </xpath>
             <xpath expr="//sheet/group/group[1]/field[1]" position="after">
-                <field name="teller" />
+                <field name="teller" invisible ="1" />
             </xpath>
             <xpath expr="//sheet/group/group[1]/field[@name='location_dest_id']" position="after">
                 <field name="source" />
             </xpath>
         </field>
     </record>
-  
 </odoo>
