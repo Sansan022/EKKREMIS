@@ -125,6 +125,8 @@
                                 <field name="issued" />
                                 <field name="product_uom" /> 
                                 <field name="active_ako" />
+                                <field name="transfer_checker" />
+                                <field name="teams" attrs="{'readonly': [('transfer_checker','=', False)], 'required': [('transfer_checker','=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                             </tree>
                         </field>
                     </group>

@@ -29,9 +29,7 @@ class Validate_Team_Return(models.Model):
     def change_return_list(self):
         listahan = []
         for rec in self:
-            
             search_first = self.env['stock.picking'].search([('name','=',rec.source)])
-
             for item in search_first:
                 print(item.name)
                 search_first2 = self.env['stock.move'].search([])
@@ -56,9 +54,8 @@ class Validate_Team_Return(models.Model):
                         }
                         ))
 
-        # Update the one2many table
+            # Update the one2many table
             self.update({'return_list': listahan})
-        # return super(TransferData, self).do_new_transfer()
 
 # Transient Model to hold all that will be returned(same as product_return_moves)
 class Return_list_holder(models.TransientModel):
@@ -121,22 +118,14 @@ class Return_list_holder(models.TransientModel):
         for line_return_damage in team_return_damaged:
             final_return_list_damaged.append((0,0,line_return_damage))
     
-        for items in final_return_list:
-            print("Mga laman ng normal return list ")
-            print(items)
-        
-        for items_damage in final_return_list_damaged:
-            print("Mga laman ng damaged return list ")
-            print(items_damage)
-        
-        # Pa bago pa ng name nito hehez
-        listahan =[]
-        listahan2 =[]
-        listahan3 = []
+        # Lists
+        base =[]
+        team_ret =[]
+        subs_list = []
 
         for rec in self:
             for lines in rec.return_list_move:
-                listahan.append({
+                base.append({
                 'name': lines.product_id.product_tmpl_id.name,
                 'product_id': lines.product_id.id,
                 'serial': lines.etsi_serial_product, 
@@ -148,13 +137,13 @@ class Return_list_holder(models.TransientModel):
                 'picking_type_id' : 6
                 })
             for lines2 in rec.return_list_move_holder:
-                listahan2.append(lines2.etsi_serial_product)  
+                team_ret.append(lines2.etsi_serial_product)  
         
-        for fetch_serial_list in listahan:
-            if fetch_serial_list['serial'] not in listahan2:
-                listahan3.append(
-                    ( 0,0,{
-                    
+        for fetch_serial_list in base:
+            if fetch_serial_list['serial'] not in team_ret:
+                subs_list.append((
+                    0,0, 
+                    {
                     'name' : fetch_serial_list['name'],
                     'product_id': fetch_serial_list['product_id'],
                     'etsi_serials_field' : fetch_serial_list['serial'],
@@ -163,8 +152,7 @@ class Return_list_holder(models.TransientModel):
                     'product_uom': fetch_serial_list['product_uom'],
                     'quantity': fetch_serial_list['qty'], 
                     'picking_type_id': 6
-                    }
-                    ))
+                }))
 
         # Appends the list for teams selected
         team_lst = []
@@ -220,7 +208,7 @@ class Return_list_holder(models.TransientModel):
             # Shunn yung picking type id nito, hard code pa
             'picking_type_id': picking_checker.id,
             # 'origin': self.picking_id.name,
-            'move_lines': listahan3,
+            'move_lines': subs_list,
             # Labo labo pa tong location_id 
             'location_id': 5,
             # Labo labo pa tong location_dest_id 
@@ -271,6 +259,7 @@ class Return_list_holder(models.TransientModel):
         issued_stats = self.env['stock.move'].search([])
         inventory_stats = self.env['etsi.inventory'].search([])
 
+        # Damaged Products
         if product_lists_damaged and product_serials_damaged:
             for issued_ids in issued_stats:
                 if issued_ids.etsi_serials_field in product_serials_damaged:
@@ -281,6 +270,7 @@ class Return_list_holder(models.TransientModel):
                             if searched_ids.etsi_serial in product_serials_damaged:
                                 searched_ids.update({'etsi_status': 'used'})
 
+        # Normal Return - WH
         if product_lists and product_serials:
             for issued_ids in issued_stats:
                 if issued_ids.etsi_serials_field in product_serials:
@@ -291,6 +281,7 @@ class Return_list_holder(models.TransientModel):
                             if searched_ids.etsi_serial in product_serials:
                                 searched_ids.update({'etsi_status': 'available'})
 
+        # Subs Issuance
         if final and final_ids:
             for issued_ids in issued_stats:
                 if issued_ids.etsi_serials_field in final:
@@ -406,6 +397,8 @@ class Return_list_childs(models.TransientModel):
     product_uom = fields.Many2one(
         'product.uom', 'Unit of Measure')
     product_uom_qty = fields.Float('Quantity',default=1.0)
+    transfer_checker = fields.Boolean("Transfer")
+    teams = fields.Many2one('team.configuration')
 
 
 class Return_list_child(models.TransientModel):
