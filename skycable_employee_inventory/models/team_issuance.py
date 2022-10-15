@@ -184,6 +184,8 @@ class Team_issuance(models.Model):
 
                     
 
+                    
+
     @api.constrains('etsi_serials_field')
     def testfunc(self):
         for record in self.picking_id.move_lines:
@@ -253,37 +255,18 @@ class Team_issuance_stock_picking(models.Model):
 
         for check in self:
             # picking_checker = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
-            picking_checker = self.env['stock.picking.type'].search([('code', '=', 'outgoing'),('subscriber_checkbox', '=', True),('return_picking_type_id', '!=', False)])
+            picking_checker = self.env['stock.picking.type'].search([('code', '=', 'internal'),('return_picking_type_id','!=',False)])
             
             if self.picking_type_id.id == picking_checker.id:
                 for rec in self.move_lines:
                     if rec.etsi_serials_field != False:
                         status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
-                        status_checker.etsi_status = "used"
+                        status_checker.etsi_status = "deployed"
 
                         status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
                         for records in status_checker2:
-                                records.issued_field = "Yes"
-                                records.subscriber_field = self.partner_id.id
-                                records.checker_box = False
-                    elif rec.etsi_mac_field != False:
-                        status_checker = self.env['etsi.inventory'].search([('etsi_mac', '=', rec.etsi_mac_field)])
-                        status_checker.etsi_status = "used"
-
-                        status_checker2 = self.env['stock.move'].search([('etsi_mac_field', '=', rec.etsi_mac_field)])
-                        for records in status_checker2:
-                                records.issued_field = "Yes"
-                                records.subscriber_field = self.partner_id.id
-                                records.checker_box = False
-                    elif rec.etsi_smart_card_field != False:
-                        status_checker = self.env['etsi.inventory'].search([('etsi_smart_card', '=', rec.etsi_smart_card_field)])
-                        status_checker.etsi_status = "used"
-
-                        status_checker2 = self.env['stock.move'].search([('etsi_smart_card_field', '=', rec.etsi_smart_card_field)])
-                        for records in status_checker2:
-                                records.issued_field = "Yes"
-                                records.subscriber_field = self.partner_id.id
-                                records.checker_box = False
+                                records.issued_field = "Deployed"
+                                # records.checker_box = False
             else:
                 pass
         return res

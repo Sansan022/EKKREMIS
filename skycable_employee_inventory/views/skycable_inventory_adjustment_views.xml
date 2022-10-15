@@ -36,7 +36,7 @@
                 </xpath>
 
                 <xpath expr="//sheet/notebook/page[1]" position="after">
-                    <page name="BROADBAND" string="BROADBAND" attrs="{'invisible': [('filter2','=','catv5')]}">
+                    <page name="BROADBAND" string="BROADBAND" attrs="{'invisible': [('filter2','in',('catv5', 'drops','others'))]}">
                         <field name="etsi_product_detail" context="{'default_etsi_filter': filter, 'default_etsi_products': product_id}" attrs="{'readonly': ['|',('state','=','done')]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials" />
@@ -60,7 +60,7 @@
                 </xpath>
 
                 <xpath expr="//sheet/notebook/page[2]" position="after">
-                    <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','=','broadband')]}">
+                    <page name="CATV5" string="CATV5" attrs="{'invisible': [('filter2','in',('broadband', 'drops', 'others'))]}">
                         <field name="etsi_product_detail_2" context="{'default_etsi_filter_2': filter, 'default_etsi_products_2': product_id}" attrs="{'readonly': ['|',('state','=','done')]}">
                             <tree editable="bottom">
                                 <field name="etsi_serials_2" />
