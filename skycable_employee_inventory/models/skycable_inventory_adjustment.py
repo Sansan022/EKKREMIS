@@ -17,7 +17,7 @@ class ProductDetails(models.Model):
     filter2 = fields.Selection(related='product_id.internal_ref_name')
 
 
-    employee_name_inv = fields.Char(String="Employee Name", default=lambda self: self.env.user.name)
+    employee_name_inv = fields.Many2one('res.users',String="Employee Name", default=lambda self: self.env.user.id)
     receive_date_inv = fields.Date(String="Received Date", default=fields.Datetime.now)
     
 
@@ -211,7 +211,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned,
                     'etsi_team_in': line.sky_team,
                     'etsi_punched_date_in': line.sky_time_punch,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
         elif self.filter2 == 'catv5':
             # if len(self.etsi_product_detail_2) == 0:
@@ -229,7 +229,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned_2,
                     'etsi_team_in': line.sky_team_2,
                     'etsi_punched_date_in': line.sky_time_punch_2,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
                
            
@@ -252,7 +252,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned,
                     'etsi_team_in': line.sky_team,
                     'etsi_punched_date_in': line.sky_time_punch,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
             for line in self.etsi_product_detail_2:
                 self.env['etsi.inventory'].create(
@@ -266,7 +266,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned_2,
                     'etsi_team_in': line.sky_team_2,
                     'etsi_punched_date_in': line.sky_time_punch_2,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
 
                     })
         return res
