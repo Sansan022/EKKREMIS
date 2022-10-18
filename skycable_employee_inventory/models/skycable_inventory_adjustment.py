@@ -1,8 +1,7 @@
 from odoo import api, fields, models, _
-import time
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from datetime import datetime
-from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
+from odoo.exceptions import UserError
+from odoo.tools import float_utils
 
 class ProductDetails(models.Model):
     _inherit = 'stock.inventory'
@@ -17,8 +16,8 @@ class ProductDetails(models.Model):
     filter2 = fields.Selection(related='product_id.internal_ref_name')
 
 
-    employee_name_inv = fields.Many2one('res.users',String="Employee Name", default=lambda self: self.env.user.id)
-    receive_date_inv = fields.Date(String="Received Date", default=fields.Datetime.now)
+    employee_name_inv = fields.Many2one('res.users',String="Employee Name", default=lambda self: self.env.user.id, required=True)
+    receive_date_inv = fields.Date(string="Received Date", required=True,default=fields.Date.today())
     
 
     # Inventory Adjustment Sequence 
@@ -287,6 +286,7 @@ class ProductDetails(models.Model):
         if self.user_has_groups('stock.group_tracking_lot'):
             res_filter.append(('pack', _('A Pack')))
         return res_filter
+
     
 class ProductAdjustment(models.Model):
     _name = 'etsi.product.detail.line'

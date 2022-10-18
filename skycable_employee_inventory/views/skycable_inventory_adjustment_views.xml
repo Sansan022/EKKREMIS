@@ -91,7 +91,7 @@
 
                 
                 <xpath expr="//sheet/group/group[2]/field[1]" position="after">
-                    <field name="receive_date_inv" string = "Received Date" attrs="{'readonly': [('state','=','done')]}"/>
+                    <field name="receive_date_inv" attrs="{'readonly': [('state','=','done')]}"/>
                 </xpath>
 
 
