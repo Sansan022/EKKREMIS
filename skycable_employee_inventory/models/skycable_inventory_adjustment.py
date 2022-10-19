@@ -1,8 +1,7 @@
 from odoo import api, fields, models, _
-import time
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from datetime import datetime
-from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
+from odoo.exceptions import UserError
+from odoo.tools import float_utils
 
 class ProductDetails(models.Model):
     _inherit = 'stock.inventory'
@@ -17,8 +16,8 @@ class ProductDetails(models.Model):
     filter2 = fields.Selection(related='product_id.internal_ref_name')
 
 
-    employee_name_inv = fields.Char(String="Employee Name", default=lambda self: self.env.user.name)
-    receive_date_inv = fields.Date(String="Received Date", default=fields.Datetime.now)
+    employee_name_inv = fields.Many2one('res.users',String="Employee Name", default=lambda self: self.env.user.id, required=True)
+    receive_date_inv = fields.Date(string="Received Date", required=True,default=fields.Date.today())
     
 
     # Inventory Adjustment Sequence 
@@ -211,7 +210,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned,
                     'etsi_team_in': line.sky_team,
                     'etsi_punched_date_in': line.sky_time_punch,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
         elif self.filter2 == 'catv5':
             # if len(self.etsi_product_detail_2) == 0:
@@ -229,7 +228,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned_2,
                     'etsi_team_in': line.sky_team_2,
                     'etsi_punched_date_in': line.sky_time_punch_2,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
                
            
@@ -252,7 +251,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned,
                     'etsi_team_in': line.sky_team,
                     'etsi_punched_date_in': line.sky_time_punch,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
                     })
             for line in self.etsi_product_detail_2:
                 self.env['etsi.inventory'].create(
@@ -266,7 +265,7 @@ class ProductDetails(models.Model):
                     'etsi_date_returned_in': line.sky_date_returned_2,
                     'etsi_team_in': line.sky_team_2,
                     'etsi_punched_date_in': line.sky_time_punch_2,
-                    'etsi_employee_in': self.employee_name_inv,
+                    'etsi_employee_in': self.employee_name_inv.id,
 
                     })
         return res
@@ -287,6 +286,11 @@ class ProductDetails(models.Model):
         if self.user_has_groups('stock.group_tracking_lot'):
             res_filter.append(('pack', _('A Pack')))
         return res_filter
+
+class ProductDetails2(models.Model):
+    _inherit = 'stock.inventory.line'
+
+
     
 class ProductAdjustment(models.Model):
     _name = 'etsi.product.detail.line'

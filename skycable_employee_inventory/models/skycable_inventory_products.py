@@ -94,7 +94,7 @@ class Product_Serial_SmartButton(models.Model):
     etsi_date_returned_in = fields.Date(string="Date Returned")
     etsi_team_in = fields.Char(string="Team")
     etsi_punched_date_in = fields.Datetime("Punch Time")
-    etsi_employee_in = fields.Char("Employee")
+    etsi_employee_in = fields.Many2one('res.users',"Employee")
 
 
     # ADDING FIELDS FOR DROPS REFERENCE
@@ -209,7 +209,7 @@ class Inherit_Product_Quantity(models.TransientModel):
     new_quantity2 = fields.Float(string='New Quantity on Hand')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
-    employee_name = fields.Char(string='Employee Name', default=lambda self: self.env.user.name)
+    employee_name = fields.Many2one('res.users', string='Employee Name', default=lambda self: self.env.user.id)
     date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
     # drops_reference_wiz = fields.Char(default=lambda self: self.)
     
@@ -500,7 +500,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                     'line_ids': [(0, 0, line_data)],
                     'etsi_product_detail': new_lst,
                     'etsi_product_detail_2': new_lst2,
-                    'employee_name_inv': self.employee_name,
+                    'employee_name_inv': self.employee_name.id,
                     'receive_date_inv': self.date_time,
                 })
                 inventory.action_done()
