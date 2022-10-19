@@ -19,9 +19,16 @@ class team_configuration(models.Model):
         ],
         default="one_man",
     )
-    etsi_inventory_id = fields.One2many("team.issuance", "team_issuance_id")
+    etsi_inventory_id = fields.One2many("team.issued", "etsi_inventory_line")
 
-    # check the length of team
+
+    def print_inventory(self):
+        for i in self.etsi_inventory_id:
+            for j in i.team_issuance_id:
+                print("team_issuance_id", j.type_checker)
+        print("hello, world")
+
+
     @api.constrains("team_members", "teamType")
     def _validations(self):
         if self.teamType == "two_man":
@@ -163,7 +170,6 @@ class team_configuration_line(models.Model):
 
         return res
 
-    # validation for team members, one team only
     @api.onchange("team_members_lines")
     def _check_team_members(self):
         s = []
@@ -206,8 +212,8 @@ class team_page_lines(models.Model):
     replaced_by = fields.Char()
 
 
-class team_configuration(models.Model):
-    _name = "team.issuance"
+class team_issuance(models.Model):
+    _name = "team.issued"
 
     team_issuance_id = fields.Many2one("etsi.inventory")
     etsi_inventory_line = fields.Many2one("team.configuration")
@@ -219,3 +225,4 @@ class team_configuration(models.Model):
 
     date_return_issued = fields.Date()
     date_issued = fields.Date()
+
