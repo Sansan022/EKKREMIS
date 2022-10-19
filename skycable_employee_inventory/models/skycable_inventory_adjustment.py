@@ -287,6 +287,10 @@ class ProductDetails(models.Model):
             res_filter.append(('pack', _('A Pack')))
         return res_filter
 
+class ProductDetails2(models.Model):
+    _inherit = 'stock.inventory.line'
+
+
     
 class ProductAdjustment(models.Model):
     _name = 'etsi.product.detail.line'
