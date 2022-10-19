@@ -40,6 +40,17 @@
                                 <field name="team_members_lines" string="Team Member" required="1"/>                     
                             </tree>
                         </field>
+                        <field name="etsi_inventory_id" readonly="False">
+                            <tree editable='bottom' >         
+                                <field name="team_issuance_id" string="product_issued"/>                     
+                                <!-- <field name="product_issued"/>                      -->
+                                <field name="mac_id_issued"/>                     
+                                <field name="serial_id_issued"/>                     
+                                <field name="smart_card_issued"/>                     
+                                <field name="date_issued"/>                     
+                                <field name="date_return_issued" string="Date return"/>                     
+                            </tree>
+                        </field>
                     </sheet>
                 </form>
             </field>

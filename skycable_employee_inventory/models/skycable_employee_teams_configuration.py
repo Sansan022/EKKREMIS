@@ -19,6 +19,7 @@ class team_configuration(models.Model):
         ],
         default="one_man",
     )
+    etsi_inventory_id = fields.One2many("team.issuance", "team_issuance_id")
 
     # check the length of team
     @api.constrains("team_members", "teamType")
@@ -203,3 +204,18 @@ class team_page_lines(models.Model):
     )
     createdDateHistory = fields.Date()
     replaced_by = fields.Char()
+
+
+class team_configuration(models.Model):
+    _name = "team.issuance"
+
+    team_issuance_id = fields.Many2one("etsi.inventory")
+    etsi_inventory_line = fields.Many2one("team.configuration")
+
+    product_issued = fields.Char()
+    mac_id_issued = fields.Char()
+    serial_id_issued = fields.Char()
+    smart_card_issued = fields.Char()
+
+    date_return_issued = fields.Date()
+    date_issued = fields.Date()
