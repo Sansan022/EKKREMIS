@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import api, fields, models
+from openerp import api, fields, models, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
 
@@ -21,11 +21,13 @@ class team_configuration(models.Model):
     )
     etsi_inventory_id = fields.One2many("team.issued", "etsi_inventory_line")
 
-
     def print_inventory(self):
-        for i in self.etsi_inventory_id:
-            for j in i.team_issuance_id:
-                print("team_issuance_id", j.type_checker)
+        for _ in self.etsi_inventory_id.team_issuance_id:
+            l = self.env['etsi.inventory'].search([('etsi_team_in', '=', self.team_members)])
+            print(l)
+
+        for i in self.etsi_inventory_id.team_issuance_id:
+            print("team_issuance_id", i.type_checker)
         print("hello, world")
 
 
