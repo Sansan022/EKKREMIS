@@ -464,6 +464,91 @@
     </record>
 
 
+  
+    <!-- HIDING UNNECESSARY FIELDS -->
+    <record id="inherit_product_template_tree_view" model="ir.ui.view">
+        <field name="name">product.name.product.template.tree.view.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <!-- HIDING list_price -->
+            <xpath expr="//tree/field[@name='list_price']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- HIDING standard_price -->
+            <xpath expr="//tree/field[@name='standard_price']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- HIDING FIELDS IN KANBAN -->
+    <record id="product_template_kanban_view" model="ir.ui.view">
+        <field name="name">product.template.kanban.view.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates/t/div/div[2]/ul/li" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>         
+        </field>
+
+
+    </record>
+
+
+      <!-- ADDING TOTAL NUMBER OF PRODUCT IN INVENTORY -->
+      <record id="product_template_qty_available_tree_inherit" model="ir.ui.view">
+        <field name="name">product.template.qty.available.tree.view</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/> 
+        <field name="arch" type="xml">
+
+            <!-- <xpath expr="//data/field//field[1]" position="attributes">
+                <attribute name="invisible">Total</attribute>
+            </xpath> -->
+            
+
+
+            <field name="uom_id" position="before">
+                <field name="qty_available" sum="Total" widget="integer"/>
+            </field>
+
+        </field>
+      </record>
+
+
+      <record id="view_product_template_pivot" model="ir.ui.view">
+        <field name="name">product_template.report_pivot</field>
+        <field name="model">product.template</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <pivot string="Product Summary">
+                <field name="internal_ref_name" type="row"/>
+            </pivot>
+        </field>
+    </record>
+
+
+    <record id="action_product_template_action_product" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field eval="1" name="sequence"/>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,pivot</field>
+        <field name="view_type">form</field>
+        <field name="context">{"search_default_consumable": 1, 'default_type': 'product'}</field>
+        <!-- <field name="view_id" ref="stock.view_product_template_pivot"/>  -->
+    </record>
+
+   
+   
+   
+
+
 
 
 

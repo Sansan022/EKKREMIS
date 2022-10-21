@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="view_pivot_all_serial_2" model="ir.ui.view">
+        <field name="name">view.pivot.all.serial</field>
+        <field name="model">etsi.inventory</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="etsi_serial" type="row"/>
+                <field name="etsi_smart_card" type="row"/>
+                <field name="etsi_punched_date_in" type="col" interval="day"/>
+
+                <!-- <field name="etsi_status" type="col"/> -->
+                <!-- <field name="etsi_product_id" type="coll"/> -->
+                <!-- <field name="etsi_product_name" invisible='True'/>
+                <field name="type_checker"/> -->
+            </pivot>
+        </field>
+    </record>
+
+    <record id="View_all_serial_action" model="ir.actions.act_window">
+        <field name="name">View All Serial</field>
+        <field name="res_model">etsi.inventory</field>
+        <field name="view_mode">tree,pivot</field>
+    </record>
+        
+
+    
+    </data>
+    
+
+</odoo>

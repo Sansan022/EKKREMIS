@@ -55,7 +55,8 @@
         'reports/team_issuance.xml',
         'reports/team_configuration_file.xml',
 
- 
+        'views/pivot_view_all_serial.xml',
+        'views/pivot_product_view.xml',
 
         
 
