@@ -77,7 +77,7 @@ class Product_drops_reference(models.Model):
 class Product_Serial_SmartButton(models.Model):
 
     _name = 'etsi.inventory'
-    # _rec_name = 'etsi_product_id'
+    _rec_name = 'etsi_product_id'
 
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import api, fields, models
+from openerp import api, fields, models, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
 
@@ -19,8 +19,8 @@ class team_configuration(models.Model):
         ],
         default="one_man",
     )
+    
 
-    # check the length of team
     @api.constrains("team_members", "teamType")
     def _validations(self):
         if self.teamType == "two_man":
@@ -162,7 +162,6 @@ class team_configuration_line(models.Model):
 
         return res
 
-    # validation for team members, one team only
     @api.onchange("team_members_lines")
     def _check_team_members(self):
         s = []
