@@ -19,17 +19,7 @@ class team_configuration(models.Model):
         ],
         default="one_man",
     )
-    etsi_inventory_id = fields.One2many("team.issued", "etsi_inventory_line")
-
-    def print_inventory(self):
-        for _ in self.etsi_inventory_id.team_issuance_id:
-            l = self.env['etsi.inventory'].search([('etsi_team_in', '=', self.team_members)])
-            print(l)
-
-        for i in self.etsi_inventory_id.team_issuance_id:
-            print("team_issuance_id", i.type_checker)
-        print("hello, world")
-
+    
 
     @api.constrains("team_members", "teamType")
     def _validations(self):
@@ -212,19 +202,3 @@ class team_page_lines(models.Model):
     )
     createdDateHistory = fields.Date()
     replaced_by = fields.Char()
-
-
-class team_issuance(models.Model):
-    _name = "team.issued"
-
-    team_issuance_id = fields.Many2one("etsi.inventory")
-    etsi_inventory_line = fields.Many2one("team.configuration")
-
-    product_issued = fields.Char()
-    mac_id_issued = fields.Char()
-    serial_id_issued = fields.Char()
-    smart_card_issued = fields.Char()
-
-    date_return_issued = fields.Date()
-    date_issued = fields.Date()
-

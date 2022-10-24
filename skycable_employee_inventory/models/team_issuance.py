@@ -261,9 +261,9 @@ class Team_issuance_stock_picking(models.Model):
 
 
     move_lines = fields.One2many('stock.move', 'picking_id', string="Stock Moves", copy=True)
-
+    line = fields.Many2one("team.configuration")
     # pick_id = fields.Many2one('stock.picking')
-
+    
     @api.multi
     def process(self):
         self.ensure_one()

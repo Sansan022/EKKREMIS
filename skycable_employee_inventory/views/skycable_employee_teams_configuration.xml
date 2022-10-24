@@ -43,17 +43,6 @@
                                 <field name="team_members_lines" string="Team Member" required="1"/>                     
                             </tree>
                         </field>
-                        <field name="etsi_inventory_id" readonly="False">
-                            <tree editable='bottom' >         
-                                <!-- <field name="team_issuance_id" string="product_issued"/>                      -->
-                                <field name="product_issued"/>                     
-                                <field name="mac_id_issued"/>                     
-                                <field name="serial_id_issued"/>                     
-                                <field name="smart_card_issued"/>                     
-                                <field name="date_issued"/>                     
-                                <field name="date_return_issued" string="Date return"/>                     
-                            </tree>
-                        </field>
                     </sheet>
                 </form>
             </field>
@@ -80,9 +69,6 @@
             <field name="arch" type="xml">
               <xpath expr="//notebook/page[5]" position="after">
                   <page name="teams_page" string="Teams">
-                  <group name="name" string="Team Number">
-                    <field name="team_number_id" string="Team Code" />
-                  </group>
                     <field name="history" string="History" readonly='True'>
                         <tree editable="bottom" create="false" delete="false" decoration-success="status=='permanent'" decoration-danger="status=='removed'"  decoration-warning="status=='temporary'">
                             <field name="team_number_team" string="Team Code History"/>
