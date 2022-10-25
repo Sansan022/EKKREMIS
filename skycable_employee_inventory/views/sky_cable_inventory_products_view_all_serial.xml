@@ -53,6 +53,7 @@
                 <group>
                 <filter name="filter_type_available" string="Available" domain="[('etsi_status','=','available')]"/>
                 <filter name="filter_type_used" string="Used" domain="[('etsi_status','=','used')]"/>
+                <filter name="2-man team" string="Team" context="{'group_by': 'etsi_team_in'}" />
                 </group>
             </search>
         </field>
