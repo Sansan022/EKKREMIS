@@ -36,56 +36,119 @@
                             
                             <br/>
                             <br/>
-                            <h3> Transaction Number:<spant t-field="o.name"/></h3>
+                            <h5> <strong>CPE</strong></h5>
 
 
 
-                            <table class="table table-condensed"  style=" border: 1px solid; ">
+                            <table class="table table-condensed"  style=" border: 1px solid;  width: 100%; table-layout: auto;">
                             
                                 <thead  style=" border: 1px solid; ">
-                                        <th><strong>MATL. CODE</strong></th>
-                                        <th><strong>SERIAL NO.</strong></th>
-                                        <th><strong>MAC ID no</strong></th>
-                                        <th><strong>SMART CARD</strong></th>
-                                        <th><strong>ISSUED</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL NO.</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID no</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>ISSUED</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
                                 </thead>
 
                                 <tbody  style=" border: 1px solid; ">
-                                    <tr t-foreach='o.move_lines' t-as='line'>
-                                        <td>
-                                            <span t-field="line.product_id" />
-                                        </td>
-                                        <td>
-                                            <span t-field="line.etsi_serials_field" />
-                                        </td>
-                                        <td>
-                                            <span t-field="line.etsi_mac_field" />
-                                        </td>
-                                        <td>
-                                            <span t-field="line.etsi_smart_card_field" />
-                                        </td>
-                                        <td>
-                                            <span t-field="line.issued_field" />
-                                        </td>
-                                    </tr>
+                                    
+                                   
+                                    
+                                    
+                                        <tr t-foreach='o.move_lines' t-as='line' style=" border: 1px solid; ">
+                                           
+                                        <t t-if="line.etsi_serials_field == False">
+                                            
+                                        </t>
+                                        
+                                        <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                            <td style=" border: 1px solid;  text-align: center; "> 
+                                                    <span t-field="line.product_id" />
+                                               
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <img t-att-src="'/report/barcode/Code128/'+line.etsi_serials_field" style="width:240px;height:20px;"/>
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_mac_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_smart_card_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.issued_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-esc="line.product_uom_qty" />
+                                            </td>
+                                        </t>
+                                            
+                                        </tr>
+                                    
                                 </tbody>
                             </table>
                             <br/>
                             <br/>
-
-                            <table class="table table-condensed" style=" border: 1px solid; ">
+                            <h5> <strong>DROPS AND MATERIALS</strong></h5>
+                            <table class="table table-condensed"  style=" border: 1px solid; width: 100%; table-layout: auto;">
                             
                                 <thead  style=" border: 1px solid; ">
-                                        <th><strong>Team code</strong></th>
-                                        <th><strong>Employee name</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>ISSUED</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                </thead>
+
+                                <tbody  style=" border: 1px solid; ">
+                                    
+                                   
+                                    
+                                    
+                                        <tr t-foreach='o.move_lines' t-as='line'>
+                                        <t t-if="line.etsi_serials_field == False">
+                                            <td style=" border: 1px solid;  text-align: center;">
+                                                <span t-field="line.product_id" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center;">
+                                                <span t-field="line.issued_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center;">
+                                                <span t-esc="line.product_uom_qty" />
+                                            </td>
+                                        </t>
+                                        
+                                        <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                        </t>
+                                         
+                                            
+                                        </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <br/>
+                            <br/>
+                            
+                            
+                            <table class="table table-condensed" style=" border: 1px solid; width: 100%; table-layout: auto;">
+                            
+                                <thead  style=" border: 1px solid; ">
+                                        <th style=" border: 1px solid;  text-align: center; "><strong>Team code</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center; "><strong>Employee name</strong></th>
                                 </thead>
 
                                 <tbody  style=" border: 1px solid; ">
                                     <tr t-foreach='o.etsi_teams_line_ids' t-as='line'>
-                                        <td>
+                                        <td style=" border: 1px solid;  text-align: center; ">
                                             <span t-field="o.etsi_teams_id" />
                                         </td>
-                                        <td>
+                                        <td style=" border: 1px solid;  text-align: center; ">
                                              <t t-if="line.etsi_teams_temporary == True">
                                                  <span t-field="line.etsi_teams_replace" />
                                              </t>
@@ -103,12 +166,9 @@
                             </table>
                             <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right">RELEASE BY:__________________</h5>
-                            <h5 class="text-right">SIGNATURE:___________________</h5>
+                            <h5 class="text-right">ENCODE BY: Administrator </h5>
+                            <h5 class="text-right">RECIEVED SIGNATURE:___________________</h5>
                             <br/> <br/>
-                            <h5 class="text-right"> RECIEVE BY:__________________</h5>
-                            <h5 class="text-right"> SIGNATURE:__________________</h5>
-                       
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
@@ -123,6 +183,8 @@
                                 <p><strong>Date:</strong>  <span t-field="o.date"/></p>
                                 <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
                                 <p><strong>State:</strong>   <span t-field="o.state"/></p>
+                                
+                                <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>
                         </div>
 

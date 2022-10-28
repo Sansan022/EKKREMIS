@@ -20,6 +20,26 @@
       report_type="qweb-html"
       />
 
+      <!-- for view all serial -->
+      <report 
+      id="configuration_report_xml"
+      model="etsi.inventory"
+      string="All Serial"
+      name="skycable_employee_inventory.all_serial_report"
+      file="skycable_employee_inventory.all_serial_report"
+      report_type="qweb-html"
+      />
+
+      <report 
+      id="data_entry_report"
+      model="stock.inventory"
+      string="Data Entry Report"
+      name="skycable_employee_inventory.data_entry"
+      file="skycable_employee_inventory.data_entry"
+      report_type="qweb-pdf"
+      />
+    
+
 
 
 </odoo>

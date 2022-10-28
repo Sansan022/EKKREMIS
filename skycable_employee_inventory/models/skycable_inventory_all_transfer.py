@@ -11,33 +11,20 @@ class EtsiTeams(models.Model):
     _rec_name = "etsi_teams_id"
     etsi_teams_id = fields.Many2one('team.configuration', string="Teams Number")
     etsi_teams_member_no = fields.Char(string="Employee Number")
-    etsi_teams_member_name = fields.Char(string="Employee Name")
+    etsi_teams_member_name = fields.Many2one('hr.employee',string="Employee Name")
     etsi_teams_line_ids = fields.One2many(
     'team.replace','etsi_teams_replace_line', string='Team Members') 
     
     
-    # @api.multi
-    # @api.onchange('etsi_teams_member_name')
-    # def auto_fill_details_01_name(self): 
-    #     for rec in self:
+    
+    @api.multi
+    @api.onchange('etsi_teams_member_name')
+    def auto_fill_details_01_name(self): 
+        for rec in self:
             
-    #         database_name = self.env['hr.employee'].search([('first_name','=',rec.etsi_teams_member_name)])
-    #         database2_name = self.env['team.configuration'].search([('team_number','=',database_name.team_number_id)])
-    #         rec.etsi_teams_id = database2_name.id  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            database_name = self.env['hr.employee'].search([('name','=',rec.etsi_teams_member_name.name)])
+            # database2_name = self.env['team.configuration'].search([('identification_id','=',database_name.etsi_teams_member_no)])
+            rec.etsi_teams_member_no = database_name.identification_id
 
     @api.multi
     @api.onchange('etsi_teams_member_no')
@@ -45,7 +32,9 @@ class EtsiTeams(models.Model):
         for rec in self:
             database = self.env['hr.employee'].search([('identification_id','=',rec.etsi_teams_member_no)])
             database2 = self.env['team.configuration'].search([('team_number','=',database.team_number_id)])
+            rec.etsi_teams_member_name = database.id
             rec.etsi_teams_id = database2.id
+            
 
     @api.multi
     @api.onchange('etsi_teams_id')
@@ -58,6 +47,7 @@ class EtsiTeams(models.Model):
             'etsi_teams_temporary' : '',
             }))
         self.etsi_teams_line_ids = table
+       
         
     # @api.model 
     # def create(self, vals):

@@ -68,9 +68,9 @@
             <group>
 
               
-              <field name="etsi_teams_member_no" attrs="{'readonly':[('state', 'in', 'done')]}"/>
+              <field name="etsi_teams_member_no" required="1" attrs="{'readonly':[('state', 'in', 'done')]}"/>
               <field name="etsi_teams_member_name" attrs="{'readonly':[('state', 'in', 'done')]}"/>
-              <field name="etsi_teams_id"  required="1" attrs="{'readonly':[('state', 'in', 'done')]}"
+              <field name="etsi_teams_id"  attrs="{'readonly':[('state', 'in', 'done')]}"
               options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}"/>
 
 
@@ -91,5 +91,19 @@
         
       </field>
     </record>
+
+<!-- HIDE PRINTING -->
+  <record id="view_pullout_inherit" model="ir.ui.view">
+        <field name="name">stock.pullout.view.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Hide the print button -->
+            <xpath expr="//header/button[@name='616']" position="attributes">
+                <attribute name="invisible" >1</attribute>
+            </xpath>
+            
+        </field>
+  </record>
 
 </odoo>

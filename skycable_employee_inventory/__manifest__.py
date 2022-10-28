@@ -52,8 +52,10 @@
 
         # REPORTS
         'reports/report_team_issuance.xml',
-        'reports/team_issuance.xml',
+        'reports/all_report_configuration.xml',
         'reports/team_configuration_file.xml',
+        'reports/view_all_serials.xml',
+        'reports/data_entry_template.xml',
 
         'views/pivot_view_all_serial.xml',
         'views/pivot_product_view.xml',
