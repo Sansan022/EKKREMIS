@@ -23,6 +23,16 @@ class ProductDetails(models.Model):
     # Inventory Adjustment Sequence 
     name = fields.Char(required=True, copy=False, readonly=True, default = lambda self : ('New'))
 
+    # DITO AKO HINDI NATAPOS. TO BE CONTINUE
+    # @api.onchange('etsi_product_detail')
+    # def _onchange_etsi_product_detail(self):
+    #     for rec in self:
+    #         print(rec.etsi_product_detail.etsi_serials)
+    #         print(rec.etsi_product_detail.etsi_serials)
+    #         print(rec.etsi_product_detail.etsi_serials)
+    #         print(rec.etsi_product_detail.etsi_serials)
+           
+
     @api.multi
     @api.onchange('line_ids')
     def remove_connected(self):

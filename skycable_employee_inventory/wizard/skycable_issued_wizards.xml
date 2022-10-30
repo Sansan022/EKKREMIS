@@ -74,9 +74,8 @@
                             <group>
                                 <field name="drops_type_convert_to" 
                                         string="Convert To: " 
-                                        domain="[('drops_reference_id', '=', sky_drops_reference_wiz), ('id', '!=', matcode),('internal_ref_name','=','drops')]"/>  
-                                
-                                
+                                        domain="[('drops_reference_id', '=', sky_drops_reference_wiz), ('id', '!=', matcode),('internal_ref_name','=','drops'),('uom_id.name','!=', current_unit)]"
+                                        options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>  
                                 <field name="initial_current_quantity" string="Current Quantity" readonly="True"/>  
                                 <field name= "converted_units"  string = "Units"/>                                
                                 <field name = "sky_drops_reference_wiz" invisible="True"/>
