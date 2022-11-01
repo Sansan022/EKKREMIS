@@ -64,6 +64,22 @@ class ProductTemplateInheritance(models.Model):
             count = self.env['etsi.inventory'].search_count([('etsi_product_id', '=', rec.name)])
             rec.product_count = count
 
+    def testing1212(self):
+        return {
+
+            'name': 'Convert Transient',
+            'res_model': 'stock.move.test',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'view_id': self.env.ref('skycable_employee_inventory.stock_move_test_transient').id,
+            'context': {'default_matcode':self.id}
+            
+            # 'test':self.id
+            
+        }
+
 
 #REFERENCE OF DROPS MANY2ONE
 class Product_drops_reference(models.Model):
@@ -82,7 +98,7 @@ class Product_Serial_SmartButton(models.Model):
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
-    etsi_status = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used')], string="Status", default='available', readonly=True)
+    etsi_status = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used'),('returned', 'Returned'),('damaged', 'Damaged'),('onhand', 'On Hand'),('delivery', 'Delivery'),('delivered', 'Delivered')], string="Status", default='available', readonly=True)
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Many2one('product.product',string="Product")
 
@@ -109,7 +125,7 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     etsi_serial_product = fields.Char(string="Serial ID")
     etsi_mac_product = fields.Char(string="MAC ID")
-    etsi_status_product = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
+    etsi_status_product = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used'),('returned', 'Returned'),('damaged', 'Damaged'),('onhand', 'On Hand'),('delivery', 'Delivery'),('delivered', 'Delivered')], string="Status", default='available', readonly=True)
     etsi_product_id_product = fields.Many2one('stock.change.product.qty')
     etsi_product_name_product = fields.Many2one(related='etsi_product_id_product.product_id',string="Product")
     etsi_quantity = fields.Float(string= "Quantity", readonly=True, default=1)
@@ -161,7 +177,7 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
     etsi_serial_product_2 = fields.Char(string="Serial ID")
     etsi_smart_card_product_2 = fields.Char(string="Smart Card ID")
-    etsi_status_product_2 = fields.Selection([('available', 'Available'),('used', 'Used')], string="Status", default='available', readonly=True)
+    etsi_status_product_2 = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used'),('returned', 'Returned'),('damaged', 'Damaged'),('onhand', 'On Hand'),('delivery', 'Delivery'),('delivered', 'Delivered')], string="Status", default='available', readonly=True)
     etsi_product_id_product_2 = fields.Many2one('stock.change.product.qty')
     etsi_product_name_product_2 = fields.Many2one(related='etsi_product_id_product_2.product_id',string="Product")
     etsi_quantity_2 = fields.Float(string= "Quantity", readonly=True, default=1)

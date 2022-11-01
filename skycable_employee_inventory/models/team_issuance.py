@@ -77,8 +77,8 @@ class Team_issuance(models.Model):
                 elif duplicate_count < 1:
                     raise ValidationError("Serial not found in the database.")
                 else:
-                    if search_first.etsi_status == 'used':
-                        raise ValidationError("Serial is already used.")
+                    if search_first.etsi_status != 'available':
+                        raise ValidationError("Serial is already used or currently on another transaction.")
                     else:
 
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
@@ -108,8 +108,8 @@ class Team_issuance(models.Model):
                 if duplicate_count2 < 1:
                     raise ValidationError("Mac not found in the database.")
                 else:
-                    if search_first2.etsi_status == 'used':
-                        raise ValidationError("Mac is already used.")
+                    if search_first2.etsi_status != 'available':
+                        raise ValidationError("Mac is already used or currently on another transaction.")
                     else:
 
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
@@ -140,8 +140,8 @@ class Team_issuance(models.Model):
                 if duplicate_count3 < 1:
                     raise ValidationError("Smart Card not found in the database.")
                 else:
-                    if search_first3.etsi_status == 'used':
-                        raise ValidationError("Smart Card is already used.")
+                    if search_first3.etsi_status != 'available':
+                        raise ValidationError("Smart Card is already used or currently on another transaction.")
                     else:
 
                         stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
