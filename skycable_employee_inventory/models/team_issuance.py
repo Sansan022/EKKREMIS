@@ -81,7 +81,7 @@ class Team_issuance(models.Model):
                         raise ValidationError("Serial is already used or currently on another transaction.")
                     else:
 
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel', 'done']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False)])
 
                         if stock_moves:
                             for moves in stock_moves:
@@ -112,7 +112,7 @@ class Team_issuance(models.Model):
                         raise ValidationError("Mac is already used or currently on another transaction.")
                     else:
 
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel', 'done']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
 
 
                         if stock_moves:
@@ -144,7 +144,7 @@ class Team_issuance(models.Model):
                         raise ValidationError("Smart Card is already used or currently on another transaction.")
                     else:
 
-                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
+                        stock_moves = self.env['stock.move'].search([('state','not in',['cancel', 'done']),('picking_type_id.code','=','internal'),('picking_type_id.return_picking_type_id','!=',False),('issued_field','!=','Return')])
 
                         if stock_moves:
                             for moves in stock_moves:
@@ -205,9 +205,9 @@ class Team_issuance(models.Model):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if rec2.product_id.id == self.product_id.id:
-                # and rec2.product_id_duplicate.product_tmpl_id.uom_id.id == self.product_id_duplicate.product_tmpl_id.uom_id.id
-                check6 = "Duplicate Drops/Others detected within the Table \n: {}".format(rec2.product_id.product_tmpl_id.name)
-                raise ValidationError(check6)     
+                if rec2.etsi_serials_field == False and rec2.etsi_mac_field == False and rec2.smart_card == False :
+                    check6 = "Duplicate Drops/Others detected within the Table \n: {}".format(rec2.product_id.product_tmpl_id.name)
+                    raise ValidationError(check6)
 
                     
 
@@ -287,7 +287,7 @@ class Team_issuance_stock_picking(models.Model):
                     if rec.etsi_serials_field != False:
                         status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', rec.etsi_serials_field)])
                         status_checker.etsi_status = "deployed"
-                        status_checker.etsi_team_in = self.etsi_teams_id.team_number
+                        status_checker.etsi_team_in = self.etsi_teams_id.id
 
                         status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
                         for records in status_checker2:

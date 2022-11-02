@@ -33,6 +33,8 @@
         # Phase 3
         'views/skycable_operation_return.xml',
         'views/team_issuance_views.xml',
+        'views/skycable_inventory_subscriber_issuance.xml',
+        'views/skycable_inventory_pullout_operation.xml',
         
 
 

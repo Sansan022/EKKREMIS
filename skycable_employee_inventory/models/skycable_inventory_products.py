@@ -108,7 +108,7 @@ class Product_Serial_SmartButton(models.Model):
     etsi_subscriber_in = fields.Char(string="Subscriber")
     etsi_date_issued_in = fields.Date(string="Date Issued")
     etsi_date_returned_in = fields.Date(string="Date Returned")
-    etsi_team_in = fields.Char(string="Team")
+    etsi_team_in = fields.Many2one('team.configuration', string="Teams")
     etsi_punched_date_in = fields.Datetime("Punch Time")
     etsi_employee_in = fields.Many2one('res.users',"Employee")
 

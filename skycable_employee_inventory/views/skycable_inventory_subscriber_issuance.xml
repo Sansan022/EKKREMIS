@@ -1,0 +1,143 @@
+
+<odoo>
+    <record id="view_subscriber_inherit" model="ir.ui.view">
+           <field name="name">stock.subscriber.view.form.inherit</field>
+           <field name="model">stock.picking</field>
+           <field name="inherit_id" ref="stock.view_picking_form"/>
+           <field name="arch" type="xml">
+
+            <!-- Hide the operations page for subscriber issuance -->
+
+            <xpath expr="//notebook/page[1]" position="attributes">
+               
+                <attribute name="attrs">{'invisible': ['|','|','|', ('teller', '=', 'subscriber'), ('teller', '=', 'pull-out'), ('teller', '=', 'pull-out-return'),  ('teller', '=', 'return')]}</attribute>
+            </xpath>
+            <!-- <xpath expr="//notebook/page[2]/field[@name='etsi_teams_member_no']" position="attributes">
+            <attribute name="attrs">{'required': [('teller', '!=', 'subscriber')]}</attribute>
+            </xpath> -->
+            <!-- Hiding the teams page if subscriber issuance -->
+            <xpath expr="//notebook/page[2]" position="attributes">
+                <attribute name="attrs">{'invisible': [('teller', '=', 'subscriber')]}</attribute>
+            </xpath>
+            
+               <!-- Add One2many Field for subscriber issuance page -->
+               <xpath expr="//notebook/page[2]" position="after">
+                   <page string="Subscriber Issuance" attrs="{'invisible': [('teller','!=','subscriber')]}">
+                       <group name="name_group" >
+                         
+                           <field name="subs_issue" string="Subscriber Issuance"  nolabel="1" attrs="{'readonly': [('state','=','done')]}">
+                           <tree editable="bottom">
+                               <!-- Form for installed serials -->
+                               <field name="job_number" required="1"/>
+                               <field name="comp_date" required="1" />
+                               <field name ="form_num" required="1"/>
+                               <field name ="form_type" required="1"/>
+   
+                               <!-- Serial Information -->
+                               <field name ="product_id"  required="1" invisible="1"/>
+                                <field name="product_id_related" readonly="1" />
+                               <field name ="quantity" invisible="1"  />
+                               
+                               <field name ="etsi_serial_product"/>
+                               
+                               <field name ="etsi_mac_product" invisible="1"/>
+                               <field name="etsi_mac_product_related" readonly="1" />
+
+                               <field name ="etsi_smart_card" invisible="1" />
+                               <field name="etsi_smart_card_related" readonly="1"/>
+
+                               <field name ="issued" readonly="1"/>
+                             
+                               <field name="product_uom"  required="1" invisible="1" />
+                               <field name="product_uom_related" readonly="1" />
+                               <field name="product_uom_qty" readonly="1"/>
+                               <field name ="active_name" invisible="1" />
+                               <field name ="active_ako"  invisible="1" />
+                           </tree>
+   
+                           </field>
+                       </group>
+                   </page>
+               </xpath>
+           </field>
+   </record>
+   
+   
+   
+   <record id="subscriber_issuance_form" model="ir.ui.view">
+       <field name="name">operation.team.issuance.view.form</field>
+       <field name="model">subscriber_issuance_child</field>
+       <field name="arch" type="xml">
+           <form >
+               <sheet>
+                   <group string="Subscriber List">    
+                    
+                       
+                       </group>
+                       </sheet>
+                       </form>
+   
+   
+           </field>
+           </record>
+           
+   <record id="subscriber_issuance_action" model="ir.actions.act_window">
+       <field name="name">Subscriber Issuance</field>
+       <field name="res_model">subscriber_issuance_child</field>
+       <field name="view_mode">form</field>
+       <field name="view_id" ref="subscriber_issuance_form" />
+       <field name="target">new</field>
+   </record>
+   <!-- 
+   
+   <record id="subscriber_issuance_action" model="ir.actions.act_window">
+       <field name="name">Subscriber Issuance</field>
+       <field name="res_model">subscriber_issuance_child</field>
+       <field name="view_mode">form</field>
+       <field name="view_id" ref="subscriber_issuance_form"></field>
+       <field name="target">new</field>
+   </record> -->
+   <!-- 
+   <record id="subscriber_issuance_form" model="ir.ui.view">
+       <field name="name">subscriber_issuance</field>
+       <field name="model">subscriber_issuance_child</field>
+       <field name="arch" type="xml">
+           <form string="FORM">
+               <sheet>
+                   <group>
+                       
+                   </group>
+               </sheet>
+           </form>
+       </field>
+   </record> -->
+   
+   <!-- Initial Demand -->
+   
+   <record id="view_picking_form_table_inherit_subscriber" model="ir.ui.view">
+       <field name="name">stock.picking.table.inherit.subscriber </field>
+       <field name="model">stock.picking</field>
+       <field name="inherit_id" ref="stock.view_picking_form"/>
+       <field name="arch" type="xml">
+   
+       <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
+               <attribute name="attrs">{'readonly': [('teller', '=', 'subscriber')]}</attribute>
+       </xpath>
+         
+         <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
+         <!-- ADDING ISSUE BUTTON -->
+       <xpath expr="//header/button[@name='button_scrap']" position="after">
+           <button name="sub_btn" string="Confirm Issuance" type="object" class="btn-default" attrs=" {'invisible': ['|', ('teller', '!=', 'subscriber'), ('state', '=', 'done')]}"/>
+     </xpath>
+        
+   <!-- 
+   
+     <xpath expr="//header/button[@name='button_scrap']" position="attributes">
+       <attribute name="invisible">1</attribute>
+     </xpath> --> 
+   
+     </field>
+     </record>
+   
+   </odoo>
+   

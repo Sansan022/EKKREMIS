@@ -68,7 +68,7 @@
             <group>
 
               
-              <field name="etsi_teams_member_no" required="1" attrs="{'readonly':[('state', 'in', 'done')]}"/>
+              <field name="etsi_teams_member_no" attrs="{'readonly':[('state', 'in', 'done')], 'required':[('teller', '!=', 'subscriber')]}"/>
               <field name="etsi_teams_member_name" attrs="{'readonly':[('state', 'in', 'done')]}"/>
               <field name="etsi_teams_id"  attrs="{'readonly':[('state', 'in', 'done')]}"
               options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}"/>

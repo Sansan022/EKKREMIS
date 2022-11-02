@@ -9,3 +9,5 @@ from . import skycable_employee_tags_configuration
 from . import skycable_operation_return
 from . import team_issuance
 from . import skycable_team_return
+from . import skycable_subscriber_issuance
+from . import skycable_pullout_operations
