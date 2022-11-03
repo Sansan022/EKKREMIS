@@ -1,2 +1,3 @@
 skycable_employee_inventory/models/*.pyc
 skycable_employee_inventory/wizard/*.pyc
+skycable_employee_inventory/reports/*.pyc
