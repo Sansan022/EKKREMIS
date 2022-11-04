@@ -22,7 +22,7 @@
 
       <!-- for view all serial -->
       <report 
-      id="configuration_report_xml"
+      id="view_all_serial_xml"
       model="etsi.inventory"
       string="All Serial"
       name="skycable_employee_inventory.all_serial_report"

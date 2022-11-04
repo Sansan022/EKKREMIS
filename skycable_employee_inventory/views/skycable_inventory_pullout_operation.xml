@@ -21,9 +21,9 @@
 
 
             <!-- Hide the cancel button -->
-             <xpath expr="//header/button[@name='action_cancel']" position="attributes">
+             <!-- <xpath expr="//header/button[@name='action_cancel']" position="attributes">
                 <attribute name="invisible" >1</attribute>
-            </xpath>
+            </xpath> -->
     
 
             <!-- Add additional fields when items are received by Sky -->
@@ -32,9 +32,9 @@
                 <field name="employee_for_delivery" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')]}" />
                 <field name="date_delivered" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')]}" />
                 <field name="received_by" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')]}" />
-                <button class="oe_stat_button" type="object" name="get_all_pullouts" icon="fa-car" style="width: 6rem;" attrs="{'invisible': [ '|',  ('teller','!=', 'pull-out-return'), ('teller','!=', 'pull-out')]}">
+                <!-- <button class="oe_stat_button" type="object" name="get_all_pullouts" icon="fa-car" style="width: 6rem;" attrs="{'invisible': [ '|',  ('teller','!=', 'pull-out-return'), ('teller','!=', 'pull-out')]}">
                     <field string="Pull Outs &#xA; " name="etsi_subscriber_issuance" widget="statinfo"/>
-                </button>
+                </button> -->
             </xpath>
             <!-- Add Button to confirm pullout -->
             <xpath expr="//header/button[@name='button_scrap']" position="after">

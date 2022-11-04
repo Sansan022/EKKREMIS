@@ -9,8 +9,7 @@
             <!-- Hide the operations page for subscriber issuance -->
 
             <xpath expr="//notebook/page[1]" position="attributes">
-               
-                <attribute name="attrs">{'invisible': ['|','|','|', ('teller', '=', 'subscriber'), ('teller', '=', 'pull-out'), ('teller', '=', 'pull-out-return'),  ('teller', '=', 'return')]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('draft', 'confirmed', 'waiting')),('teller', 'in', ('subscriber', 'pull-out','pull-out-return', 'return')) ]}</attribute>
             </xpath>
             <!-- <xpath expr="//notebook/page[2]/field[@name='etsi_teams_member_no']" position="attributes">
             <attribute name="attrs">{'required': [('teller', '!=', 'subscriber')]}</attribute>
