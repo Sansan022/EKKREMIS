@@ -80,6 +80,16 @@ class ProductTemplateInheritance(models.Model):
             
         }
 
+    @api.onchange('name')
+    def duplicate_name(self):
+        for rec in self:
+            count = self.env['product.template'].search_count([('name', '=', rec.name)])
+            if count >= 1:
+                return {'warning': {'title': _('Warning'),'message': _('Material code already exist in the database.')}}
+        
+
+    
+
 
 #REFERENCE OF DROPS MANY2ONE
 class Product_drops_reference(models.Model):

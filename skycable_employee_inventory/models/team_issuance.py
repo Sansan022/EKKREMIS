@@ -3,6 +3,7 @@ import time
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import datetime
 from odoo.exceptions import ValidationError
+import pandas as pd
 
 
 class Team_issuance(models.Model):
@@ -31,7 +32,7 @@ class Team_issuance(models.Model):
     @api.multi
     @api.onchange('etsi_serials_field','etsi_mac_field','etsi_smart_card_field')
     def auto_fill_details_01(self): 
-        self.ensure_one()
+        
         for rec in self:
             database = self.env['etsi.inventory']
             database2 = self.env['product.template']
@@ -102,8 +103,7 @@ class Team_issuance(models.Model):
                             rec.etsi_smart_card_field = test.etsi_smart_card
                             rec.uom_field_duplicate = rec.product_uom.id
 
-
-
+               
             elif rec.etsi_mac_field != False:
                 if duplicate_count2 < 1:
                     raise ValidationError("Mac not found in the database.")
@@ -205,14 +205,35 @@ class Team_issuance(models.Model):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if rec2.product_id.id == self.product_id.id:
-                if rec2.etsi_serials_field == False and rec2.etsi_mac_field == False and rec2.smart_card == False :
+                if rec2.etsi_serials_field == False and rec2.etsi_mac_field == False and rec2.etsi_smart_card_field == False:
                     check6 = "Duplicate Drops/Others detected within the Table \n: {}".format(rec2.product_id.product_tmpl_id.name)
                     raise ValidationError(check6)
 
-                    
 
+    # @api.onchange('etsi_serials_field')
+    # def lalala(self):
+    #     list_original_serials = []  
+    #     for rec in self:
+    #         for rec2 in rec.picking_id.move_lines:
+    #             if not rec2.etsi_serials_field == False:
+    #     #             list_original_serials.append(rec2.etsi_serials_field)
+    #     # print(list_original_serials)
+    #     # print(list_original_serials)
+    #     # print(list_original_serials)
+
+
+        # df_serials = pd.DataFrame(list_original_serials)
+        # duplicate_serials = df_serials[df_serials.duplicated()]
+        # df[df.duplicated(['ID'], keep=False)].sort_values(by='ID')
+        # print(duplicate_serials)
+
+
+        # if not duplicate_serials.empty:
+        #     return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+                    
     @api.constrains('etsi_serials_field')
     def testfunc(self):
+
         for record in self.picking_id.move_lines:
             if record.state == 'done':
                 raise ValidationError("You cannot add new item once the record is validated.")
@@ -225,7 +246,7 @@ class Team_issuance(models.Model):
             elif rec2.etsi_serials_field == self.etsi_serials_field:
                 check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
                 raise ValidationError(check6)
-    
+        
     @api.constrains('etsi_mac_field')
     def testfunc2(self):
         for record in self.picking_id.move_lines:
@@ -253,7 +274,7 @@ class Team_issuance(models.Model):
                 print("running")
                 pass
             elif rec2.etsi_smart_card_field == self.etsi_smart_card_field:
-                check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
+                check6 = "Duplicate detected within the Table \n Smart Card Number: {}".format(rec2.etsi_serials_field)
                 raise ValidationError(check6)
 
 class Team_issuance_stock_picking(models.Model):
@@ -263,6 +284,44 @@ class Team_issuance_stock_picking(models.Model):
     move_lines = fields.One2many('stock.move', 'picking_id', string="Stock Moves", copy=True)
     line = fields.Many2one("team.configuration")
     # pick_id = fields.Many2one('stock.picking')
+    @api.multi
+    @api.onchange('move_lines')
+    def lalala(self):
+        list_original_serials = []  
+        list_original_mac = []  
+        list_original_smart= []  
+        list_multiple_drop= []  
+        for rec in self:
+            for line in self.move_lines:
+                if not line.etsi_serials_field_duplicate == False:
+                    list_original_serials.append(line.etsi_serials_field_duplicate)
+                if not line.etsi_mac_field_duplicate == False:
+                    list_original_serials.append(line.etsi_mac_field_duplicate)
+                if not line.etsi_smart_card_field_duplicate == False:
+                    list_original_serials.append(line.etsi_smart_card_field_duplicate)
+                if line.etsi_smart_card_field_duplicate == False and line.etsi_smart_card_field_duplicate == False and line.etsi_serials_field_duplicate == False:
+                    list_multiple_drop.append(line.product_id.id)
+
+        df_serials = pd.DataFrame(list_original_serials)
+        df_mac = pd.DataFrame(list_original_mac)
+        df_smart = pd.DataFrame(list_original_smart)
+        df_drop = pd.DataFrame(list_multiple_drop)
+
+        duplicate_serials = df_serials[df_serials.duplicated()]
+        duplicate_mac = df_mac[df_mac.duplicated()]
+        duplicate_smart = df_smart[df_smart.duplicated()]
+        duplicate_drop = df_drop[df_drop.duplicated()]
+        
+
+        if not duplicate_serials.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+        elif not duplicate_mac.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Mac Detected within the table.')}}
+        elif not duplicate_smart.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Smart Card Detected within the table.')}}
+        elif not duplicate_drop.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Drops Detected within the table.')}}
+
     
     @api.multi
     def process(self):
