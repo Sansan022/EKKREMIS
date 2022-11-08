@@ -20,7 +20,7 @@ class Team_issuance(models.Model):
     etsi_mac_field_duplicate = fields.Char(related="etsi_mac_field")
     etsi_smart_card_field_duplicate = fields.Char(related="etsi_smart_card_field")
 
-    uom_field_duplicate = fields.Many2one('product.uom',string="Unit of Measure")
+    uom_field_duplicate = fields.Many2one('product.uom',string="Unit of Measure",related="product_uom")
     uom_field_duplicate2 = fields.Many2one(related="uom_field_duplicate")
     # ,related="product_id_duplicate.product_tmpl_id.uom_id.id"
     checker_box = fields.Boolean(string="To be issued")

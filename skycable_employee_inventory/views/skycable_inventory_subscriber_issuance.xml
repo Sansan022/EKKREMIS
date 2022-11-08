@@ -126,7 +126,7 @@
        <field name="arch" type="xml">
    
        <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
-               <attribute name="attrs">{'readonly': [('teller', 'in', ('subscriber', 'return','damage'))]}</attribute>
+               <attribute name="attrs">{'readonly': [('teller', 'in', ('subscriber', 'return','damage'))], 'readonly': [('state', 'in', ('cancel','done'))]}</attribute>
        </xpath>
          
          <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->

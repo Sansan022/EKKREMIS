@@ -40,13 +40,16 @@ class ProductTemplateInheritance(models.Model):
     @api.multi
     def serial_location(self):
         if self.internal_ref_name == 'broadband':
+            view_id = self.env.ref("skycable_employee_inventory.serials_tree_vieww").id
             return {
                 'name': 'serials.tree',
                 'type': 'ir.actions.act_window',
                 'res_model': 'etsi.inventory',
                 'view_mode': 'tree',
+                'views': [(view_id,'tree')],
                 'domain': [('etsi_product_id', '=', self.name )]
             }
+            
         else:
             view_id = self.env.ref("skycable_employee_inventory.serials_tree_view_two").id
             return {
