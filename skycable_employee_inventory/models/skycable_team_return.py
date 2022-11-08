@@ -8,7 +8,7 @@ class Validate_Team_Return(models.Model):
     _inherit = 'stock.picking'
 
     # picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-    teller = fields.Selection([('return', 'Return'),('others', 'Others'),('subscriber', 'Subscriber'),('pull-out', 'Pullout Receive'),('pull-out-return', 'Pullout Return')], default='others')
+    teller = fields.Selection([('return', 'Return'),('damage', 'Damage'),('others', 'Others'),('subscriber', 'Subscriber'),('pull-out', 'Pullout Receive'),('pull-out-return', 'Pullout Return')], default='others')
     source = fields.Many2one('stock.picking', domain="[('picking_type_id.name','=', 'Team Issuance')]", string="Source Document")
     transfered_item = fields.Many2one("etsi.inventory")
     product_stats = fields.Selection([
@@ -18,7 +18,11 @@ class Validate_Team_Return(models.Model):
     remarks = fields.Text("Remarks")
     # One2many to list all items
     return_list = fields.One2many('stock.picking.return.list','return_list_connector')
-    
+    # Returned Items list 
+    return_items = fields.One2many('stock.picking.damaged.item.list','damaged_item_connector')
+    # Damaged Items List 
+    damaged_items =  fields.One2many('stock.picking.damaged.item.list','damaged_item_connector')
+
     @api.model
     def default_get(self, fields):
         res = super(Validate_Team_Return, self).default_get(fields)
@@ -47,6 +51,8 @@ class Validate_Team_Return(models.Model):
                 res['teller'] = 'others'
             if pm_search_sr.name == 'Team Return':
                 res['teller'] = 'return'
+            if pm_search_sr.name == 'Damage Location':
+                res['teller'] = 'damage'
             if pm_search_sr.name == 'Pullout Receive':
                 res['teller'] = 'pull-out'
             if pm_search_sr.name == 'Pullout Return To Sky':
@@ -70,27 +76,31 @@ class Validate_Team_Return(models.Model):
                 search_first2 = self.env['stock.move'].search([])
                 for x in search_first2:
                     if x.picking_id.name == rec.source.name:
-                        self.update({'etsi_teams_id' : teams_id })
-                        # listahan.append({'serial':x.etsi_serials_field, 'mac_id': x.etsi_mac_field })
-                        listahan.append((
-                        0, 0, {
-                            'product_id': x.product_id.id, 
-                            'quantity' : x.product_uom_qty, 
-                            # Unit of measure 
-                            'product_uom' : x.product_uom.id,
-                            'move_id': x.id, 
-                            'issued': x.issued_field,
-                            'etsi_serial_product': x.etsi_serials_field, 
-                            'etsi_mac_product': x.etsi_mac_field, 
-                            'etsi_smart_card': x.etsi_smart_card_field,
-                            'issued_field': x.issued_field,
-                            'subscriber' : x.subscriber_field.id,
-                            'state' : 'draft',
-                            'active_ako' : x.picking_id.id,
-                            'active_name' : rec.name,
-                            'teams': rec.etsi_teams_id.id
-                        }
-                        ))
+                        if  x.issued_field == 'Deployed' :
+                                # listahan.append({'serial':x.etsi_serials_field, 'mac_id': x.etsi_mac_field })
+                            listahan.append((
+                            0, 0, {
+                                'product_id': x.product_id.id, 
+                                'quantity' : x.product_uom_qty, 
+                                # Unit of measure 
+                                'product_uom' : x.product_uom.id,
+                                'move_id': x.id, 
+                                'issued': x.issued_field,
+                                'etsi_serial_product': x.etsi_serials_field, 
+                                'etsi_mac_product': x.etsi_mac_field, 
+                                'etsi_smart_card': x.etsi_smart_card_field,
+                                'issued_field': x.issued_field,
+                                'subscriber' : x.subscriber_field.id,
+                                'state' : 'draft',
+                                'active_ako' : x.picking_id.id,
+                                'active_name' : rec.name,
+                                'teams': rec.etsi_teams_id.id
+                            }
+                            ))
+                            self.update({'etsi_teams_id' : teams_id })
+                        # else:
+                        #     raise ValidationError("No available item to return in this ")
+                        
 
         # Update the one2many table
             self.update({'return_list': listahan})
@@ -135,6 +145,14 @@ class Return_list_holder(models.TransientModel):
                     'etsi_serials_field': line_ret.etsi_serial_product,
                     'etsi_mac_field': line_ret.etsi_mac_product,
                     'etsi_smart_card_field': line_ret.etsi_smart_card,
+
+                    # Additional for returned items
+                    'etsi_serial_product' : line_ret.etsi_serial_product,
+                    'etsi_mac_product' : line_ret.etsi_mac_product,
+                    'etsi_smart_card' : line_ret.etsi_smart_card,
+                    'issued' : "Return",
+
+                    # Continuation
                     'issued_field': "Return",
                     'product_uom': line_ret.product_id.product_tmpl_id.uom_id.id,
                     'quantity': line_ret.quantity, 
@@ -153,14 +171,24 @@ class Return_list_holder(models.TransientModel):
                     'etsi_serials_field': line_dmg.etsi_serial_product,
                     'etsi_mac_field': line_dmg.etsi_mac_product,
                     'etsi_smart_card_field': line_dmg.etsi_smart_card,
+                    
+                    # Additional for returned items
+                    'etsi_serial_product' : line_dmg.etsi_serial_product,
+                    'etsi_mac_product' : line_dmg.etsi_mac_product,
+                    'etsi_smart_card' : line_dmg.etsi_smart_card,
+
+                    'dmg_type': line_dmg.dmg_type,
+
+                    'issued' : "Return",
                     'issued_field': "Damaged",
                     'issued' : "Damaged", 
                     'product_uom': line_dmg.product_id.product_tmpl_id.uom_id.id,
                     'quantity': line_dmg.quantity, 
-                    'location_id' : 1,
-                    'location_dest_id' : 2,
+                    'location_id' : 18,
+                    'location_dest_id' : 19,
                     # Hard coded pa tong picking_type Id 
-                    'picking_type_id': 6
+                    'picking_type_id': 9,
+        
                 })
         
         # Transfer declaration / process
@@ -190,6 +218,8 @@ class Return_list_holder(models.TransientModel):
                     'state' : 'done',
                     'picking_type_id': picking_type_id,
                     'move_lines': team_return,
+                    'return_items' : team_return,
+                    'status_field' :  'done',
                     # create ka pa dito ng laman ng return_list(all items) 
                     'location_id': picking.picking_type_id.default_location_src_id.id,
                     'location_dest_id': picking.picking_type_id.default_location_dest_id.id,
@@ -401,16 +431,35 @@ class Return_list_holder(models.TransientModel):
             return_damaged_function = stock_picking_db.create({
                     'picking_type_id': picking_checker2.id,
                     'move_lines':final_return_list_damaged,
+                    # Damaged items
+                    'damaged_items' : final_return_list_damaged, 
                     'location_id': picking_checker2.default_location_src_id.id,
                     'location_dest_id': picking_checker2.default_location_dest_id.id,
                     'etsi_teams_member_no': picking.etsi_teams_member_no,
                     'etsi_teams_member_name': picking.etsi_teams_member_name.id,
                     'etsi_teams_id':  picking.etsi_teams_id.id,
                     'etsi_teams_line_ids':  team_new_list,
-                    'state' : 'done'
+                    'state' : 'done',
+                    'teller' : 'damage'
                 })
             # Execure the damaged function
             return_damaged_function.action_assign()
+
+            # Update the status of created record for damaged items in stock.picking 
+
+            search_picking = self.env['stock.move'].search([])
+
+            for serial in search_picking:
+                for list_serial in team_return_damaged:
+                    search_picking_id = self.env['stock.move'].search([('etsi_serials_field','=',list_serial['etsi_serials_field'])])
+
+                    if search_picking_id:
+                        stock_picking = self.env['stock.picking'].search([('id','=', serial.picking_id.id)])
+
+                        stock_picking.update({
+                            'state' : 'done'
+                        })
+                   
             
             # Update quanity of serials from subscriber issuance
             product_lists_damaged = []
@@ -429,7 +478,7 @@ class Return_list_holder(models.TransientModel):
                         for searched_ids in inventory_stats:
                             if searched_ids.etsi_product_id in product_lists_damaged:
                                 if searched_ids.etsi_serial in product_serials_damaged:
-                                    searched_ids.update({'etsi_status': 'used'})
+                                    searched_ids.update({'etsi_status': 'damaged'})
         
         # if all transation is done update current form in done state
         picking.update({'state' : 'done'})
@@ -673,6 +722,10 @@ class Return_list_childs(models.TransientModel):
             ei_search_mc = self.env['etsi.inventory'].search([('etsi_mac','=', rec.etsi_mac_product)])
             ei_search_sc = self.env['etsi.inventory'].search([('etsi_smart_card','=', rec.etsi_smart_card)])
             
+            search_name = self.env['stock.picking'].search([('name','=', rec.active_ako.name)])
+            
+            transfer_list = self.env['stock.transfer.team.return'].search([])
+            
             list_ako = []
             
             # Valued data only passes
@@ -724,20 +777,53 @@ class Return_list_childs(models.TransientModel):
                 if rec.etsi_serial_product:
                     # Validation for issued status
                     if pm_search_sr:
+                        # check stock.move
                         for ser in pm_search_sr:
+                            # check etsi.inventory
                             for ser2 in ei_search_sr:
-                                if ser.issued_field == "Deployed":
-                                    # Auto fill statements
-                                    rec.product_id = ser.product_id.id
-                                    rec.etsi_mac_product = ser.etsi_mac_field
-                                    rec.etsi_smart_card = ser.etsi_smart_card_field
-                                    rec.issued = "Deployed"
-                                    rec.active_ako = ser.picking_id.id
-                                    rec.quantity = 1.00
-                                    rec.product_uom = 1
-                                    rec.teams = ser2.etsi_team_in.id
+                                # check if transfer list is true
+                                if transfer_list:
+                                    # check stock.transfer.team.return
+                                    for t_list in transfer_list:
+                                        if ser.issued_field == "Deployed":
+                                            # Auto fill statements
+                                            rec.product_id = ser.product_id.id
+                                            rec.etsi_mac_product = ser.etsi_mac_field
+                                            rec.etsi_smart_card = ser.etsi_smart_card_field
+                                            rec.issued = "Deployed"
+                                            rec.active_ako = ser.picking_id.id
+                                            rec.quantity = 1.00
+                                            rec.product_uom = 1
+                                            # rec.teams_from = s_name.etsi_teams_id.id
+                                            rec.teams = ser2.etsi_team_in.id
+                                        elif t_list.etsi_serial_product == rec.etsi_serial_product and t_list.issued == "Waiting":
+                                            # Auto fill statements
+                                            rec.product_id = ser.product_id.id
+                                            rec.etsi_mac_product = ser.etsi_mac_field
+                                            rec.etsi_smart_card = ser.etsi_smart_card_field
+                                            rec.issued = "Deployed"
+                                            rec.active_ako = ser.picking_id.id
+                                            rec.quantity = 1.00
+                                            rec.product_uom = 1
+                                            # rec.teams_from = s_name.etsi_teams_id.id
+                                            rec.teams = ser2.etsi_team_in.id
+                                        else:
+                                            raise ValidationError("This Product is not Deployed / Already installed (Used)")
                                 else:
-                                    raise ValidationError("This Product is not Deployed / Already installed (Used)")
+                                    # check stock.transfer.team.return
+                                    if ser.issued_field == "Deployed":
+                                        # Auto fill statements
+                                        rec.product_id = ser.product_id.id
+                                        rec.etsi_mac_product = ser.etsi_mac_field
+                                        rec.etsi_smart_card = ser.etsi_smart_card_field
+                                        rec.issued = "Deployed"
+                                        rec.active_ako = ser.picking_id.id
+                                        rec.quantity = 1.00
+                                        rec.product_uom = 1
+                                        # rec.teams_from = s_name.etsi_teams_id.id
+                                        rec.teams = ser2.etsi_team_in.id
+                                    else:
+                                        raise ValidationError("This Product is not Deployed / Already installed (Used)")
                     else:
                         raise ValidationError("This Product is not Deployed / Already installed (Used)")
                     
@@ -748,17 +834,14 @@ class Return_list_childs(models.TransientModel):
         for rec in self:
             search_name = self.env['stock.picking'].search([('name','=', rec.active_ako.name)])
             
-            for s_name in search_name:
-                rec.teams_from = s_name.etsi_teams_id.id
-            
-            if rec.transfer_checker == False:
+            if rec.transfer_checker:
+                for s_name in search_name:
+                    rec.teams_from = s_name.etsi_teams_id.id
+            else:
                 # Remove from vals
                 rec.teams_from = False
                 rec.teams_to = False
-            
-            print(rec.transfer_checker, "CHECKER")
-            print(rec.teams_to, "ONCHANGE 2")
-                
+                rec.update({'teams_to': False})
                              
 class Return_list_child(models.TransientModel):
     _name = 'stock.picking.return.list_2'
@@ -823,3 +906,71 @@ class TransferLists(models.TransientModel):
     product_uom_qty = fields.Float('Quantity',default=1.0)
     teams_from = fields.Many2one('team.configuration', string="Teams From")
     teams_to = fields.Many2one('team.configuration', string="Teams To")
+
+
+# Model for accepting returned items
+class ReturnedItems(models.Model):
+    _name='stock.picking.returned.item.list'
+      # Connects to return_list
+    return_item_connector = fields.Many2one('stock.picking')
+
+    product_id =  fields.Many2one('product.product',string='Product') 
+    quantity = fields.Float('Quantity')
+    issued = fields.Char(string="Product Status")
+    etsi_serial_product = fields.Char(string="Serial ID")
+    etsi_mac_product = fields.Char(string="MAC ID")
+    etsi_smart_card = fields.Char(string="Smart Card")
+    active_ako = fields.Many2one('stock.picking')
+    active_name = fields.Many2one('stock.picking')
+    product_uom = fields.Many2one('product.uom', 'Unit of Measure')
+    product_uom_qty = fields.Float('Quantity',default=1.0)
+    teams = fields.Many2one('team.configuration')
+
+# Model for accepting damaged items
+
+class DamagedItems(models.Model):
+    _name = 'stock.picking.damaged.item.list'
+
+    damaged_item_connector = fields.Many2one('stock.picking')
+
+    product_id =  fields.Many2one('product.product',string='Product') 
+    quantity = fields.Float('Quantity')
+    issued = fields.Char(string="Product Status")
+    etsi_serial_product = fields.Char(string="Serial ID")
+    etsi_mac_product = fields.Char(string="MAC ID")
+    etsi_smart_card = fields.Char(string="Smart Card")
+    active_ako = fields.Many2one('stock.picking')
+    active_name = fields.Many2one('stock.picking')
+    product_uom = fields.Many2one('product.uom', 'Unit of Measure')
+    product_uom_qty = fields.Float('Quantity',default=1.0)
+    teams = fields.Many2one('team.configuration')
+    dmg_type = fields.Selection([
+        ('physical','Physical Damage'),
+        ('boot','Not Bootable'),
+        ('power','No Power')
+    ], string="Damage Type")
+
+
+
+class ValidationProcess(models.TransientModel):
+    _inherit ='stock.immediate.transfer'
+        # bypass mark as to do since it was remove
+    @api.multi
+    def process(self):
+        self.ensure_one()
+        # If still in draft => confirm and assign
+        if self.pick_id.state == 'draft'  :
+            self.pick_id.action_confirm()
+            if self.pick_id.state != 'assigned':
+                self.pick_id.action_assign()
+                if self.pick_id.state != 'assigned':
+                    raise UserError(_("Could not reserve all requested products. Please use the \'Mark as Todo\' button to handle the reservation manually."))
+        for pack in self.pick_id.pack_operation_ids:
+            if pack.product_qty > 0:
+                pack.write({'qty_done': pack.product_qty})
+            else:
+                pack.unlink()
+        return self.pick_id.do_transfer()
+
+
+

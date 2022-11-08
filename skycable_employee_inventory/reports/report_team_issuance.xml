@@ -36,21 +36,35 @@
                             
                             <br/>
                             <br/>
-                            <h5> <strong>CPE</strong></h5>
+                            <h5 t-foreach='o.move_lines' t-as='line'>
+                            <t t-if="line.etsi_serials_field == False">
+                            </t>
+                            <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                            <strong>CPE</strong>
+                            </t>
+                            </h5>
 
 
 
                             <table class="table table-condensed"  style=" border: 1px solid;  width: 100%; table-layout: auto;">
+                             
+                                    
                             
-                                <thead  style=" border: 1px solid; ">
+                                <thead  style=" border: 1px solid; "  t-foreach='o.move_lines' t-as='line'>
+                                    <t t-if="line.etsi_serials_field == False">
+                                            
+                                    </t>
+                                    <t t-else="line.etsi_serials_field == line.etsi_serials_field">
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL NO.</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID no</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>ISSUED</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                    </t>
                                 </thead>
 
+                                
                                 <tbody  style=" border: 1px solid; ">
                                     
                                    
@@ -95,13 +109,26 @@
                             </table>
                             <br/>
                             <br/>
-                            <h5> <strong>DROPS AND MATERIALS</strong></h5>
+
+
+
+                            <h5 t-foreach='o.move_lines' t-as='line'> 
+                                <t t-if="line.etsi_serials_field == False">
+                                <strong>DROPS AND MATERIALS</strong>
+                                </t>
+                                <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                </t>
+                            </h5>
                             <table class="table table-condensed"  style=" border: 1px solid; width: 100%; table-layout: auto;">
                             
-                                <thead  style=" border: 1px solid; ">
+                                <thead  style=" border: 1px solid; " t-foreach='o.move_lines' t-as='line'>
+                                    <t t-if="line.etsi_serials_field == False">
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>ISSUED</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                    </t>
+                                    <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                    </t>
                                 </thead>
 
                                 <tbody  style=" border: 1px solid; ">

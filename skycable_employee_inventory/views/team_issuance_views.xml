@@ -78,7 +78,7 @@
             <field name="arch" type="xml">
 
             <xpath expr="//notebook/page[2]" position="attributes">
-                    <attribute name="attrs">{'invisible': [('etsi_teams_id', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('etsi_teams_id', '=', False),('teller','in',('return','pull-out','pull-out-return'))]}</attribute>
             </xpath>
 
 
@@ -88,9 +88,9 @@
               
               <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
               <!-- ADDING ISSUE BUTTON -->
-          <xpath expr="//header/button[@name='button_scrap']" position="after">
+          <!-- <xpath expr="//header/button[@name='button_scrap']" position="after">
             <button name="%(transient_issued_action)d" type="action" string="Issue" states="done"  groups="base.group_user"/>
-          </xpath>
+          </xpath> -->
 
           <!-- HIDING SCRAP BUTTON -->
           <xpath expr="//header/button[@name='button_scrap']" position="attributes">

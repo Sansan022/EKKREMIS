@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
      
-
          <report 
             id="report_xml"
             model="stock.picking"
@@ -37,6 +36,56 @@
       name="skycable_employee_inventory.data_entry"
       file="skycable_employee_inventory.data_entry"
       report_type="qweb-pdf"
+      />    
+      
+ <!-- Subscriber  Issuance Report-->
+      <report 
+      id="subs_report_xml"
+      model="stock.picking"
+      string="Subscriber Issuance Report"
+      name="skycable_employee_inventory.subs_report_view"
+      file="skycable_employee_inventory.subs_report_view"
+      report_type="qweb-html"
+      />
+
+     <!-- TEAM RETURN  ITEM Report-->
+      <report 
+      id="team_return_report_xml"
+      model="stock.picking"
+      string="Team Return Item Report"
+      name="skycable_employee_inventory.team_return_report_view"
+      file="skycable_employee_inventory.team_return_report_view"
+      report_type="qweb-html"
+      /> 
+      
+      <!-- TEAM RETURN  ITEM Report-->
+      <report 
+      id="damage_return_report_xml"
+      model="stock.picking"
+      string="Damage Return Report"
+      name="skycable_employee_inventory.damage_return_report_view"
+      file="skycable_employee_inventory.damage_return_report_view"
+      report_type="qweb-html"
+      />
+
+      <!-- PULL-OUT RECEIVE PRINT -->
+      <report 
+      id="pull_out_recieve_report_xml"
+      model="stock.picking"
+      string="Pull-Out Receive Report"
+      name="skycable_employee_inventory.pull_out_recieve_view"
+      file="skycable_employee_inventory.pull_out_recieve_view"
+      report_type="qweb-html"
+      />
+
+      <!-- PULL-OUT DELIVERY TO SKY PRINT -->
+      <report 
+      id="pull_out_delivery_report_xml"
+      model="stock.picking"
+      string="Pull-Out Delivery to Sky Report"
+      name="skycable_employee_inventory.pull_out_delivery_view"
+      file="skycable_employee_inventory.pull_out_delivery_view"
+      report_type="qweb-html"
       />
     
 

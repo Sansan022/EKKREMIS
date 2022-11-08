@@ -7,16 +7,22 @@
            <field name="arch" type="xml">
 
             <!-- Hide the operations page for subscriber issuance -->
-
             <xpath expr="//notebook/page[1]" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('draft', 'confirmed', 'waiting')),('teller', 'in', ('subscriber', 'pull-out','pull-out-return', 'return')) ]}</attribute>
+            <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('draft', 'confirmed', 'waiting')),('teller', 'in', ('subscriber', 'pull-out','pull-out-return', 'return', 'damage')) ]}</attribute>
             </xpath>
+            <!-- attrs="{'invisible': [('teller', 'in', ('draft', 'confirmed', 'waiting'))]}">  -->
+
             <!-- <xpath expr="//notebook/page[2]/field[@name='etsi_teams_member_no']" position="attributes">
             <attribute name="attrs">{'required': [('teller', '!=', 'subscriber')]}</attribute>
             </xpath> -->
+
+            <!-- Overwrite the location id in subscriber issuance -->
+            <xpath expr="//group/group[1]/field[@name='location_id']" position="replace">
+            <field name="location_id" groups="stock.group_stock_multi_locations" required="1" readonly="1" domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]"/>
+            </xpath>
             <!-- Hiding the teams page if subscriber issuance -->
             <xpath expr="//notebook/page[2]" position="attributes">
-                <attribute name="attrs">{'invisible': [('teller', '=', 'subscriber')]}</attribute>
+                <attribute name="attrs">{'invisible': [('teller', 'in', ('subscriber','pull-out-return'))]}</attribute>
             </xpath>
             
                <!-- Add One2many Field for subscriber issuance page -->
@@ -120,15 +126,14 @@
        <field name="arch" type="xml">
    
        <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
-               <attribute name="attrs">{'readonly': [('teller', '=', 'subscriber')]}</attribute>
+               <attribute name="attrs">{'readonly': [('teller', 'in', ('subscriber', 'return','damage'))]}</attribute>
        </xpath>
          
          <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
          <!-- ADDING ISSUE BUTTON -->
-       <xpath expr="//header/button[@name='button_scrap']" position="after">
-           <button name="sub_btn" string="Confirm Issuance" type="object" class="btn-default" attrs=" {'invisible': ['|', ('teller', '!=', 'subscriber'), ('state', '=', 'done')]}"/>
-     </xpath>
-        
+       <!-- <xpath expr="//header/button[@name='action_cancel']" position="before">
+           <button name="sub_btn" string="Confirm Issuance" type="object" class="btn-default" attrs=" {'invisible': ['|', '|',('teller', '!=', 'subscriber'), ('state', '=', 'done') ,('status_field', '=', 'done')]}"/>
+     </xpath> -->
    <!-- 
    
      <xpath expr="//header/button[@name='button_scrap']" position="attributes">
@@ -139,4 +144,4 @@
      </record>
    
    </odoo>
-   
+    

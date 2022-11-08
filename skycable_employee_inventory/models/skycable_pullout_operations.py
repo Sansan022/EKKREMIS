@@ -29,37 +29,40 @@ class Validate_Pullout_Received(models.Model):
     # Load default values for skycable return 
 
 
-    # @api.model
-    # def default_get(self, fields):
-    #     res = super(Validate_Pullout_Received, self).default_get(fields)
-    #     print("OYYYYYYYYYYYYYYYYYYYYYYYY")
-    #     print("OYYYYYYYYYYYYYYYYYYYYYYYY")
-    #     print("OYYYYYYYYYYYYYYYYYYYYYYYY")
+    @api.model
+    def default_get(self, fields):
+        res = super(Validate_Pullout_Received, self).default_get(fields)
 
-    #     return_lines = []
-    #     return_res =self.env['etsi.pull_out.inventory'].search([])
-    #     if return_res:
-    #         print("May laman")
-    #     else:
-    #         print("Wala laman")
+        return_lines = []
+        return_res =self.env['etsi.pull_out.inventory'].search([('etsi_status','=','received')])
 
+       
+        for item in return_res:
+            line = (0,0, {
+                'for_delivery': True,  
+                'job_number' : item.job_number,     
+                'job_number_related' : item.job_number,
 
+                'product_id' : item.etsi_product_name,
+                'product_id_related' : item.etsi_product_name,
 
-    #     for item in return_res:
-    #         # print("Mg laman", item)
-    #         # print("Mg laman", item)
-    #         # print("Mg laman", item)
-    #         line = (0,0, {
-    #             'etsi_serial_product' : item.etsi_serial
-    #         })
-    #         return_lines.append(line)
-    #         res.update({
-    #             'pullout_holder_return': return_lines
+                'etsi_mac_product': item.etsi_mac,
+                'etsi_serial_product' : item.etsi_serial,
+                'etsi_mac_product' : item.etsi_mac,
+                'etsi_smart_card' : item.etsi_smart_card,
+                'etsi_teams_id' : item.etsi_teams_id,
+                'issued' : item.etsi_status
+                 
+            })
 
-    #         }
+            return_lines.append(line)
+            res.update({
+                'pullout_holder_return': return_lines
 
-    #         )
-    #     return res
+            }
+
+            )
+        return res
 
 
     @api.multi
@@ -120,7 +123,8 @@ class Validate_Pullout_Received(models.Model):
                 'etsi_status': 'received',
                 'etsi_receive_date_in': laman['etsi_receive_date_in'],
                 # 'etsi_punched_date_in': laman['etsi_punched_date_in'],
-                # 'etsi_date_returned_in': laman['etsi_date_returned_in'],               
+                # 'etsi_date_returned_in': laman['etsi_date_returned_in'],     
+                    
                 }
                 )        
                 print(laman['etsi_serial'])
@@ -201,66 +205,121 @@ class Validate_Pullout_Received(models.Model):
 
     @api.multi
     def receive_pullout_btn(self):
+
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         listahan_delivery = []
         for rec in self:
-            search_name = self.env['stock.picking'].search([('name','=',rec.name)])
-            picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print(rec.etsi_teams_id)
-            print("UMAABOT DITOOOOOOo")
-            for x in rec.pullout_holder:
-                
+            if rec.pullout_holder:
 
-                listahan_delivery.append((
-                    0, 0, {
-                        'name': x.product_id,
-                        'product_id': 1, 
-                        'product_uom_qty' : x.product_uom_qty, 
-                        # Unit of measure 
-                        'product_uom' : x.product_uom.id,
-                        'move_id': x.id, 
-                        'issued_field': "On Hand",
-                        'etsi_serials_field': x.etsi_serial_product, 
-                        'etsi_mac_field': x.etsi_mac_product, 
-                        'etsi_smart_card_field': x.etsi_smart_card,
-                        # 'subscriber' : x.subscriber_field.id,
-                        'state' : 'draft',
-                        'location_id' : rec.location_id,
-                        'location_dest_id' : rec.location_dest_id,
-                        'picking_type_id': rec.picking_type_id,
-                        'etsi_teams_id' : x.etsi_teams_id
-                    }
-                    ))
-                
-                
-                for item in listahan_delivery:
-                    print(item)
-                    
-            picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Return To Sky')])
-            stock_picking_db = self.env['stock.picking']
+
+                search_name = self.env['stock.picking'].search([('name','=',rec.name)])
+                picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
             
-            self.update({
-                # 'etsi_team_issuance_id': picking.id,
-                'picking_type_id': picking_checker2.id,
-                # 'partner_id': self.skycable_subscriber_id.id,
-                'move_lines':listahan_delivery,
-                'location_id': picking_checker2.default_location_src_id.id,
-                'location_dest_id': picking_checker2.default_location_dest_id.id,
-                'state' : 'draft',
-                'status_field' : 'done',
-                'etsi_teams_id' : 1,
+                for x in rec.pullout_holder:
 
-                })
-    
+                    if x.etsi_mac_product  == False and x.etsi_smart_card == False:
+
+                        raise ValidationError("Please make sure to fill MAC or Smart Card for each lines")
+                    else:
+                        listahan_delivery.append((
+                            0, 0, {
+                                'name': x.product_id,
+                                'product_id': 1, 
+                                'product_uom_qty' : x.product_uom_qty, 
+                                # Unit of measure 
+                                'product_uom' : x.product_uom.id,
+                                'move_id': x.id, 
+                                'issued_field': "On Hand",
+                                'etsi_serials_field': x.etsi_serial_product, 
+                                'etsi_mac_field': x.etsi_mac_product, 
+                                'etsi_smart_card_field': x.etsi_smart_card,
+
+                                 # Additional for returned items
+                                # 'subscriber' : x.subscriber_field.id,
+                                'state' : 'draft',
+                                'location_id' : rec.location_id,
+                                'location_dest_id' : rec.location_dest_id,
+                                'picking_type_id': rec.picking_type_id,
+                                'etsi_teams_id' : x.etsi_teams_id
+                            }
+                            ))
+                        
+                        
+                        for item in listahan_delivery:
+                            print(item)
+                        
+                picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Return To Sky')])
+                stock_picking_db = self.env['stock.picking']
+                
+                self.update({
+                    # 'etsi_team_issuance_id': picking.id,
+                    'picking_type_id': picking_checker2.id,
+                    # 'partner_id': self.skycable_subscriber_id.id,
+                    'move_lines':listahan_delivery,
+                    'location_id': picking_checker2.default_location_src_id.id,
+                    'location_dest_id': picking_checker2.default_location_dest_id.id,
+                    'state' : 'done',
+                    'status_field' : 'done',
+                    'etsi_teams_id' : 1,
+
+                    })
+
+                
+                # CREATE RECORD
+                picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+                # Code sa pag create
+                stock_picking_db = self.env['etsi.pull_out.inventory']
+
+                listahan = []
+                for rec in self:
+                    search_name = self.env['stock.picking'].search([('name','=',rec.name)])
+                    picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
+                    print(rec.etsi_teams_id)
+                    
+                    for x in rec.pullout_holder:
+                        listahan.append({
+
+                                'job_number': x.job_number,
+                                'etsi_product_name' : x.product_id,
+                                'etsi_serial' : x.etsi_serial_product,
+                                'etsi_mac': x.etsi_mac_product,
+                                'etsi_smart_card': x.etsi_smart_card ,
+                                'etsi_employee_in' : 'Administrator',
+                                'etsi_teams_id' : rec.etsi_teams_id,
+                                'etsi_receive_date_in' : x.comp_date,
+                                # 'etsi_punched_date_in' : x.comp_date,
+                                # 'etsi_date_returned_in' : x.comp_date,
+                                'name' : rec.name
+                                })
+                                
+                for rec in self:
+                    employee_id = rec.etsi_teams_id.team_number
+
+                for laman in listahan:
+                
+                    stock_picking_db = self.env['etsi.pull_out.inventory']
+                    stock_picking_db.create(
+                    {
+                    # 'etsi_team_issuance_id': picking.id,
+                    'job_number' : laman['job_number'], 
+                    'etsi_product_name' : laman['etsi_product_name'],
+                    'etsi_serial': laman['etsi_serial'],
+                    'etsi_mac': laman['etsi_mac'],
+                    'etsi_smart_card': laman['etsi_smart_card'],
+                    'etsi_employee_in': laman['etsi_employee_in'],
+                    'etsi_teams_id' : employee_id,
+                    'etsi_status': 'received',
+                    'etsi_receive_date_in': laman['etsi_receive_date_in'],
+                    # 'etsi_punched_date_in': laman['etsi_punched_date_in'],
+                    # 'etsi_date_returned_in': laman['etsi_date_returned_in'],     
+                    'transaction_number' : laman['name']          
+                    }
+                    )        
+                    print(laman['etsi_serial'])
+            else:
+                raise ValidationError("Please fill up  Items to receive for pull-outs ")
+            
+            
     # @api.multi
     # def receive_pullout_btn(self):
     #     picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
@@ -335,37 +394,52 @@ class Validate_Pullout_Received(models.Model):
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         listahan = []
 
+        count = 0
         for rec in self:
-            if rec.pullout_holder_return == False:
-                raise ValidationError("Please fill up items to return to sky")
+
+            for lines in rec.pullout_holder_return:
+
+                if lines.for_delivery == True:
+                    count += 1
+
+            if count == 0:
+                raise ValidationError("Please select at least one item to return to sky")
+            else:
+                pass
 
             search_name = self.env['stock.picking'].search([('name','=',rec.name)])
             picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
           
             for x in rec.pullout_holder_return:
-                listahan.append((
-                    0, 0, {
-                        'name' : x.product_id,
-                        'product_id': 1, 
-                        'product_uom_qty' : x.product_uom_qty, 
-                        # Unit of measure 
-                        'product_uom' : x.product_uom.id,
-                        'move_id': x.id, 
-                        'issued_field': "delivery",
-                        'etsi_serials_field': x.etsi_serial_product, 
-                        'etsi_mac_field': x.etsi_mac_product, 
-                        'etsi_smart_card_field': x.etsi_smart_card,
-                        # 'subscriber' : x.subscriber_field.id,
-                        'job_number' : x.job_number,
-                        'state' : 'draft',
-                        'location_id' : rec.location_id,
-                        'location_dest_id' : rec.location_dest_id,
-                        'picking_type_id': rec.picking_type_id
-                    }
-                    ))
-                        
-                for item in listahan:
-                    print(item)
+
+
+                if x.for_delivery == True:
+
+                    listahan.append((
+                        0, 0, {
+                            'name' : x.product_id,
+                            'product_id': 1, 
+                            'product_uom_qty' : x.product_uom_qty, 
+                            # Unit of measure 
+                            'product_uom' : x.product_uom.id,
+                            'move_id': x.id, 
+                            'issued_field': "delivery",
+                            'etsi_serials_field': x.etsi_serial_product, 
+                            'etsi_mac_field': x.etsi_mac_product, 
+                            'etsi_smart_card_field': x.etsi_smart_card,
+
+                            
+                            # 'subscriber' : x.subscriber_field.id,
+                            'job_number' : x.job_number,
+                            'state' : 'draft',
+                            'location_id' : rec.location_id,
+                            'location_dest_id' : rec.location_dest_id,
+                            'picking_type_id': rec.picking_type_id
+                        }
+                        ))
+                            
+                    for item in listahan:
+                        print(item)
                     
             picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Return To Sky')])
             stock_picking_db = self.env['stock.picking']
@@ -390,6 +464,7 @@ class Validate_Pullout_Received(models.Model):
                         if searched_ids.etsi_serial in product_serials:
                             searched_ids.update({'etsi_status': 'delivery',
                             'etsi_date_issued_in' : Date,
+                            'transaction_number' : rec.name
                             })
 
 
@@ -398,6 +473,7 @@ class Validate_Pullout_Received(models.Model):
                 'picking_type_id': picking_checker2.id,
                 # 'partner_id': self.skycable_subscriber_id.id,
                 'move_lines':listahan,
+    
                 'location_id': picking_checker2.default_location_src_id.id,
                 'location_dest_id': picking_checker2.default_location_dest_id.id,
                 'etsi_teams_id':  picking.etsi_teams_id.id,
@@ -502,8 +578,12 @@ class Validate_Pullout_Received(models.Model):
                                     searched_ids.update({'etsi_status': 'returned',
                                     'etsi_date_returned_in' : rec.date_delivered,
                                     })
+        # Finish the form
         
-        self.update({'state' : 'done'})
+        self.update({'state' : 'done',
+        'status_field' : 'done'
+        })
+        
 
 class Validate_Pullout_Received_Child(models.TransientModel):
     _name = 'pullout_picking_child'
@@ -518,7 +598,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
         ('a','Newly Installed'),
         ('b','Immediate')
     })
-    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Modem'),('empty', '')], default='empty')
+    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Modem')], default='catv')
     
     etsi_teams_id = fields.Many2one('team.configuration', string="Team Number")
     product_id =  fields.Char('CPE Mat. Code', required="True") 
@@ -528,7 +608,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
     etsi_serial_product = fields.Char(string="Serial ID", required="True")
     etsi_mac_product = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
-    active_ako = fields.Char("Active Ako ")
+    active_ako = fields.Many2one('stock.picking')
     product_uom = fields.Many2one(
         'product.uom', 'Unit of Measure', default=1)
     product_uom_qty = fields.Float('Quantity',default=1.0)
@@ -557,49 +637,15 @@ class Validate_Pullout_Received_Child(models.TransientModel):
                 if  pm_search_sr_count > 1:
                         raise ValidationError("Serial already exists!")
 
+                if rec.etsi_smart_card and rec.etsi_mac_product :
+                    if rec.serial_type == 'catv':
+                        self.update({'etsi_mac_product' : False})
+                    else:
+                        self.update({'etsi_smart_card' : False})
 
-                if rec.etsi_serial_product != False and rec.etsi_mac_product != False and rec.etsi_smart_card == False:
-                    rec.update({'serial_type' : 'modem'})
-                    self.etsi_smart_card = False
-                   
-                if rec.etsi_serial_product != False and rec.etsi_smart_card != False and rec.etsi_mac_product == False:
-                    rec.update({'serial_type' : 'catv',
-                    'etsi_mac_product' : False
-                    })
-                    self.etsi_mac_product = False
-                
-                if rec.etsi_serial_product != False and rec.etsi_smart_card and rec.etsi_mac_product :
-                    raise ValidationError("Can not be both")
-                # if rec.etsi_serial_product != False and rec.etsi_smart_card == False and rec.etsi_mac_product == False :
-                #     raise ValidationError("Can not be both empty")
-                
+                    raise ValidationError ("Can not be both ")
+
        
-                #     # if rec.etsi_mac_product and rec.etsi_smart_card :
-                #     #     raise ValidationError("Input only either MAC ID or Smart Card ID")
-
-                # if rec.etsi_serial_product != False and rec.etsi_smart_card != False and rec.etsi_mac_product == False:
-                    # if  pm_search_sr_count > 1:
-
-                    #     raise ValidationError("Serial already exists!")
-                    #     # if rec.etsi_mac_product == False and rec.etsi_smart_card == False:
-                    # #     raise ValidationError("Please put MAC ID or Smart Card ID")
-                    # if rec.etsi_mac_product == False and rec.etsi_smart_card == False:
-                    #     raise ValidationError("Please do not leave Smart Card or MAC ID field empty")
-                    
-                    # if rec.etsi_mac_product and rec.etsi_smart_card :
-                    #     raise ValidationError("Input only either MAC ID or Smart Card ID")
-                # if  rec.etsi_mac_product == False and rec.etsi_smart_card == False:
-                #     raise ValidationError("Please do not leave Smart Card or MAC ID field empty")
-            
-        @api.onchange('serial_type')
-
-        def changesss(self):
-
-            for rec in self:
-                if rec.serial_type == 'empty':
-                    print("LAST NA TO ")
-                    self.etsi_mac_product = False
-                    self.etsi_mac_product = False
 
     @api.onchange('etsi_serial_product','etsi_mac_product','etsi_smart_card')
     def onchange_transfer_pull_out_returnasd(self):
@@ -611,11 +657,43 @@ class Validate_Pullout_Received_Child(models.TransientModel):
         for laman in listahan:
             print(laman)
 
+    # Code for serial type
+
+    @api.multi
+    @api.onchange('serial_type')   
+    def checker_onchange(self):
+        # If transfer checker is checked
+        for rec in self:
+            search_name = self.env['stock.picking'].search([('name','=', rec.active_ako.name)])
+
+            if search_name:
+                print("MERON")
+            else:
+                print("WALAA")
+            
+            if rec.serial_type == 'catv':
+                self.update({'etsi_mac_product' : False})
+
+            else:
+                self.update({'etsi_smart_card' : False})
+
+                
+            
+            # else:
+            #     rec.teams_from = False
+            #     rec.teams_to = False
+            #     rec.update({'teams_to': False})
+            # # Remove from vals
+
+            # print(rec.transfer_checker, "CHECKER")
+            # print(rec.teams_to, "ONCHANGE 2")
+
 class Validate_Pullout_Received_Child(models.TransientModel):
     _name = 'pullout_picking_child_return'
     
     pullout_picking_child_connector_2 = fields.Many2one('stock.picking')
      # Pull Out Return Form
+    for_delivery = fields.Boolean('Delivery')
     job_number = fields.Char("Job Order")
     job_number_related = fields.Char(related="job_number")
     subs_type = fields.Char("Type")
@@ -791,6 +869,8 @@ class Etsi_Pullout_Inventory(models.Model):
     etsi_employee_in = fields.Char("Employee")
 
     job_number =  fields.Char('Job Order')
+
+    transaction_number = fields.Char('Transaction Number')
 
     # count = fields.Char('Count: ' default=data.example_count)
 

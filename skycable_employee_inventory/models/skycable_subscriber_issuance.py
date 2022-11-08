@@ -23,14 +23,14 @@ class Validate_Subscriber_Issuance(models.Model):
     def sub_btn(self):
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
 
-        listahan = []
+        subs_list = []
         for rec in self:
             search_name = self.env['stock.picking'].search([('name','=',rec.name)])
             picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
 
             for x in rec.subs_issue:
 
-                listahan.append((
+                subs_list.append((
                     0, 0, {
                         'name':x.product_id.product_tmpl_id.name,
                         'product_id': x.product_id_related.id, 
@@ -50,7 +50,7 @@ class Validate_Subscriber_Issuance(models.Model):
                     }
                     ))
                 
-                for item in listahan:
+                for item in subs_list:
                     print(item)
                     
         picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
@@ -60,7 +60,10 @@ class Validate_Subscriber_Issuance(models.Model):
             # 'etsi_team_issuance_id': picking.id,
             # 'picking_type_id': picking_checker2.id,
             # 'partner_id': self.skycable_subscriber_id.id,
-            'move_lines':listahan,
+            'move_lines':subs_list,
+            # 'subs_issue': subs_list,
+
+            'status_field' : 'done',
             # 'location_id': picking_checker2.default_location_src_id.id,
             # 'location_dest_id': picking_checker2.default_location_dest_id.id,
             # 'etsi_teams_id':  picking.etsi_teams_id.id,
@@ -101,19 +104,135 @@ class Validate_Subscriber_Issuance(models.Model):
                             if searched_ids.etsi_serial in final:
                                 searched_ids.update({'etsi_status': 'used'})
                                 # searched_ids.update({'etsi_team_in': self.etsi_teams_id.team_number})
-        
+    
+
+    # Validation for serial number within the table 
+    @api.constrains('subs_issue')
+    @api.onchange('subs_issue')
+    def _check_exist_serial_in_line_subs(self):
+
+        exist_serial_list = []
+        exist_mac_list = []
+        exist_smart_card_list = []
+
+        count = 0
+        for search in self:
+            
+            for line in search.subs_issue:
+                if line.etsi_serial_product == False:
+                    raise ValidationError(_('Serial ID can not be blank'))
+                if line.etsi_serial_product:
+                    
+                    if line.etsi_serial_product in exist_serial_list:
+                        check = "Duplicate detected within the table \n Serial Number: {}".format(line.etsi_serial_product)
+                        raise ValidationError(check)
+                        # Raise Validation Error
+                    exist_serial_list.append(line.etsi_serial_product)
+
+
     @api.multi
     def do_new_transfer(self):
+
+        if self.teller == 'subscriber':
+
+            subs_list = []
+            for rec in self:
+                search_name = self.env['stock.picking'].search([('name','=',rec.name)])
+                picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
+
+                for x in rec.subs_issue:
+
+                    subs_list.append((
+                        0, 0, {
+                            'name':x.product_id.product_tmpl_id.name,
+                            'product_id': x.product_id_related.id, 
+                            'product_uom_qty' : x.product_uom_qty, 
+                            # Unit of measure 
+                            'product_uom' : x.product_uom_related.id,
+                            'move_id': x.id, 
+                            'issued_field': "Used",
+                            'etsi_serials_field': x.etsi_serial_product, 
+                            'etsi_mac_field': x.etsi_mac_product, 
+                            'etsi_smart_card_field': x.etsi_smart_card,
+                            # 'subscriber' : x.subscriber_field.id,
+                            'state' : 'draft',
+                            'location_id' : rec.location_id,
+                            'location_dest_id' : rec.location_dest_id,
+                            'picking_type_id': rec.picking_type_id
+                        }
+                        ))
+                    
+                    for item in subs_list:
+                        print(item)
+                        
+            picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+            stock_picking_db = self.env['stock.picking']
+
+            self.update({
+                # 'etsi_team_issuance_id': picking.id,
+                # 'picking_type_id': picking_checker2.id,
+                # 'partner_id': self.skycable_subscriber_id.id,
+                'move_lines':subs_list,
+                # 'subs_issue': subs_list,
+
+                'status_field' : 'done',
+                # 'location_id': picking_checker2.default_location_src_id.id,
+                # 'location_dest_id': picking_checker2.default_location_dest_id.id,
+                # 'etsi_teams_id':  picking.etsi_teams_id.id,
+                # 'state' : 'draft'
+                })
+            
+            product_lists = []
+            product_serials = []
+
+            product_serials_issued= []
+            product_lists_issued = []
+
+            final= []
+            final_ids = []
+
+            for rec in self:
+                # if rec.picking_type_id.name == "Subscriber Return" or rec.picking_type_id.name == "Team Return":
+                for plines_issued in rec.subs_issue:
+                    product_serials_issued.append(plines_issued.etsi_serial_product)
+                    product_lists_issued.append(plines_issued.product_id)
+
+            for item in  product_serials_issued:
+                final.append(item)
+
+            for items_ids in product_lists_issued:
+                final_ids.append(items_ids.id)
+
+            issued_stats = self.env['stock.move'].search([])
+            inventory_stats = self.env['etsi.inventory'].search([])
+
+            if final and final_ids:
+                for issued_ids in issued_stats:
+                    if issued_ids.etsi_serials_field in final:
+                        issued_ids.update({'issued_field': 'Used'})
+
+                        for searched_ids in inventory_stats:
+                            if searched_ids.etsi_product_id.id in final_ids:
+                                if searched_ids.etsi_serial in final:
+                                    searched_ids.update({'etsi_status': 'used'})
+                                    # searched_ids.update({'etsi_team_in': self.etsi_teams_id.team_number})
+
+        # message = 'Button click successful'
+        # return {
+        #     'type' : 'ir.actions.client',
+        #     'tags' : 'display_notification',
+        #     'params' : {
+
+        #         'message' : message, 
+        #         'type' : 'success', 
+        #         'sticky' : True,
+        #     }
+        # }
+    
+        # Code for updating the status of products as issued 
         res = super(Validate_Subscriber_Issuance, self).do_new_transfer()
 
-        print("Subscriber ISSUANCE")
-        print("Subscriber ISSUANCE")
-        print("Subscriber ISSUANCE")
-
-
         for rec in self:
-            print(rec.teller)
-            print(rec.teller)
             teller = rec.teller
 
         if teller == 'subscriber':
@@ -121,8 +240,7 @@ class Validate_Subscriber_Issuance(models.Model):
             picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
             picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
 
-
-            listahan = []
+            subs_list = []
             for rec in self:
                 search_name = self.env['stock.picking'].search([('name','=',rec.name)])
                 picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
@@ -213,18 +331,6 @@ class Validate_Subscriber_Issuance(models.Model):
                 print(data.example_count)
                 print(data.example_count)
 
-            
-            # for data in self:       
-            #     list_data = data_obj.search_count([()])
-            #     data.etsi_subscriber_issuance = len(list_data)  
-            #     print(data.etsi_subscriber_issuance,"COUNT")
-            #     print(data.etsi_subscriber_issuance,"COUNT")
-            #     print(data.etsi_subscriber_issuance,"COUNT")
-            #     print(data.etsi_subscriber_issuance,"COUNT")
-
-
-
-           
             if pm_search_sr.name == 'Subscriber Issuance':
 
                 res['teller'] = 'subscriber'
@@ -234,6 +340,10 @@ class Validate_Subscriber_Issuance(models.Model):
             if pm_search_sr.name == 'Team Return':
 
                 res['teller'] = 'return'
+
+            if pm_search_sr.name == 'Damage Location':
+                
+                res['teller'] = 'damage'
 
             if pm_search_sr.name == 'Pullout Receive':
 
@@ -288,6 +398,8 @@ class Validate_Subscriber_Issuance_Child(models.TransientModel):
     @api.onchange('etsi_serial_product','etsi_mac_product','etsi_smart_card')
     def onchange_transfer(self):
         # Validate Datas
+
+        recommend = []
         for rec in self:
             # search available products - stock.move model
             pm_search_sr = self.env['stock.move'].search([('etsi_serials_field','=', rec.etsi_serial_product)])
@@ -373,7 +485,33 @@ class Validate_Subscriber_Issuance_Child(models.TransientModel):
                         print(ser.issued_field)
                         print(ser.issued_field)
                         break
+    
+# Suggestion box 
 
+    @api.onchange('etsi_serial_product','etsi_mac_product','etsi_smart_card')
+    def store_recommendation(self):
+        recommend = []
+        count =  0 
+        for rec in self:
+            if rec.etsi_serial_product:
+
+                recommend.append(rec.etsi_serial_product)
+                count += 1
+        print(count)        
+        
+        for item in recommend:
+            database = self.env['issuance.recommendation'].search([])
+            database.create({'etsi_serial_product' : item})
+            print(item,"Laman")
+            print(item,"Laman")
+            print(item,"Laman")
+        
+
+class Container(models.TransientModel):
+    _name = 'issuance.recommendation'
+
+    etsi_serial_product = fields.Char()
+    
 
 class Subscriber_issuance(models.Model):
     _inherit = 'stock.move'

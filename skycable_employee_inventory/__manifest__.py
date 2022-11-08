@@ -52,12 +52,17 @@
         'views/skycable_inventory_internal_search.xml',
         'views/sky_cable_inventory_products_view_all_serial.xml',
 
-        # REPORTS
+          # REPORTS
         'reports/report_team_issuance.xml',
         'reports/all_report_configuration.xml',
         'reports/team_configuration_file.xml',
         'reports/view_all_serials.xml',
         'reports/data_entry_template.xml',
+        'reports/report_subscriber_issuance.xml',
+        'reports/report_team_return_items_print.xml',
+        'reports/report_damage_return.xml',
+        'reports/pull_out_recieve_print.xml',
+        'reports/pull_out_delivery_print.xml',
 
         'views/pivot_view_all_serial.xml',
         'views/pivot_product_view.xml',

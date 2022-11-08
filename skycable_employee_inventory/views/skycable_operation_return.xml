@@ -54,7 +54,7 @@
             <form >
                 <sheet>
                     <group string="Return List">        
-                        <field name="return_list_move_holder" nolabel="1">
+                        <field name="return_list_move_holder" nolabel="1" readonly="1">
                             <tree editable="bottom" delete="0" create="0">
                                 <field name="product_id" />
                                 <field name="etsi_serial_product" />
@@ -63,14 +63,14 @@
                                 <field name="issued" />
                                 <field name="quantity" />
                                 <field name="product_uom" /> 
-                                <field name="active_ako" />
-                                <field name="active_name" />
-                                <field name="teams" />
+                                <field name="active_ako" invisible="1"  />
+                                <field name="active_name" invisible="1"  />
+                                <field name="teams" invisible="1" />
                             </tree>
                         </field> 
                     </group>
                     <group string="Damage List">
-                        <field name="damage_list_ids" nolabel="1">
+                        <field name="damage_list_ids" nolabel="1" readonly="1">
                             <tree editable="bottom" delete="0" create="0">
                                 <field name="product_id" />
                                 <field name="etsi_serial_product" />
@@ -85,7 +85,7 @@
                         </field> 
                     </group>
                     <group string="Transfer List">
-                        <field name="transfer_list_ids" nolabel="1">
+                        <field name="transfer_list_ids" nolabel="1" readonly="1">
                             <tree editable="bottom" delete="0" create="0">
                                 <field name="product_id" />
                                 <field name="etsi_serial_product" />
@@ -96,7 +96,7 @@
                                 <field name="product_uom" /> 
                                 <field name="teams_from" attrs="{'readonly': [('product_id','=', False)], 'required': True}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                 <field name="teams_to" attrs="{'readonly': [('product_id','=', False)], 'required': True}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
-                                <field name="active_ako" />
+                                <field name="active_ako" invisible="1"  />
                                 <field name="active_name" invisible="1" />
                             </tree>
                         </field> 
@@ -131,7 +131,7 @@
                     <group name="name_group" >
                         <field name="return_list" string="Return List"  nolabel="1" attrs="{'readonly': [('state','=','done')]}">
                             <tree editable="bottom">
-                                <field name="product_id" readonly="1" />
+                                <field name="product_id" readonly="1" required="1" />
                                 <field name="etsi_serial_product" />
                                 <field name="etsi_mac_product" />
                                 <field name="etsi_smart_card" />
@@ -139,35 +139,87 @@
                                 <field name="issued" readonly="1" />
                                 <field name="product_uom" readonly="1" /> 
                                 <field name="active_ako" invisible="1" />
-                                <field name="return_checker" attrs="{'readonly': ['|',('transfer_checker','=', True),('damage_checker','=', True)]}" />
-                                <field name="damage_checker" attrs="{'readonly': ['|',('transfer_checker','=', True),('return_checker','=', True)]}" />
-                                <field name="dmg_type" attrs="{'readonly': [('damage_checker','=', False)], 'required': [('damage_checker','=', True)]}" />
-                                <field name="transfer_checker" attrs="{'readonly': ['|',('return_checker','=', True),('damage_checker','=', True)]}" />
+                                <field name="return_checker"  />
+                                <field name="damage_checker"  />
+                                <field name="dmg_type" />
+                                <field name="transfer_checker"/>
                                 <field name="teams_from" attrs="{'readonly': True}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
-                                <field name="teams_to" attrs="{'readonly': [('transfer_checker','=', False)], 'required': [('transfer_checker','=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                <field name="teams_to"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                 <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                 -->
                                 <field name="teams_from_duplicate" invisible="1" />
                                 <field name="teams" invisible="1" />
                                 <field name="product_id_duplicate" invisible="1" />
                                 <field name="product_uom_duplicate" invisible="1" />
                                 <field name="issued_duplicate" invisible="1" />
-                                
                             </tree>
                         </field>
                     </group>
                 </page>
             </xpath>
+
+            <!-- Add the returned items page -->
+            <xpath expr="//notebook/page[3]" position="after">
+            <page string="Returned Items" attrs="{'invisible': ['|', ('teller','!=','return'), ('status_field','=','draft')]}">
+            <field name="return_items" readonly="1" nolabel="1"  >
+                <tree editable="bottom">
+                    <field name="product_id" readonly="1" required="1" />
+                    <field name="etsi_serial_product" />
+                    <field name="etsi_mac_product" />
+                    <field name="etsi_smart_card" />
+                    <field name="quantity" />
+                    <field name="product_uom" />
+                    <field name="issued" />
+
+                </tree>
+            
+            </field>
+             </page>
+            </xpath>
+
+              <!-- Add the returned items page -->
+            <xpath expr="//notebook/page[4]" position="after">
+            <page string="Damaged Items" attrs="{'invisible': ['|', ('teller','!=','damage')]}">
+            <field name="damaged_items" readonly="1" nolabel="1"  >
+                <tree editable="bottom">
+                    <field name="product_id" readonly="1" required="1" />
+                    <field name="etsi_serial_product" />
+                    <field name="etsi_mac_product" />
+                    <field name="etsi_smart_card" />
+                    <field name="quantity" />
+                    <field name="product_uom" />
+                    <field name="issued" />
+                    <field name="dmg_type" />
+                </tree>
+            
+            </field>
+             </page>
+            </xpath>
+            <!-- Replace the validate button -->
+             <xpath expr="//header/button[5]" position="replace">
+                <button name="do_new_transfer" states="draft,partially_available,assigned" string="Validate" attrs="{'invisible': ['|', ('teller','in',('return','pull-out','pull-out-return'))]}" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+            </xpath>
+            <!-- Add the return button -->
             <xpath expr="//header/button[8]" position="replace">
-                <button name="%(return_item_action)d" string="Return" state="draft" type="action" groups="base.group_user" attrs="{'invisible': [('teller','!=','return')]}"/>
+                <button name="%(return_item_action)d" string="Return" state="draft" type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': [('teller','!=','return')]}"/>
             </xpath>
+            <!-- Add the field teller -->
             <xpath expr="//sheet/group/group[1]/field[1]" position="after">
-                <field name="teller"  invisible="1" />
+                <field name="teller" invisible="1"  />
             </xpath>
-            <xpath expr="//sheet/group/group[1]/field[@name='location_dest_id']" position="after">
+            <!-- Add the Source Document Field for batch return -->
+            <xpath expr="//sheet/group/group[2]/field[@name='min_date']" position="after">
                 <field name="source" attrs="{'readonly': [('state','=','done')], 'invisible': [('teller','!=','return')]}"  />
             </xpath>
+            <!-- Hide the origin button -->
             <xpath expr="//sheet/group/group[2]/field[@name='origin']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <!-- Hiding the initial demand page if team return -->
+            <xpath expr="//notebook/page[2]" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('teller', '=', 'return')]}</attribute>
+            </xpath>
+            
             <!-- <xpath expr="//sheet/group/group[2]/field[@name='origin']" position="after">
                 <field name="transfered_item" domain="[('etsi_status','=','deployed')]" attrs="{'readonly': [('state','=','done')], 'invisible': [('teller','!=','return')]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                 <field name="remarks" attrs="{'readonly': [('state','=','done')]}" />
