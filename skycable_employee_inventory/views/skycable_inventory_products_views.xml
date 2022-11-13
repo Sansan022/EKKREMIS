@@ -513,8 +513,8 @@
 
             <!-- ADDING DROP CATEGORY TYPE -->
             <xpath expr="//kanban/templates/t/div/div[2]/ul/li" position="before">
-               <li>Drops Category Code:  <field name="drops_reference_id" /></li> 
-            </xpath>          
+               <li attrs="{'invisible': [('default_code', 'in', ('CATV5', 'BROADBAND'))]}">Drops Category Code:  <field name="drops_reference_id" /></li> 
+            </xpath>    
         </field>
 
 
