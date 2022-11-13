@@ -52,7 +52,16 @@
                 <separator/>
                 <group>
                 <filter name="filter_type_available" string="Available" domain="[('etsi_status','=','available')]"/>
+                <filter name="filter_type_deployed" string="Deployed" domain="[('etsi_status','=','deployed')]"/>
                 <filter name="filter_type_used" string="Used" domain="[('etsi_status','=','used')]"/>
+                
+                <filter name="filter_type_returned" string="Returned" domain="[('etsi_status','=','returned')]"/>
+                <filter name="filter_type_damaged" string="Damaged" domain="[('etsi_status','=','damaged')]"/>
+
+                <filter name="filter_type_onhand" string="On-Hand" domain="[('etsi_status','=','onhand')]"/>
+                <filter name="filter_type_delivery" string="Delivery" domain="[('etsi_status','=','delivery')]"/>
+                <filter name="filter_type_delivered" string="Delivered" domain="[('etsi_status','=','delivered')]"/>
+
                 <filter name="filter_etsi_team_in" string="Team" context="{'group_by': 'etsi_team_in'}" />
                 </group>
             </search>
@@ -64,7 +73,7 @@
         <field name="res_model">etsi.inventory</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree</field>
-        <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_used':0} </field>
+        <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_deployed':0,'search_default_filter_type_used':0,'search_default_filter_type_returned':0,'search_default_filter_type_damaged':0,'search_default_filter_type_onhand':0,'search_default_filter_type_delivery':0,'search_default_filter_type_delivered':0} </field>
 
     </record>
 
