@@ -6,6 +6,7 @@ from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 from odoo.exceptions import UserError
 from collections import Counter 
+import pandas as pd
 
 class ProductTemplateInheritance(models.Model):
     _inherit = 'product.template'
@@ -155,10 +156,24 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_team = fields.Char(string="Team")
     etsi_punch_time = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
 
+    # etsi_product_count_duplicate = fields.Integer(compute='_depends_product_duplicate',store="True")
+    # etsi_duplicate = fields.Integer()
     
-    # @api.depends('etsi_punch_time')
-    # def _depends_time_punch(self):
+    # @api.depends('etsi_product_count_duplicate')
+    # def _depends_product_duplicate(self):
     #     for rec in self:
+    #         if rec.etsi_duplicate:
+    #             rec.etsi_product_count_duplicate  = 1
+    #             print(rec.etsi_duplicate)
+    #             print(rec.etsi_duplicate)
+    #             print(rec.etsi_duplicate)
+    #             print(rec.etsi_duplicate)
+    #         else:
+                
+    #             print('NO DATA')
+    #             print('NO DATA')
+    #             print('NO DATA')
+    #             print('NO DATA')
 
     
 
@@ -250,6 +265,64 @@ class Inherit_Product_Quantity(models.TransientModel):
     # @api.depends('date_time')
     # def _depends_datetime_format(self):
     #     self.date_time = "HT"
+
+    @api.onchange('etsi_product_items_2')
+    def _onchange_etsi_product_items_2(self):
+
+        list_of_serials =[]
+        list_of_smart_card = []
+        for rec in self:
+            for line in rec.etsi_product_items_2:
+                if not line.etsi_serial_product_2 == False:
+                    list_of_serials.append(line.etsi_serial_product_2)
+                if not line.etsi_smart_card_product_2 == False:
+                    list_of_macs.append(line.etsi_smart_card_product_2)
+
+        df_serials = pd.DataFrame(list_of_serials)
+        df_smart_card = pd.DataFrame(list_of_smart_card)
+
+        duplicate_serials = df_serials[df_serials.duplicated()]
+        duplicate_smart_card = df_smart_card[df_smart_card.duplicated()]
+
+
+        if not duplicate_serials.empty:
+             return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+        if not duplicate_smart_card.empty:
+             return {'warning': {'title': _('Warning'),'message': _('Duplicate Smart Card Detected within the table.')}}
+
+
+
+    # duplicated in BROADBAND ON CHANGE
+    @api.onchange('etsi_product_items')
+    def _onchange_etsi_product_items(self):
+
+        list_of_serials =[]
+        list_of_macs = []
+
+        is_okay = False
+        for rec in self:
+            for line in rec.etsi_product_items:
+                if not line.etsi_serial_product == False:
+                    list_of_serials.append(line.etsi_serial_product)
+                if not line.etsi_mac_product == False:
+                    list_of_macs.append(line.etsi_mac_product)
+
+
+
+        df_serials = pd.DataFrame(list_of_serials)
+        df_macs = pd.DataFrame(list_of_macs)
+
+        duplicate_serials = df_serials[df_serials.duplicated()]
+        duplicate_macs = df_macs[df_macs.duplicated()]
+
+
+        if not duplicate_serials.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+        if not duplicate_macs.empty:
+            return {'warning': {'title': _('Warning'),'message': _('Duplicate Mac Address Detected within the table.')}}
+
+
+
     
 
 
