@@ -165,27 +165,6 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_team = fields.Char(string="Team")
     etsi_punch_time = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
 
-    # etsi_product_count_duplicate = fields.Integer(compute='_depends_product_duplicate',store="True")
-    # etsi_duplicate = fields.Integer()
-    
-    # @api.depends('etsi_product_count_duplicate')
-    # def _depends_product_duplicate(self):
-    #     for rec in self:
-    #         if rec.etsi_duplicate:
-    #             rec.etsi_product_count_duplicate  = 1
-    #             print(rec.etsi_duplicate)
-    #             print(rec.etsi_duplicate)
-    #             print(rec.etsi_duplicate)
-    #             print(rec.etsi_duplicate)
-    #         else:
-                
-    #             print('NO DATA')
-    #             print('NO DATA')
-    #             print('NO DATA')
-    #             print('NO DATA')
-
-    
-
 
 # Onchange Validation for serial product and mac product
     @api.onchange('etsi_serial_product', 'etsi_mac_product')
@@ -264,8 +243,9 @@ class Inherit_Product_Quantity(models.TransientModel):
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Many2one('res.users', string='Employee Name', default=lambda self: self.env.user.id)
     date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
-   
 
+
+#currently testing the ui
     @api.onchange('etsi_product_items_2')
     def _onchange_etsi_product_items_2(self):
 
@@ -276,7 +256,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 if not line.etsi_serial_product_2 == False:
                     list_of_serials.append(line.etsi_serial_product_2)
                 if not line.etsi_smart_card_product_2 == False:
-                    list_of_macs.append(line.etsi_smart_card_product_2)
+                    list_of_smart_card.append(line.etsi_smart_card_product_2)
 
         df_serials = pd.DataFrame(list_of_serials)
         df_smart_card = pd.DataFrame(list_of_smart_card)
@@ -305,7 +285,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 if not line.etsi_serial_product == False:
                     list_of_serials.append(line.etsi_serial_product)
                 if not line.etsi_mac_product == False:
-                    list_of_smart_card.append(line.etsi_mac_product)
+                    list_of_macs.append(line.etsi_mac_product)
 
 
 
