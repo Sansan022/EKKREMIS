@@ -264,16 +264,7 @@ class Inherit_Product_Quantity(models.TransientModel):
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Many2one('res.users', string='Employee Name', default=lambda self: self.env.user.id)
     date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
-    # drops_reference_wiz = fields.Char(default=lambda self: self.)
-    
-
-
-
-    # getting the date format
-    
-    # @api.depends('date_time')
-    # def _depends_datetime_format(self):
-    #     self.date_time = "HT"
+   
 
     @api.onchange('etsi_product_items_2')
     def _onchange_etsi_product_items_2(self):
@@ -314,7 +305,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 if not line.etsi_serial_product == False:
                     list_of_serials.append(line.etsi_serial_product)
                 if not line.etsi_mac_product == False:
-                    list_of_macs.append(line.etsi_mac_product)
+                    list_of_smart_card.append(line.etsi_mac_product)
 
 
 
