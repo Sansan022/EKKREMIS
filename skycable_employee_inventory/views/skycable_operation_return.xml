@@ -143,7 +143,7 @@
                                 <field name="damage_checker"  />
                                 <field name="dmg_type" />
                                 <field name="transfer_checker"/>
-                                <field name="teams_from" attrs="{'readonly': True}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                <field name="teams_from" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                 <field name="teams_to"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  -->
@@ -201,7 +201,7 @@
             </xpath>
             <!-- Add the return button -->
             <xpath expr="//header/button[8]" position="replace">
-                <button name="%(return_item_action)d" string="Return" state="draft" type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': [('teller','!=','return')]}"/>
+                <button name="%(return_item_action)d" string="Return" state="draft" type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','return'), ('state','=','done')]}"/>
             </xpath>
             <!-- Add the field teller -->
             <xpath expr="//sheet/group/group[1]/field[1]" position="after">

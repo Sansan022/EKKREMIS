@@ -25,8 +25,8 @@
 
 
             <xpath expr="//form/sheet" position="before" >
-<!-- Change the color to green -->
-            <div class ="alert alert-danger" role="alert" style="margin-bottom:0px" attrs="{'invisible' : ['|', ('teller','!=', 'pull-out-return'),  ('status_field','!=', 'waiting')]}" >
+            <!-- Change the color to green -->
+            <div class ="container" role="alert" style="margin-bottom:0px" attrs="{'invisible' : ['|', ('teller','!=', 'pull-out-return'),  ('status_field','!=', 'waiting')]}" >
             Note: The form will be completed once the delivery team confirms the return of pull-outs to Sky Cable. Please provide the fields 
             Employee for Delivery, Date returned and the received by fields when the delivery team returns.
             </div>
@@ -39,7 +39,10 @@
                 <field name="employee_for_delivery" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')], 'required': [('status_field','!=','draft')]}" />
                 <field name="date_delivered" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')], 'required': [('status_field','!=','draft')]}" />
                 <field name="received_by" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')], 'required': [('status_field','!=','draft')]}" />
+                <!-- Count pull outs  -->
+                <field name="etsi_pullout_count" attrs="{'invisible': [('teller',  'not in', ('pull-out-return', 'pull-out') )]}" />
             </xpath>
+
             <!-- Add Button to confirm pullout -->
             <xpath expr="//header/button[@name='action_cancel']" position="before">
                  <button name="receive_pullout_btn" string="Confirm Receive" type="object" class="oe_highlight" attrs=" { 'invisible': ['|',('state', '=', 'done'),('teller', '!=', 'pull-out')]}"/>
@@ -62,16 +65,13 @@
                             <field name="serial_type" required="1" />
                             
                             <field name ="etsi_serial_product" />
-                            <field name ="etsi_mac_product" />
-                            <field name ="etsi_smart_card"  />
-                            <field name="comp_date" />
+                            <field name ="etsi_mac_product"  />
+                            <field name ="etsi_smart_card" />
+                            <field name="comp_date" readonly="1"/>
                             <!-- <field name="etsi_teams_id"/> -->
-                            <field name ="issued" />
-                          
-                            <field name="product_uom" />
-          
-                            <field name="product_uom_qty"/>
-                            
+                            <field name ="issued" readonly="1"/>
+                            <field name="product_uom" readonly="1" />
+                            <field name="product_uom_qty" readonly="1"/>
                             <field name ="active_name" invisible="1" />
                             <field name ="active_ako"  invisible="1" />
                             
@@ -85,7 +85,7 @@
             <xpath expr="//notebook/page[3]" position="after">
                 <page string="Pullouts Return" attrs="{'invisible': [('teller','!=','pull-out-return')], 'readonly': [('status_field','!=','draft')]}">
                     <group name="name_group" >
-                        <field name="pullout_holder_return" delete="0" create="0" string="Pull Out Form"  nolabel="1" attrs="{'readonly': [('state','=','done')], 'invisible': [('teller','!=','pull-out-return')]}">
+                        <field name="pullout_holder_return" delete="0" create="0" string="Pull Out Form"  nolabel="1" attrs="{'readonly': ['|', ('state','=','done'), ('status_field','!=','draft')], 'invisible': [('teller','!=','pull-out-return')]}">
                         <tree editable="bottom">
 
                             <field name="for_delivery" />
@@ -129,6 +129,47 @@
                     </group>
                 </page>
             </xpath>
+
+
+
+
+            
+             <!-- Returned Items For  Pull-outs  -->
+
+        <xpath expr="//notebook/page[4]" position="after">
+            <page string="Pullouts Returned List" attrs="{'invisible': ['|', ('teller','!=','pull-out-return'), ('state','!=','done')]}">
+                <group name="pull-out_return_group" >
+                    <field name="pullout_return_list" delete="0" create="0" string="Pull Out Form"  nolabel="1" attrs="{'readonly': [('state','=','done')], 'invisible': [('teller','!=','pull-out-return')]}">
+
+                        <tree editable="bottom">
+<!-- 
+                                    <field name="for_delivery" /> -->
+                                    <field name="job_number" invisible="1"   />
+                                    <field name="job_number_related" readonly="1"/>
+                                    <field name ="product_id"  invisible="1" />
+                                    <field name="product_id_related" readonly="1" />
+                                    <field name ="quantity" invisible="1"  />
+                                    
+                                    <field name ="etsi_serial_product" readonly="1" />
+                                    <field name ="etsi_mac_product" readonly="1"/>
+                                    <field name ="etsi_smart_card" readonly="1"/>
+                                    <field name="comp_date"  invisible="1"/>
+                                    <field name="etsi_teams_id" readonly="1" />
+                                    <field name ="issued" readonly="1"/>
+                                
+                                    <field name="product_uom" invisible="1" />
+                                    <field name="product_uom_qty" invisible="1"  />
+                                    <field name ="active_name" invisible="1" />
+                                    <field name ="active_ako"  invisible="1" />
+
+                        </tree>  
+                    </field>
+                </group>
+
+            </page>
+        </xpath>
+
+        
         </field>
     </record>
 
@@ -175,8 +216,6 @@
                 <field name="etsi_teams_id" />
                 <field name="etsi_status"/>
                 <field name="transaction_number" />
-              
-
                 
                 <!-- <search>
                     <filter name="filter_type_CATV" string="CATV" domain="[('etsi_serial','=','catv5')]"/>

@@ -12,7 +12,7 @@
         
         
         <!--==========Smart Button for issuances=============-->
-        <div name="button_box" position="inside">
+        <!-- <div name="button_box" position="inside">
           <field name="etsi_subscriber" invisible="True"/>
           <field name="etsi_team" invisible="True"/>
 
@@ -24,7 +24,7 @@
             <field string="Team &#xA; Issuance" name="etsi_team_issuance" widget="statinfo"/>
           </button>
           
-        </div>
+        </div> -->
         <!--========== End Smart Button for issuances=============-->
 
         <!-- ======== hide mark as to do =========-->
