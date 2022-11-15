@@ -88,14 +88,35 @@ class ProductTemplateInheritance(models.Model):
     def duplicate_name(self):
         for rec in self:
             count = self.env['product.template'].search_count([('name', '=', rec.name)])
-            if count >= 1:
+            if count >= 1 and rec.internal_ref_name != "drops":
                 return {'warning': {'title': _('Warning'),'message': _('Material code already exist in the database.')}}
 
     @api.constrains('name')
     def duplicate_name_cons(self):
         for rec in self:
             count = self.env['product.template'].search_count([('name', '=', rec.name)])
-            if count >= 2:
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            if count >= 2 and rec.internal_ref_name != "drops":
+                raise ValidationError("Material code already exist in the database.")
+
+    @api.constrains('internal_ref_name')
+    def duplicate_name_cons(self):
+        for rec in self:
+            count = self.env['product.template'].search_count([('name', '=', rec.name)])
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            if count >= 2 and rec.internal_ref_name != "drops":
                 raise ValidationError("Material code already exist in the database.")
 
                 # return {'warning': {'title': _('Warning'),'message': _('Material code already exist in the database.')}}
