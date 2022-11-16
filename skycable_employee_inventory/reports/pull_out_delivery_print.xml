@@ -50,7 +50,7 @@
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>TEAM NUMBER</strong></th>
+                                        <!-- <th style=" border: 1px solid;  text-align: center;"><strong>TEAM NUMBER</strong></th> -->
                                         <th style=" border: 1px solid;  text-align: center;"><strong>PULL-OUT DATE</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
                                 </thead>
@@ -61,7 +61,7 @@
                                    
                                     
                                     
-                                        <tr style=" border: 1px solid; " t-foreach='o.pullout_holder_return' t-as='line' >
+                                        <tr style=" border: 1px solid; " t-foreach='o.pullout_return_list' t-as='line' >
                                     
                                         
                                             <td style=" border: 1px solid;  text-align: center; "> 
@@ -84,9 +84,9 @@
                                                 <span t-field="line.etsi_smart_card" />
                                             </td>
 
-                                            <td style=" border: 1px solid;  text-align: center; ">
+                                            <!-- <td style=" border: 1px solid;  text-align: center; ">
                                                 <span t-field="line.etsi_teams_id" />
-                                            </td>
+                                            </td> -->
 
                                             <td style=" border: 1px solid;  text-align: center; ">
                                                 <span t-field="line.comp_date" />
@@ -106,13 +106,19 @@
                             <br/> <br/>
                             <h5 class="text-right">RELEASE BY: <span t-esc="request.env.user.name"/></h5>
                             <h5 class="text-right">SIGNATURE: ______________________</h5>
+                        
+                            
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
                                 <p><strong>Source Location:</strong>    <span t-field="o.location_id"/></p>
                                 <p><strong>Destination Location:</strong>    <span t-field="o.location_dest_id"/></p>
-                                <p><strong>Team code:</strong>    <span t-field="o.etsi_teams_id"/></p>
+                                <p><strong>Team code:</strong>    <span t-field="o.employee_for_delivery"/></p>
+                                <p><strong>Date Returned: </strong>    <span t-field="o.date_delivered"/></p>
+                                <p><strong>Received By: </strong>    <span t-field="o.received_by"/></p>
+
                             </div> 
+                            <br></br>
                       
 
                             
@@ -129,6 +135,3 @@
         </template>
     </data>
 </odoo>
-
-
-

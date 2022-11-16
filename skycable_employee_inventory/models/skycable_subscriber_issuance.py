@@ -163,92 +163,104 @@ class Validate_Subscriber_Issuance(models.Model):
         res = super(Validate_Subscriber_Issuance, self).do_new_transfer()
 
         for rec in self:
-            teller = rec.teller
+            if rec.teller == 'subscriber':
+                picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
 
-        if teller == 'subscriber':
-    
-            picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-
-            subs_list = []
-            for rec in self:
+                subs_list = []
+                team_nums = []
                 search_name = self.env['stock.picking'].search([('name','=',rec.name)])
                 picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
+                picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
+                stock_picking_db = self.search([])
 
-            picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Subscriber Issuance')])
-            stock_picking_db = self.env['stock.picking']
+                self.update({
+                    'state' : 'done'
+                })
+                
+                # To Update the status 
+                product_lists = []
+                product_serials = []
 
-            self.update({
-                'state' : 'done'
-            })
-            
-            # To Update the status 
-            product_lists = []
-            product_serials = []
+                product_serials_issued= []
+                product_lists_issued = []
 
-            product_serials_issued= []
-            product_lists_issued = []
+                final= []
+                final_ids = []
 
-            final= []
-            final_ids = []
-
-            for rec in self:
                 # if rec.picking_type_id.name == "Subscriber Return" or rec.picking_type_id.name == "Team Return":
                 for plines_issued in rec.subs_issue:
                     product_serials_issued.append(plines_issued.etsi_serial_product)
                     product_lists_issued.append(plines_issued.product_id)
 
-            for item in product_serials_issued:
-                final.append(item)
+                for item in product_serials_issued:
+                    final.append(item)
 
-            for items_ids in product_lists_issued:
-                final_ids.append(items_ids.id)
+                for items_ids in product_lists_issued:
+                    final_ids.append(items_ids.id)
 
-            issued_stats = self.env['stock.move'].search([])
-            inventory_stats = self.env['etsi.inventory'].search([])
-            trans_float_data = self.env['stock.transfer.team.return'].search([])
-            
-            if final and final_ids:
-                # check if installed item is available in transfer
-                for trans in trans_float_data:
-                    # If serial is available 
-                    if trans.etsi_serial_product in final and trans.issued == 'Waiting' and trans.transfer_checker == True:
-                        for subs_ret in final:
-                            for issued_ids in issued_stats: # stock.move
-                                if subs_ret == issued_ids.etsi_serials_field:
-                                    trans.update({
-                                        'issued': "Done",
-                                        'source': issued_ids.doc_source.id,
-                                        'return_checker': True,
-                                    })
-                                    
-                                    # Update record of product recipient's team issuance
-                                    for inventory in inventory_stats:
-                                        # Check if the floating data is ready - to update the product list on team issuance (Product reciever)
-                                        if trans.issued == 'Done' and trans.transfer_checker == True and trans.return_checker == True:
-                                            # update stock.move
-                                            if issued_ids.etsi_serials_field == trans.etsi_serial_product:
-                                                issued_ids.update({'picking_id': issued_ids.doc_source.id})
-                                                
-                                                # update etsi.inventory - team number
-                                                if inventory.etsi_serial == subs_ret:
-                                                    inventory.update({'etsi_team_in': trans.team_num_to.id})
-                                                    
-                                                    # Update product status
-                                                    if issued_ids.etsi_serials_field in final:
-                                                        issued_ids.update({'issued_field': 'Used'})
+                issued_stats = self.env['stock.move'].search([])
+                inventory_stats = self.env['etsi.inventory'].search([])
+                trans_float_data = self.env['stock.transfer.team.return'].search([])
+                
+                if final and final_ids:
+                    # check if installed item is available in transfer
+                    if trans_float_data:
+                        for trans in trans_float_data:
+                            # If serial is available 
+                            if trans.etsi_serial_product in final and trans.issued == 'Waiting' and trans.transfer_checker == True:
+                                for subs_ret in final:
+                                    for issued_ids in issued_stats: # stock.move
+                                        if subs_ret == issued_ids.etsi_serials_field:
+                                            trans.update({
+                                                'issued': "Done",
+                                                'source': issued_ids.doc_source.id,
+                                                'return_checker': True,
+                                            })
+                                            
+                                            # Update record of product recipient's team issuance
+                                            for inventory in inventory_stats:
+                                                # Check if the floating data is ready - to update the product list on team issuance (Product reciever)
+                                                if trans.issued == 'Done' and trans.transfer_checker == True and trans.return_checker == True:
+                                                    # update stock.move
+                                                    if issued_ids.etsi_serials_field == trans.etsi_serial_product:
+                                                        if issued_ids.doc_source.id:
+                                                            # get picking_id of team_to
+                                                            for ey in stock_picking_db:
+                                                                if ey.etsi_teams_id.id == trans.team_num_to.id:
+                                                                    team_nums.append(ey.id)
+                                                            # transfer item
+                                                            issued_ids.update({'picking_id': max(team_nums)}) # highest picking ID of a team
+                                                        
+                                                        # update etsi.inventory - team number
+                                                        if inventory.etsi_serial == subs_ret:
+                                                            if trans.team_num_to.id:
+                                                                inventory.update({'etsi_team_in': trans.team_num_to.id})
+                                                            
+                                                            # Update product status
+                                                            if issued_ids.etsi_serials_field in final:
+                                                                issued_ids.update({'issued_field': 'Used'})
 
-                                                        for searched_ids in inventory_stats:
-                                                            if searched_ids.etsi_product_id.id in final_ids:
-                                                                if searched_ids.etsi_serial in final:
-                                                                    searched_ids.update({'etsi_status': 'used'})
-                                                                    searched_ids.update({'etsi_team_in': self.etsi_teams_id.team_number})
-                                                    
-                                                                    # Delete floating data
-                                                                    self.ensure_one()
-                                                                    trans.unlink()
-                                                                    return
-                        
-                    # if not
+                                                                for searched_ids in inventory_stats:
+                                                                    if searched_ids.etsi_product_id.id in final_ids:
+                                                                        if searched_ids.etsi_serial in final:
+                                                                            searched_ids.update({'etsi_status': 'used'})
+                                                                            searched_ids.update({'etsi_team_in': self.etsi_teams_id.team_number})
+                                                            
+                                                                            # Delete floating data
+                                                                            self.ensure_one()
+                                                                            trans.unlink()
+                                                                            return
+                            # if not
+                            else:
+                                for issued_ids in issued_stats:
+                                    if issued_ids.etsi_serials_field in final:
+                                        issued_ids.update({'issued_field': 'Used'})
+
+                                        for searched_ids in inventory_stats:
+                                            if searched_ids.etsi_product_id.id in final_ids:
+                                                if searched_ids.etsi_serial in final:
+                                                    searched_ids.update({'etsi_status': 'used'})
+                                                    searched_ids.update({'etsi_team_in': self.etsi_teams_id.team_number})
                     else:
                         for issued_ids in issued_stats:
                             if issued_ids.etsi_serials_field in final:

@@ -74,24 +74,7 @@
                                            
                                         <t t-if="line.etsi_serials_field == False">
                                             
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
+                                      
                                         </t>
                                         
                                         <t t-else="line.etsi_serials_field == line.etsi_serials_field">
@@ -102,6 +85,7 @@
 
                                             <td style=" border: 1px solid;  text-align: center; ">
                                                 <img t-att-src="'/report/barcode/Code128/'+line.etsi_serials_field" style="width:240px;height:20px;"/>
+                                                <p> <span t-field="line.etsi_serials_field" /></p>
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
@@ -172,19 +156,7 @@
                                                     <span t-esc="line.product_uom_qty" />
                                                 </td>
                                             </t>
-                                            
-                                            <t t-else="line.etsi_serials_field == line.etsi_serials_field">
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                                <td style=" border: 1px solid;  text-align: center;">
-                                                     EMPTY
-                                                </td>
-                                            </t>
-                                    
+                                 
                                         </tr>
                                     
                                 </tbody>
@@ -196,7 +168,7 @@
                             <table class="table table-condensed" style=" border: 1px solid; width: 100%; table-layout: auto;">
                             
                                 <thead  style=" border: 1px solid; ">
-                                        <th style=" border: 1px solid;  text-align: center; "><strong>Team code</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center; "><strong>Team code</strong>  </th>
                                         <th style=" border: 1px solid;  text-align: center; "><strong>Employee name</strong></th>
                                 </thead>
 
@@ -223,8 +195,8 @@
                             </table>
                             <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right">ENCODE BY: Administrator </h5>
-                            <h5 class="text-right">RECIEVED SIGNATURE:___________________</h5>
+                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: Administrator </h5>
+                            <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
                             <br/> <br/>
                             <p t-field="o.note"/>
                             
@@ -244,7 +216,7 @@
                                 <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>
                         </div>
-
+                  
                     </t>
                  </t>
              </t>

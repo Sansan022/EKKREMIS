@@ -322,12 +322,6 @@ class Inherit_Product_Quantity(models.TransientModel):
         if not duplicate_macs.empty:
             return {'warning': {'title': _('Warning'),'message': _('Duplicate Mac Address Detected within the table.')}}
 
-
-
-    
-
-
-
 # Validation for serial number for broadband within the table
     @api.constrains('etsi_product_items')
     def _check_exist_serial_in_line(self):

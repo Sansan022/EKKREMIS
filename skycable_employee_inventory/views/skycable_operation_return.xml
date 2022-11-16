@@ -71,7 +71,7 @@
                     </group>
                     <group string="Damage List">
                         <field name="damage_list_ids" nolabel="1" readonly="1">
-                            <tree editable="bottom" delete="0" create="0">
+                            <tree editable="bottom" delete="0" create="0t">
                                 <field name="product_id" />
                                 <field name="etsi_serial_product" />
                                 <field name="etsi_mac_product" />
@@ -80,6 +80,7 @@
                                 <field name="dmg_type"/>
                                 <field name="quantity" />
                                 <field name="product_uom" /> 
+                                <field name="teams_from_damage" invisible="1"  />
                                 <field name="active_name" invisible="1" />
                             </tree>
                         </field> 
@@ -147,6 +148,7 @@
                                 <field name="teams_to"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  -->
+                                <field name="teams_from_damage" invisible="1" />
                                 <field name="teams_from_duplicate" invisible="1" />
                                 <field name="teams" invisible="1" />
                                 <field name="product_id_duplicate" invisible="1" />
@@ -160,40 +162,37 @@
 
             <!-- Add the returned items page -->
             <xpath expr="//notebook/page[3]" position="after">
-            <page string="Returned Items" attrs="{'invisible': ['|', ('teller','!=','return'), ('status_field','=','draft')]}">
-            <field name="return_items" readonly="1" nolabel="1"  >
-                <tree editable="bottom">
-                    <field name="product_id" readonly="1" required="1" />
-                    <field name="etsi_serial_product" />
-                    <field name="etsi_mac_product" />
-                    <field name="etsi_smart_card" />
-                    <field name="quantity" />
-                    <field name="product_uom" />
-                    <field name="issued" />
-
-                </tree>
-            
-            </field>
-             </page>
+                <page string="Returned Items" attrs="{'invisible': ['|', ('teller','!=','return'), ('status_field','=','draft')]}">
+                    <field name="return_items" readonly="1" nolabel="1"  >
+                        <tree editable="bottom">
+                            <field name="product_id" readonly="1" required="1" />
+                            <field name="etsi_serial_product" />
+                            <field name="etsi_mac_product" />
+                            <field name="etsi_smart_card" />
+                            <field name="quantity" />
+                            <field name="product_uom" />
+                            <field name="issued" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
 
               <!-- Add the returned items page -->
             <xpath expr="//notebook/page[4]" position="after">
-            <page string="Damaged Items" attrs="{'invisible': ['|', ('teller','!=','damage')]}">
-            <field name="damaged_items" readonly="1" nolabel="1"  >
-                <tree editable="bottom">
-                    <field name="product_id" readonly="1" required="1" />
-                    <field name="etsi_serial_product" />
-                    <field name="etsi_mac_product" />
-                    <field name="etsi_smart_card" />
-                    <field name="quantity" />
-                    <field name="product_uom" />
-                    <field name="issued" />
-                    <field name="dmg_type" />
-                </tree>
-            
-            </field>
-             </page>
+                <page string="Damaged Items" attrs="{'invisible': ['|', ('teller','!=','damage')]}">
+                    <field name="damaged_items" readonly="1" nolabel="1"  >
+                        <tree editable="bottom">
+                            <field name="product_id" readonly="1" required="1" />
+                            <field name="etsi_serial_product" />
+                            <field name="etsi_mac_product" />
+                            <field name="etsi_smart_card" />
+                            <field name="quantity" />
+                            <field name="product_uom" />
+                            <field name="issued" />
+                            <field name="dmg_type" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
             <!-- Replace the validate button -->
              <xpath expr="//header/button[5]" position="replace">
