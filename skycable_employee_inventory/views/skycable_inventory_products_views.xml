@@ -531,8 +531,8 @@
                 <field name="qty_available" sum="Total" widget="integer"/>
             </field> -->
             <field name="qty_available" position="before">
-                <field name="drops_reference_id" />
-                <field name="description_txt" />
+                <field name="drops_reference_id" string="Drops Reference" />
+                <field name="description_txt" string="Descriptions"/>
             </field>
             <field name="qty_available" position="attributes">
                 <attribute name="widget">integer</attribute>
