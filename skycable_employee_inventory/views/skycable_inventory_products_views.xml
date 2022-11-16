@@ -525,20 +525,33 @@
       <record id="product_template_qty_available_tree_inherit" model="ir.ui.view">
         <field name="name">product.template.qty.available.tree.view</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/> 
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/>
         <field name="arch" type="xml">
-
-            <!-- <xpath expr="//data/field//field[1]" position="attributes">
-                <attribute name="invisible">Total</attribute>
-            </xpath> -->
-            
-
-
-            <field name="uom_id" position="before">
+            <!-- <field name="uom_id" position="before">
                 <field name="qty_available" sum="Total" widget="integer"/>
+            </field> -->
+            <field name="qty_available" position="before">
+                <field name="drops_reference_id" />
+                <field name="description_txt" />
             </field>
-
+            <field name="qty_available" position="attributes">
+                <attribute name="widget">integer</attribute>
+                <attribute name="sum">Total</attribute>
+            </field>        
+            <field name="virtual_available" position="attributes">
+                <attribute name="widget">integer</attribute>
+                <attribute name="sum">Total</attribute>
+            </field>        
+            <field name="type" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>       
+            <field name="categ_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>            
         </field>
       </record>
+
+
+
     </data>
 </odoo>
