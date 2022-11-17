@@ -1,112 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
-
-    <record id="view_picking_form_table_inherit" model="ir.ui.view">
-            <field name="name">stock.picking.table.inherit</field>
-            <field name="model">stock.move</field>
-            <field name="inherit_id" ref="stock.view_move_picking_tree"/>
-            <field name="arch" type="xml">
-
-              <xpath expr="//tree/field[@name='product_id']" position="attributes">
-                    <attribute name="invisible">1</attribute>
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_uom_qty']" position="attributes">
-                    <attribute name="readonly">0</attribute>
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_uom_qty']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('product_id_refname','in',('broadband','catv5'))]}</attribute>
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_uom']" position="attributes">
-                    <attribute name="readonly">0</attribute>
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_uom']" position="attributes">
-                    <attribute name="invisible">1</attribute>
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_uom_qty']" position="after">
-                    <field name="uom_field_duplicate" attrs="{'readonly': [('product_id','!=',False)]}"/>
-              </xpath>
-              <xpath expr="//tree/field[@name='product_uom_qty']" position="after">
-                    <field name="uom_field_duplicate2" invisible="True"/>
-              </xpath>
-
-          
-              <xpath expr="//tree/field[@name='product_id']" position="after">
-              
-                  <field name="product_id_duplicate"/>
-                  <field name="product_id_refname" invisible="True"/>
-                  <!-- attrs="{'readonly': [('product_id','!=',False)]}" -->
-                  <field name="etsi_serials_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
-                  <field name="etsi_mac_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
-                  <field name="etsi_smart_card_field" attrs="{'readonly': [('product_id','!=',False)]}"/>
-                  <!-- duplicate -->
-                  <field name="etsi_serials_field_duplicate" invisible="True"/>
-                  <field name="etsi_mac_field_duplicate" invisible="True"/>
-                  <field name="etsi_smart_card_field_duplicate" invisible="True"/>
-
-                  <!-- <field name="checker_box" attrs="{'invisible': [('state','!=','done')],'readonly': [('issued_field','!=','No')]}"/> -->
-                  <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
-                  <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
+    <data>
 
 
-              </xpath>
+     
 
-              <xpath expr="//tree/field[@name='state']" position="after">
-                  <!-- <button name="open_view_wizard" string="Convert" type="action"/> -->
-                  <!-- transient_issued_action2 -->
+        <template id="report_view">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="stock.external_layout_barcode_right">
+                    <link rel="stylesheet" href="/skycable_employee_inventory/static/src/style.css"/>
+                        <div class="page">
+                            <h1 class="text-center">Team Issuance Reports</h1>
+                            <br/>
+
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            
+                            <br/>
+                            <br/>
+                            <h5>
+                            <!-- <t t-if="line.etsi_serials_field == False">
+                            </t>
+                            <t t-else="line.etsi_serials_field == line.etsi_serials_field"> -->
+                            <strong>CPE</strong>
+                            <!-- </t> -->
+                            </h5>
+
+
+
+                            <table class="table table-condensed"  style=" border: 1px solid;  width: 100%; table-layout: auto;">
+                             
+                                    
+                            
+                                <thead  style=" border: 1px solid; " >
+                                    <!-- <t t-if="line.etsi_serials_field == False">
+                                            
+                                    </t>
+                                    <t t-else="line.etsi_serials_field == line.etsi_serials_field"> -->
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>BARCODE</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL NO.</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID no</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                    <!-- </t> -->
+                                </thead>
+
+                                
+                                <tbody  style=" border: 1px solid; ">
+                                    
+                                   
+                                    
+                                    
+                                        <tr t-foreach='o.move_lines' t-as='line' style=" border: 1px solid; ">
+                                           
+                                        <t t-if="line.etsi_serials_field == False">
+                                            
+                                      
+                                        </t>
+                                        
+                                        <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                            <td style=" border: 1px solid;  text-align: center; "> 
+                                                    <span t-field="line.product_id" />
+                                               
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <img t-att-src="'/report/barcode/Code128/'+line.etsi_serials_field" style="width:240px;height:20px;"/>
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_serials_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_mac_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_smart_card_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.issued_field" />
+                                            </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-esc="line.product_uom_qty" />
+                                            </td>
+                                        </t>
+                                            
+                                        </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <br/>
+                            <br/>
+
+
+                          
+                            <h5 > 
+                                <!-- <t t-foreach='o.move_lines' t-as='line'>
+                                <t t-if="line.etsi_serials_field == False"> -->
+                                <strong>DROPS AND MATERIALS</strong>
+                                <!-- </t> -->
+                             
+                                <!-- <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                </t>
+                                </t> -->
+                            </h5>
+                           
+                            <table class="table table-condensed"  style=" border: 1px solid; width: 100%; table-layout: auto;">
+                            
+                                <thead  style=" border: 1px solid; " >
+                               
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                  
+                              
+                                </thead>
+
+                                <tbody  style=" border: 1px solid; ">
+                                    
+                                   
+                                    
+                                    
+                                        <tr   t-foreach='o.move_lines' t-as='line'>
+                                      
+                                            <t t-if="line.etsi_serials_field == False">
+                                                <td style=" border: 1px solid;  text-align: center;">
+                                                    <span t-field="line.product_id" />
+                                                </td>
+
+                                                <td style=" border: 1px solid;  text-align: center;">
+                                                    <span t-field="line.issued_field" />
+                                                </td>
+
+                                                <td style=" border: 1px solid;  text-align: center;">
+                                                    <span t-esc="line.product_uom_qty" />
+                                                </td>
+                                            </t>
+                                 
+                                        </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <br/>
+                            <br/>
+                            
+                            
+                            <table class="table table-condensed" style=" border: 1px solid; width: 100%; table-layout: auto;">
+                            
+                                <thead  style=" border: 1px solid; ">
+                                        <th style=" border: 1px solid;  text-align: center; "><strong>Team code</strong>  </th>
+                                        <th style=" border: 1px solid;  text-align: center; "><strong>Employee name</strong></th>
+                                </thead>
+
+                                <tbody  style=" border: 1px solid; ">
+                                    <tr t-foreach='o.etsi_teams_line_ids' t-as='line'>
+                                        <td style=" border: 1px solid;  text-align: center; ">
+                                            <span t-field="o.etsi_teams_id" />
+                                        </td>
+                                        <td style=" border: 1px solid;  text-align: center; ">
+                                             <t t-if="line.etsi_teams_temporary == True">
+                                                 <span t-field="line.etsi_teams_replace" />
+                                             </t>
+                                             <t t-if="line.etsi_teams_temporary == False">
+                                                 <span t-field="line.team_members_lines" />
+                                             </t>
+                                           
+
+                                            <!-- #replaceTeam team etsi_teams_replace -->
+                                            <!-- #boolean etsi_teams_temporary -->
+                                            <!-- #temporary team team_members_lines -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/> <br/>
+                            <br/> <br/>
+                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: Administrator </h5>
+                            <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
+                            <br/> <br/>
+                            <p t-field="o.note"/>
+                            
+                            <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
+                                <p><strong>Source Location:</strong>    <span t-field="o.location_id"/></p>
+                                <p><strong>Destination Location:</strong>    <span t-field="o.location_dest_id"/></p>
+                                <p><strong>Team code:</strong>    <span t-field="o.etsi_teams_id"/></p>
+                            </div> 
+                      
+
+                            
+                            <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
+                                <p><strong>Date:</strong>  <span t-field="o.date"/></p>
+                                <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
+                                <p><strong>State:</strong>   <span t-field="o.state"/></p>
+                                
+                                <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
+                             </div>
+                        </div>
                   
-                  <button name="testing1212" type="object" string="Convert" attrs="{'invisible': ['|',('etsi_serials_field','!=',False),('state','!=','draft')]}"/>
-                  
-              </xpath>
-
-              <xpath expr="//tree/field[@name='product_id_duplicate']" position="attributes">
-                    <attribute name="readonly">1</attribute>
-              </xpath>
-
-            </field>
-    </record>
-
-
-    <record id="view_picking_form_table_inherit_one2many" model="ir.ui.view">
-            <field name="name">stock.picking.table.inherit.one2many</field>
-            <field name="model">stock.picking</field>
-            <field name="inherit_id" ref="stock.view_picking_form"/>
-            <field name="arch" type="xml">
-
-            <xpath expr="//notebook/page[2]" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('etsi_teams_id', '=', False),('teller','in',('return','pull-out','pull-out-return'))]}</attribute>
-            </xpath>
-
-
-            <xpath expr="//notebook/page[2]/field[@name='move_lines']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('state', 'in', ('cancel','done'))]}</attribute>
-            </xpath>
-              
-              <!-- <field name="move_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'partially_available', 'assigned'))]}" options="{'reload_on_button': True}"/> -->
-              <!-- ADDING ISSUE BUTTON -->
-          <!-- <xpath expr="//header/button[@name='button_scrap']" position="after">
-            <button name="%(transient_issued_action)d" type="action" string="Issue" states="done"  groups="base.group_user"/>
-          </xpath> -->
-
-          <!-- HIDING SCRAP BUTTON -->
-          <xpath expr="//header/button[@name='button_scrap']" position="attributes">
-            <attribute name="invisible">1</attribute>
-          </xpath>
-
-          <xpath expr="//sheet/group[1]/group[1]/field[@name='location_id']" position="attributes">
-            <attribute name="readonly">1</attribute>
-          </xpath>
-
-          <xpath expr="//sheet/group[1]/group[1]/field[@name='location_dest_id']" position="attributes">
-            <attribute name="readonly">1</attribute>
-          </xpath>
-
-            </field>
-    </record>
-
-  </data>
+                    </t>
+                 </t>
+             </t>
+        </template>
+    </data>
 </odoo>

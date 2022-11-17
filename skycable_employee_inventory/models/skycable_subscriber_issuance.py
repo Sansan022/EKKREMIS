@@ -226,7 +226,7 @@ class Validate_Subscriber_Issuance(models.Model):
                                                         if issued_ids.doc_source.id:
                                                             # get picking_id of team_to
                                                             for ey in stock_picking_db:
-                                                                if ey.etsi_teams_id.id == trans.team_num_to.id:
+                                                                if ey.etsi_teams_id.id == trans.team_num_to.id and ey.location_id.name == "Team Location" and ey.location_dest_id.name == "Customers":
                                                                     team_nums.append(ey.id)
                                                             # transfer item
                                                             issued_ids.update({'picking_id': max(team_nums)}) # highest picking ID of a team
