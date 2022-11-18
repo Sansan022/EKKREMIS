@@ -150,17 +150,20 @@ class Return_list_holder(models.TransientModel):
                     'etsi_serials_field': line_ret.etsi_serial_product,
                     'etsi_mac_field': line_ret.etsi_mac_product,
                     'etsi_smart_card_field': line_ret.etsi_smart_card,
+
                     # Additional for returned items
                     'etsi_serial_product' : line_ret.etsi_serial_product,
                     'etsi_mac_product' : line_ret.etsi_mac_product,
                     'etsi_smart_card' : line_ret.etsi_smart_card,
                     'issued' : "Available",
+
                     # Continuation
                     'issued_field': "Available",
                     'product_uom': line_ret.product_id.product_tmpl_id.uom_id.id,
                     'product_uom_qty' : line_ret.quantity,
                     'quantity': line_ret.quantity, 
                     'move_id': line_ret.id,
+
                     'location_id' : picking_checker_return.default_location_src_id,
                     'location_dest_id' : picking_checker_return.default_location_dest_id,
                     # Hard coded pa tong picking_type Id 
@@ -252,10 +255,10 @@ class Return_list_holder(models.TransientModel):
                         if issued_ids.etsi_serials_field in product_serials or issued_ids.etsi_serials_field in trans_sr:
                             issued_ids.update({'issued_field': 'Available'})
             
-                        for searched_ids in inventory_stats:
-                            if searched_ids.etsi_product_id in product_lists:
-                                if searched_ids.etsi_serial in product_serials:
-                                    searched_ids.update({'etsi_status': 'available'})
+                            for searched_ids in inventory_stats:
+                                if searched_ids.etsi_product_id in product_lists:
+                                    if searched_ids.etsi_serial in product_serials:
+                                        searched_ids.update({'etsi_status': 'available'})
                                         
            # Transfer Items
             if team_return_transfer or team_return:
@@ -889,6 +892,7 @@ class Return_list_childs(models.TransientModel):
                                         rec.product_uom = 1
                                         # rec.teams_from = s_name.etsi_teams_id.id
                                         rec.teams = ser2.etsi_team_in.id
+                                        rec.teams_from_damage = ser2.etsi_team_in.team_number
                                     else:
                                         raise ValidationError("This Product is not Deployed / Already installed (Used)")
                     else:

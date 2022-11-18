@@ -150,7 +150,7 @@
                                 <field name="teams_to"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  -->
-                                <field name="teams_from_damage" invisible="1" />
+                                <field name="teams_from_damage" />
                                 <field name="teams_from_duplicate" invisible="1" />
                                 <field name="teams" invisible="1" />
                                 <field name="product_id_duplicate" invisible="1" />

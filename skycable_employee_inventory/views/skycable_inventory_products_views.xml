@@ -540,5 +540,12 @@
 
         </field>
       </record>
+      <menuitem 
+        id="menu_inventory_product" 
+        name="Products" 
+        action="product_template_action_product"
+        web_icon="skycable_employee_inventory,static/img/product_icon.png"
+      />
+      
     </data>
 </odoo>

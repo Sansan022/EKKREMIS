@@ -59,10 +59,6 @@ class Team_issuance(models.Model):
                     domain_check =[]
                     for rec2 in drop_name:
                         domain_check.append(rec2.uom_id.id)
-                        print(domain_check)
-                        print(domain_check)
-                        print(domain_check)
-                        print(domain_check)
 
                     if rec.etsi_serials_field != False and rec.uom_field_duplicate.id == False:
                         for rec3 in drop_name:
@@ -242,7 +238,6 @@ class Team_issuance(models.Model):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_serials_field == False:
-                print("running")
                 pass
             elif rec2.etsi_serials_field == self.etsi_serials_field:
                 check6 = "Duplicate detected within the Table \n Serial Number: {}".format(rec2.etsi_serials_field)
@@ -257,7 +252,6 @@ class Team_issuance(models.Model):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_mac_field == False:
-                print("running")
                 pass
             elif rec2.etsi_mac_field == self.etsi_mac_field:
                 check6 = "Duplicate detected within the Table \n Mac Number: {}".format(rec2.etsi_serials_field)
@@ -272,7 +266,6 @@ class Team_issuance(models.Model):
         check5 = self.picking_id.move_lines - self
         for rec2 in check5:
             if self.etsi_smart_card_field == False:
-                print("running")
                 pass
             elif rec2.etsi_smart_card_field == self.etsi_smart_card_field:
                 check6 = "Duplicate detected within the Table \n Smart Card Number: {}".format(rec2.etsi_serials_field)

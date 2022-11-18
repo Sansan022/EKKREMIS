@@ -66,7 +66,7 @@
 
         'views/pivot_view_all_serial.xml',
         'views/pivot_product_view.xml',
-
+        'data/warehouse_scheduler.xml'
         
 
     ]

@@ -54,12 +54,9 @@ class Validate_Pullout_Received(models.Model):
         return_res =self.env['etsi.pull_out.inventory'].search([('etsi_status', 'in', ('received', 'damaged')),('status_field', 'not in', ('waiting', 'done'))])
 
         res['etsi_pullout_count'] = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery')),('status_field', 'not in', ('waiting', 'done'))])
-        
 
         for item in return_res:
-
             if item.etsi_status == 'received':
-
                 return_lines.append(( 0,0, {
                     'for_delivery': True,  
                     'job_number' : item.job_number,     
@@ -79,13 +76,8 @@ class Validate_Pullout_Received(models.Model):
         if 'pullout_holder_return' in fields :
             res.update({'pullout_holder_return' : return_lines })
             # res['pullout_return_list'] =  return_lines
-
-
                 # for laman in return_lines :
-
                     # print(laman)
-
-
         
         return res
 
@@ -795,7 +787,7 @@ class Etsi_Pullout_Inventory(models.Model):
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
-    etsi_status = fields.Selection([('received', 'Received'),('delivery', 'Delivery'),('returned', 'Returned')], string="Status", default='delivery', readonly=True)
+    etsi_status = fields.Selection([('received', 'Received'),('delivery', 'Delivery'),('returned', 'Returned'), ('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
 
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Char(string="Product")
