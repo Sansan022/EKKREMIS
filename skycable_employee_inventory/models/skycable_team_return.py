@@ -392,7 +392,6 @@ class Return_list_holder(models.TransientModel):
                         # Update record of product recipient's team issuance
                         for move in trans_move:
                             for inventory in transfer_picking:
-                                print("NAAYS GUMAGANA")
                                 # Check if the floating data is ready - to update the product list on team issuance (Product reciever)
                                 if list_trans.issued == "Done" and list_trans.return_checker == True and list_trans.transfer_checker == True:
                                     # update stock.move
@@ -407,7 +406,7 @@ class Return_list_holder(models.TransientModel):
                                             self.ensure_one()
                                             list_trans.unlink()
                                             return
-                        
+                            
         # Damage Transaction
         if team_return_damaged: 
             issued_stats = self.env['stock.move'].search([])

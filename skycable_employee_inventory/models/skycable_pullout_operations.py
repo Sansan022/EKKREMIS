@@ -249,19 +249,6 @@ class Validate_Pullout_Received(models.Model):
                         
                 picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Return To Sky')])
                 stock_picking_db = self.env['stock.picking']
-                
-                self.update({
-                    # 'etsi_team_issuance_id': picking.id,
-                    'picking_type_id': picking_checker2.id,
-                    # 'partner_id': self.skycable_subscriber_id.id,
-                    'move_lines':listahan_delivery,
-                    'location_id': picking_checker2.default_location_src_id.id,
-                    'location_dest_id': picking_checker2.default_location_dest_id.id,
-                    'state' : 'done',
-                    'status_field' : 'done',
-                    'etsi_teams_id' : 1,
-
-                    })
 
                 
                 # CREATE RECORD
@@ -318,6 +305,10 @@ class Validate_Pullout_Received(models.Model):
             else:
                 raise ValidationError("Please fill up  Items to receive for pull-outs ")
             
+        self.update({
+            'state' : 'done',
+            'status_field' : 'done',
+        })
             
     # @api.multi
     # def receive_pullout_btn(self):
@@ -853,7 +844,7 @@ class Etsi_Pullout_Inventory(models.Model):
     etsi_serial = fields.Char(string="Serial ID")
     etsi_mac = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
-    etsi_status = fields.Selection([('received', 'Received'),('delivery', 'Delivery'),('returned', 'Returned')], string="Status", default='delivery', readonly=True)
+    etsi_status = fields.Selection([('received', 'Received'),('delivery', 'Delivery'),('returned', 'Returned'), ('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
 
     etsi_product_id = fields.Many2one('product.product',string="Product")
     etsi_product_name = fields.Char(string="Product")
