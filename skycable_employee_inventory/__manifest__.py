@@ -22,7 +22,8 @@
     'data': [
         #wizard
         'wizard/skycable_issued_wizards.xml',
-        # 'security/ir.model.access.csv',
+        # 'security/ir.model.access.csv',\
+        'data/warehouse_scheduler.xml'
         'data/skycable_inventory_adjustment_sequence.xml',
         'views/skycable_inventory_all_transfer_views.xml',
         'views/skycable_inventory_adjustment_views.xml',
@@ -66,7 +67,7 @@
 
         'views/pivot_view_all_serial.xml',
         'views/pivot_product_view.xml',
-        'data/warehouse_scheduler.xml'
+
         
 
     ]

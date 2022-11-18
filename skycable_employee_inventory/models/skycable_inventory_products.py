@@ -95,6 +95,13 @@ class ProductTemplateInheritance(models.Model):
     def duplicate_name_cons(self):
         for rec in self:
             count = self.env['product.template'].search_count([('name', '=', rec.name)])
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
+            print(count)
             if count >= 2 and rec.internal_ref_name != "drops":
                 raise ValidationError("Material code already exist in the database.")
 
@@ -106,6 +113,9 @@ class ProductTemplateInheritance(models.Model):
                 raise ValidationError("Material code already exist in the database.")
 
                 # return {'warning': {'title': _('Warning'),'message': _('Material code already exist in the database.')}}
+        
+
+    
 
 
 #REFERENCE OF DROPS MANY2ONE
@@ -115,9 +125,9 @@ class Product_drops_reference(models.Model):
 
     drops_references=fields.Char(string="Drops type")
 
+
 # serial smart button content
 class Product_Serial_SmartButton(models.Model):
-
     _name = 'etsi.inventory'
     _rec_name = 'etsi_product_id'
 
@@ -137,21 +147,24 @@ class Product_Serial_SmartButton(models.Model):
     etsi_team_in = fields.Many2one('team.configuration', string="Teams")
     etsi_punched_date_in = fields.Datetime("Punch Time")
     etsi_employee_in = fields.Many2one('res.users',"Employee")
-    active = fields.Boolean('Active', default=True )
-
     # ADDING FIELDS FOR DROPS REFERENCE
     etsi_drops_references_in = fields.Char(string="Drop Types")
+    
+    active = fields.Boolean('Active', default=True)
+    
     
     #product scheduler
     @api.multi
     def product_archive_scheduler(self):
         two_years = datetime.now().date() - timedelta(days=730)
         active_products = self.env['etsi.inventory'].search([('etsi_date_issued_in', '<=', str(two_years))])
+        print(active_products)
         for archive_products in active_products:
             archive_products.active = False
 
 # update quantity on hand one2many content
 class Product_Quanty_On_Hand_Model(models.TransientModel):
+
     _name = 'etsi.inventory.product'
     _rec_name = 'etsi_product_id_product'
 

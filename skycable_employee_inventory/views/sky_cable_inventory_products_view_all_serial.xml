@@ -62,21 +62,20 @@
                 <filter name="filter_type_delivery" string="Delivery" domain="[('etsi_status','=','delivery')]"/>
                 <filter name="filter_type_delivered" string="Delivered" domain="[('etsi_status','=','delivered')]"/>
 
-                <filter name="filter_etsi_team_in" string="Team" domain="[]" context="{'group_by': ['etsi_team_in']}" />
-                <separator/>
+                <filter name="filter_etsi_team_in" string="Team" context="{'group_by': 'etsi_team_in'}" />
                 </group>
             </search>
         </field>
     </record>
-<!-- 
+
     <record id="View_all_serial_action" model="ir.actions.act_window">
         <field name="name">View_all_serial</field>
         <field name="res_model">etsi.inventory</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree</field>
-        <field name="context">{'search_default_filter_type_CATV':0,'search_default_filter_type_MODEM':0,'search_default_filter_type_available':0,'search_default_filter_type_deployed':0,'search_default_filter_type_used':0,'search_default_filter_type_returned':0,'search_default_filter_type_damaged':0,'search_default_filter_type_onhand':0,'search_default_filter_type_delivery':0,'search_default_filter_type_delivered':0,'search_default_filter_etsi_team_in':0} </field>
+        <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_deployed':0,'search_default_filter_type_used':0,'search_default_filter_type_returned':0,'search_default_filter_type_damaged':0,'search_default_filter_type_onhand':0,'search_default_filter_type_delivery':0,'search_default_filter_type_delivered':0} </field>
 
-    </record> -->
+    </record>
 
     <record id="action_inventory_form20" model="ir.actions.act_window">
         <field name="name">Inventory Log</field>
@@ -260,24 +259,13 @@
         </record>
 
 
-    <record id="product_template_search_view_inherit" model="ir.ui.view">
-            <field name="name">product.template.search.inherit</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_search_view" />
-            <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="before">
-	              <filter name="filter_type_CATV" string="CATV" domain="[('internal_ref_name','=','catv5')]"/>
-                  <filter name="filter_type_MODEM" string="BROADBAND" domain="[('internal_ref_name','=','broadband')]"/>
-                  <filter name="filter_type_DROPS" string="DROPS" domain="[('internal_ref_name','=','drops')]"/>
-                  <filter name="filter_type_OTHERS" string="OTHERS" domain="[('internal_ref_name','=','others')]"/>
-             </xpath>
-            </field>
-        </record>
+    
 
 
     <menuitem id="view_all_serial_menu" name="View All Serials" action="View_all_serial_action" parent="stock.menu_stock_inventory_control"/>   
     <menuitem name="Inventory Log" action="action_inventory_form20" id="menu_action_inventory_form" parent="stock.menu_stock_inventory_control" sequence="30"/>
     <!-- <menuitem id="menu_stock_inventory_control" name="Inventory Control" parent="menu_stock_root" sequence="4"/>       -->
+
 
 
 
