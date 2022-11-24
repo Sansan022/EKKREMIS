@@ -109,8 +109,7 @@
                                     
                                 </tbody>
                             </table>
-                            <br/>
-                            <br/>
+                          
 
 
                           
@@ -126,7 +125,8 @@
                             </h5>
                            
                             <table class="table table-condensed"  style=" border: 1px solid; width: 100%; table-layout: auto;">
-                            
+                               
+                                
                                 <thead  style=" border: 1px solid; " >
                                
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
@@ -161,9 +161,16 @@
                                     
                                 </tbody>
                             </table>
-                            <br/>
-                            <br/>
-                            
+                         <h5 > 
+                                <!-- <t t-foreach='o.move_lines' t-as='line'>
+                                <t t-if="line.etsi_serials_field == False"> -->
+                                <strong>TEAMS</strong>
+                                <!-- </t> -->
+                             
+                                <!-- <t t-else="line.etsi_serials_field == line.etsi_serials_field">
+                                </t>
+                                </t> -->
+                            </h5>
                             
                             <table class="table table-condensed" style=" border: 1px solid; width: 100%; table-layout: auto;">
                             
@@ -195,9 +202,7 @@
                             </table>
                             <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: Administrator </h5>
-                            <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
-                            <br/> <br/>
+                 
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
@@ -215,7 +220,16 @@
                                 
                                 <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>
+
+                             <div style=" page-break-inside: avoid;">
+                                <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: <span t-esc="request.env.user.name"/> </h5>
+                                <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
+                            </div>
                         </div>
+                        <!-- <div class="footer">
+                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: Administrator </h5>
+                            <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
+                        </div> -->
                   
                     </t>
                  </t>

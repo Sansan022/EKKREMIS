@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-     
-         <report 
-            id="report_xml"
-            model="stock.picking"
-            string="Team Issuance Report"
-            name="skycable_employee_inventory.report_view"
-            file="skycable_employee_inventory.report_view"
-            report_type="qweb-html"
-            />
+   <record id="landscape_format" model="report.paperformat">
+   <field name="name">Custom A4</field>
+      <field name="format">A4</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">40</field>
+      <field name="margin_bottom">23</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False"/>
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
+   </record>
+   <report 
+      id="report_xml"
+      model="stock.picking"
+      string="Team Issuance Report"
+      name="skycable_employee_inventory.report_view"
+      file="skycable_employee_inventory.report_view"
+      report_type="qweb-pdf"
+      paperformat="landscape_format"
+      />
+      
+      
 
    <report 
       id="configuration_report_xml"

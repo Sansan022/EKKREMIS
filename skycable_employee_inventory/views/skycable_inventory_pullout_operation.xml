@@ -40,7 +40,8 @@
                 <field name="date_delivered" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')], 'required': [('status_field','=','waiting')]}" />
                 <field name="received_by" attrs="{'readonly': [('status_field','!=','waiting')], 'invisible': [('teller','!=', 'pull-out-return')], 'required': [('status_field','=','waiting')]}" />
                 <!-- Count pull outs  -->
-                <field name="etsi_pullout_count" attrs="{'invisible': [('teller',  'not in', ('pull-out-return', 'pull-out') )]}" />
+                <field name="etsi_pullout_count" attrs="{'invisible': [('teller',  'not in', ('pull-out-return', 'pull-out') )]}" />        
+                <field name="line_counter" attrs="{'invisible': [('teller',  'not in', ('pull-out-return', 'pull-out') )]}" />
             </xpath>
 
             <!-- Add Button to confirm pullout -->
@@ -60,13 +61,13 @@
                         <tree editable="bottom">
 
                             <field name="job_number" />
-                            <field name ="product_id"/>
+                            <field name ="product_id" invisible="1"/>
                             <field name ="quantity" invisible="1"  />
                             <field name="serial_type" required="1" />
                             
                             <field name ="etsi_serial_product" />
-                            <field name ="etsi_mac_product"  />
-                            <field name ="etsi_smart_card" />
+                            <field name ="etsi_mac_product" attrs=" {'invisible': [('serial_type','=','catv')], 'required': [('serial_type','=','modem')]}"  />
+                            <field name ="etsi_smart_card" attrs=" {'invisible': [('serial_type','=','modem')], 'required': [('serial_type','=','catv')]}"  />
                             <field name="comp_date" readonly="1"/>
                             <!-- <field name="etsi_teams_id"/> -->
                             <field name ="issued" readonly="1"/>
@@ -200,7 +201,7 @@
             <tree string="Pull Outs" create="false" delete="false" edit="false">
 
                 <field name="job_number"/>
-                <field name="etsi_product_name"/>
+                <!-- <field name="etsi_product_name"/> -->
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
                 <field name="etsi_smart_card"/>

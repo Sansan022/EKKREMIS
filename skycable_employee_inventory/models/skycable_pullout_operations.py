@@ -20,42 +20,24 @@ class Validate_Pullout_Received(models.Model):
 
     # Count all etsi.inventory.pullouts
     etsi_pullout_count = fields.Integer(compute = '_count_pullouts', string="Pull-Out Counts")
+    etsi_pullout_count_temp = fields.Integer(string="Pull-Out Counts Temp")
 
     # Detects what type of serial
     serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Modem')], default='catv')
 
     # Detects what type of serial
     status_field = fields.Selection([('draft', 'Draft'),('waiting', 'Waiting For Delivery Team'),('done', 'Done')], default='draft')
-
-    # Register the serial to the etsi.inventory 
-
-    # Date can not be set from the past 
-    @api.constrains('date_delivered')
-    def check_date(self):
-
-        if self.date_delivered == False:
-            pass
-
-        if self.date_delivered < fields.Date.today():
-            raise ValidationError("The date cannot be set in the past")
     
-    def _count_pullouts(self):
-        for rec in self:
-            rec.etsi_pullout_count = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery'))])
-
-    # all records passed the test, don't return anything
-
-    # Load default values for skycable return 
-    @api.model
-    def default_get(self, fields):
-        res = super(Validate_Pullout_Received, self).default_get(fields)
+    # Detects how many lines to process
+    line_counter = fields.Integer('First: ')
+    
+    # Detects how many lines per batch, will be transferred 
+    @api.onchange('line_counter')
+    def set_num_lines(self):
 
         return_lines = []
         return_res =self.env['etsi.pull_out.inventory'].search([('etsi_status', 'in', ('received', 'damaged')),('status_field', 'not in', ('waiting', 'done'))])
-
-        res['etsi_pullout_count'] = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery')),('status_field', 'not in', ('waiting', 'done'))])
-        
-
+        counter = 0 
         for item in return_res:
 
             if item.etsi_status == 'received':
@@ -76,17 +58,52 @@ class Validate_Pullout_Received(models.Model):
                     'issued' : item.etsi_status
                     
                 }))
-        if 'pullout_holder_return' in fields :
-            res.update({'pullout_holder_return' : return_lines })
-            # res['pullout_return_list'] =  return_lines
+ 
+                counter += 1
+                
+            if counter == self.line_counter :
+                
+                break
+                
+   
+        self.update({'pullout_holder_return' : return_lines })
 
+    # Register the serial to the etsi.inventory 
 
-                # for laman in return_lines :
+    # Date can not be set from the past 
+    @api.constrains('date_delivered')
+    def check_date(self):
 
-                    # print(laman)
+        if self.date_delivered == False:
+            pass
 
+        if self.date_delivered < fields.Date.today():
+            raise ValidationError("The date cannot be set in the past")
+    
+    def _count_pullouts(self):
+        for rec in self:
+            rec.etsi_pullout_count = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery'))])
 
-        
+    # all records passed the test, don't return anything
+
+    # Load default values for skycable return 
+    
+    @api.onchange('pullout_holder')
+    def check_pullut_count(self):
+        count = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery'))])
+        for rec in self:
+            for lines in rec.pullout_holder :
+                
+                count += 1
+
+        self.update({'etsi_pullout_count' : count} )
+
+    @api.model
+    def default_get(self, fields):
+        res = super(Validate_Pullout_Received, self).default_get(fields)
+
+        res['etsi_pullout_count'] = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery')),('status_field', 'not in', ('waiting', 'done'))])
+
         return res
 
 
@@ -308,6 +325,7 @@ class Validate_Pullout_Received(models.Model):
         self.update({
             'state' : 'done',
             'status_field' : 'done',
+            'min_date' : datetime.today()
         })
             
     # @api.multi
@@ -582,10 +600,10 @@ class Validate_Pullout_Received_Child(models.TransientModel):
         ('a','Newly Installed'),
         ('b','Immediate')
     })
-    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Modem')], default='catv')
+    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Broadband')], default='catv')
     
     etsi_teams_id = fields.Many2one('team.configuration', string="Team Number")
-    product_id =  fields.Char('CPE Mat. Code', required="True") 
+    product_id =  fields.Char('CPE Mat. Code') 
     quantity = fields.Float('Quantity')
 
     issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered')], string="Status", default='received', readonly=True)
