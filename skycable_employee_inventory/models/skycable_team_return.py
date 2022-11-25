@@ -229,14 +229,14 @@ class Return_list_holder(models.TransientModel):
                     if picking.etsi_teams_id.id == plines.teams.id:
                         product_lists.append(plines.product_id)
                         product_serials.append(plines.etsi_serial_product)
-                    # else:
-                    #     trans_list.append(plines.product_id)
-                    #     trans_sr.append(plines.etsi_serial_product)
+                    else:
+                        trans_list.append(plines.product_id)
+                        trans_sr.append(plines.etsi_serial_product)
                 
                 # For Normal Return
                 if product_lists and product_serials:
                     for issued_ids in issued_stats:
-                        if issued_ids.etsi_serials_field in product_serials :
+                        if issued_ids.etsi_serials_field in product_serials or issued_ids.etsi_serials_field in trans_sr:
                             issued_ids.update({'issued_field': 'Available'})
             
                     for searched_ids in inventory_stats:
@@ -379,7 +379,6 @@ class Return_list_holder(models.TransientModel):
 
                 # If transfer transaction is finished / confirmed update product location
                 for list_trans in trans_ako:
-                    print(serial_only, "K")
                     # Check if the floating data is ready - to update the product list on team issuance (Product reciever)
                     if list_trans.etsi_serial_product in serial_only and list_trans.issued == "Done" and list_trans.return_checker == True and list_trans.transfer_checker == True:
                         final_info.append({
@@ -390,7 +389,6 @@ class Return_list_holder(models.TransientModel):
                 
                 # Update record of product recipient's team issuance
                 for fin in final_info:
-                    print(final_trans, "FINAAAL TRANSSSS")
                     trans_move = self.env['stock.move'].search([('etsi_serials_field', '=', fin['serial']), ('issued_field','=','Deployed')])
                     
                     for move in trans_move: # update stock.move
@@ -404,13 +402,9 @@ class Return_list_holder(models.TransientModel):
                 
                 # Delete done transactions
                 for list_trans in trans_ako:
-                    print("FINAAL")
-                    print(serial_only)
                     if list_trans.etsi_serial_product in serial_only and list_trans.issued == "Done" and list_trans.return_checker == True and list_trans.transfer_checker == True:
                         # Delete floating data
-                        print(list_trans.etsi_serial_product)
                         list_trans.unlink()
-                        print("FINAAL")
                             
         # Damage Transaction
         if team_return_damaged: 
@@ -712,7 +706,7 @@ class Return_list_holder(models.TransientModel):
             res.update({'etsi_teams_id': picking.etsi_teams_id.id})
         return res
 
-class TransferLists(models.Model):
+class TransferLists(models.TransientModel):
     _name = "stock.transfer.team.return"
     
     product_id =  fields.Many2one('product.product') 
@@ -729,13 +723,13 @@ class TransferLists(models.Model):
     date_transfered = fields.Date(default=datetime.today())
     installed = fields.Boolean('Installed')
 
-class Return_list_childs(models.TransientModel):
+class Return_list_childs(models.Model):
     _name = 'stock.picking.return.list'
 
     # Connects to return_list
     return_list_connector = fields.Many2one('stock.picking')
-    # Connects to return_list_moves
-    return_list_moves_connector = fields.Many2one('stock.picking.return.list.holder')
+    # # Connects to return_list_moves
+    # return_list_moves_connector = fields.Many2one('stock.picking.return.list.holder')
 
     product_id =  fields.Many2one('product.product') 
     quantity = fields.Float('Quantity',default=1.0)
@@ -937,8 +931,8 @@ class Return_list_childs(models.TransientModel):
 class Return_list_child(models.TransientModel):
     _name = 'stock.picking.return.list_2'
 
-    # Connects to return_list
-    return_list_connector = fields.Many2one('stock.picking')
+    # # Connects to return_list
+    # return_list_connector = fields.Many2one('stock.picking')
     # Connects to return_list_moves
     return_list_moves_connector_2 = fields.Many2one('stock.picking.return.list.holder')
 
@@ -957,7 +951,7 @@ class Return_list_child(models.TransientModel):
     # transfer_checker = fields.Boolean("Transfer")
     # teams = fields.Many2one('team.configuration')
 
-class DamageLists(models.Model):
+class DamageLists(models.TransientModel):
     _name = "stock.picking.damage.list"
     
     # Connects to return_list_moves
