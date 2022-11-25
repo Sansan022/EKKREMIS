@@ -260,13 +260,15 @@
 
                 <!-- ADDING NEW FIELDS -->
                 <field name="etsi_punched_date_in" />
-                <field name="etsi_subscriber_in" />
+                <field name="etsi_subscriber_in" invisible='True'/>
                 <field name="etsi_receive_date_in" />
-                <field name="etsi_date_issued_in" />
-                <field name="etsi_date_returned_in" />
+                <field name="etsi_date_issued_in" invisible='True'/>
+                <field name="etsi_date_returned_in" invisible='True'/>
                 <field name="etsi_team_in" />
 
                 <field name="etsi_status"/>
+                <field name="etsi_description" invisible='True'/>
+                
 
         </tree>
     </field>

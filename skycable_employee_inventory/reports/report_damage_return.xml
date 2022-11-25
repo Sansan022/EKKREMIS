@@ -100,7 +100,7 @@
                             </table>
                              <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right">RELEASE BY: <span t-esc="request.env.user.name"/></h5>
+                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: <span t-esc="request.env.user.name"/></h5>
                             <h5 class="text-right">SIGNATURE: ______________________</h5>
                             <p t-field="o.note"/>
                             

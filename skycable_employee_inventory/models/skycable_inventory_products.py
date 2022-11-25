@@ -1,7 +1,7 @@
 from odoo import api, fields, models, tools, _
 import time
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 from odoo.exceptions import UserError
@@ -95,13 +95,6 @@ class ProductTemplateInheritance(models.Model):
     def duplicate_name_cons(self):
         for rec in self:
             count = self.env['product.template'].search_count([('name', '=', rec.name)])
-            print(count)
-            print(count)
-            print(count)
-            print(count)
-            print(count)
-            print(count)
-            print(count)
             if count >= 2 and rec.internal_ref_name != "drops":
                 raise ValidationError("Material code already exist in the database.")
 
@@ -152,6 +145,8 @@ class Product_Serial_SmartButton(models.Model):
     
     active = fields.Boolean('Active', default=True)
     
+    #ADDING DESCRIPTION FIELD
+    etsi_description = fields.Text(related='etsi_product_id.description_txt')
     
     #product scheduler
     @api.multi

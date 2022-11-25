@@ -76,7 +76,7 @@
                                 <field name="status"/>
                                 <field name="teamTypeHistory" string="Team Type"/>
                                 <field name='createdDateHistory' string='Date'/> 
-                                <field name='replaced_by' string='Replaced by'/> 
+                                <field name='replaced_by' string='Original Member'/> 
                             </tree>
                         </field>
                   </page>

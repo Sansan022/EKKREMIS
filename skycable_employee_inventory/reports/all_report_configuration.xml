@@ -31,6 +31,7 @@
       name="skycable_employee_inventory.configuration_report_view"
       file="skycable_employee_inventory.configuration_report_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
 
       <!-- for view all serial -->
@@ -41,6 +42,7 @@
       name="skycable_employee_inventory.all_serial_report"
       file="skycable_employee_inventory.all_serial_report"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
 
       <report 
@@ -50,6 +52,7 @@
       name="skycable_employee_inventory.data_entry"
       file="skycable_employee_inventory.data_entry"
       report_type="qweb-pdf"
+      paperformat="landscape_format"
       />    
       
  <!-- Subscriber  Issuance Report-->
@@ -60,6 +63,7 @@
       name="skycable_employee_inventory.subs_report_view"
       file="skycable_employee_inventory.subs_report_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
 
      <!-- TEAM RETURN  ITEM Report-->
@@ -70,6 +74,7 @@
       name="skycable_employee_inventory.team_return_report_view"
       file="skycable_employee_inventory.team_return_report_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       /> 
       
       <!-- TEAM RETURN  ITEM Report-->
@@ -80,6 +85,7 @@
       name="skycable_employee_inventory.damage_return_report_view"
       file="skycable_employee_inventory.damage_return_report_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
 
       <!-- PULL-OUT RECEIVE PRINT -->
@@ -90,6 +96,7 @@
       name="skycable_employee_inventory.pull_out_recieve_view"
       file="skycable_employee_inventory.pull_out_recieve_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
 
       <!-- PULL-OUT DELIVERY TO SKY PRINT -->
@@ -100,8 +107,9 @@
       name="skycable_employee_inventory.pull_out_delivery_view"
       file="skycable_employee_inventory.pull_out_delivery_view"
       report_type="qweb-html"
+      paperformat="landscape_format"
       />
-    
+
 
 
 

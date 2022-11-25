@@ -25,6 +25,7 @@ class view_all_serial_report(models.AbstractModel):
          'etsi_date_returned_in': rec.etsi_date_returned_in,
          'etsi_team_in': rec.etsi_team_in,
          'etsi_status': rec.etsi_status,
+         'etsi_description': rec.etsi_description,
 
          }
          table1.append(vals)

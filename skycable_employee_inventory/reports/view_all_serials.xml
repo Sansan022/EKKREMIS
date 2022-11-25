@@ -24,12 +24,13 @@
                                 <th><strong>Employee</strong></th>
                                 <th><strong>Product</strong></th>
                                 <th><strong>Punch Time</strong></th>
-                                <th><strong>Subscriber</strong></th>
+                                <!-- <th><strong>Subscriber</strong></th> -->
                                 <th><strong>Receive</strong></th>
-                                <th><strong>Date Issued</strong></th>
-                                <th><strong>Date returned</strong></th>
-                                <th><strong>Team</strong></th>
+                                <!-- <th><strong>Date Issued</strong></th> -->
+                                <!-- <th><strong>Date returned</strong></th> -->
+                                <!-- <th><strong>Team</strong></th> -->
                                 <th><strong>Status</strong></th>
+                                <th><strong>Description</strong></th>
                         </thead>
 
                         <tbody  style=" border: 1px solid; ">
@@ -56,23 +57,26 @@
                                     <td>
                                         <t t-esc="rec['etsi_punched_date_in']"/>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <t t-esc="rec['etsi_subscriber_in']"/>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <t t-esc="rec['etsi_receive_date_in']"/>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <t t-esc="rec['etsi_date_issued_in']"/>
-                                    </td>
-                                    <td>
+                                    </td> -->
+                                    <!-- <td>
                                         <t t-esc="rec['etsi_date_returned_in']"/>
-                                    </td>
-                                    <td>
+                                    </td> -->
+                                    <!-- <td>
                                         <t t-esc="rec['etsi_team_in']"/>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <t t-esc="rec['etsi_status']"/>
+                                    </td>  
+                                    <td>
+                                        <t t-esc="rec['etsi_description']"/>
                                     </td>  
                                 </tr>
                             </t>

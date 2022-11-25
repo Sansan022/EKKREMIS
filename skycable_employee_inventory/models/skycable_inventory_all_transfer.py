@@ -195,20 +195,20 @@ class EtsiTeamsReplace(models.Model):
                 raise ValidationError("No Replaced Member selected!")
 
 
-    @api.model
-    def create(self, vals):
-        y = []
-        x = self.env['stock.picking'].search([]).mapped('etsi_teams_line_ids')
-        for rec in x:
-            y.append(rec.etsi_teams_replace.id)
+    # @api.model
+    # def create(self, vals):
+    #     y = []
+    #     x = self.env['stock.picking'].search([]).mapped('etsi_teams_line_ids')
+    #     for rec in x:
+    #         y.append(rec.etsi_teams_replace.id)
 
-        res = super(EtsiTeamsReplace, self).create(vals)
+    #     res = super(EtsiTeamsReplace, self).create(vals)
 
-        if res.etsi_teams_replace:
-            if res.etsi_teams_replace.id in y:
-                raise ValidationError("duplicate")
+    #     if res.etsi_teams_replace:
+    #         if res.etsi_teams_replace.id in y:
+    #             raise ValidationError("duplicate")
         
-        return res
+    #     return res
 
     @api.multi
     def write(self, vals):
