@@ -267,7 +267,7 @@
                 <field name="etsi_team_in" />
 
                 <field name="etsi_status"/>
-                <field name="etsi_description" invisible='True'/>
+                <field name="etsi_description"/>
                 
 
         </tree>

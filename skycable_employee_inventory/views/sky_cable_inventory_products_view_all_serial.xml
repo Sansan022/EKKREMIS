@@ -10,25 +10,29 @@
         <field name="arch" type="xml">
             <tree string="Serial Tree" create="false" delete="false" edit="false">
 
+                <field name="type_checker"/>
+                <field name="etsi_product_id"/>
+                <field name="etsi_description"/>
+
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
                 <field name="etsi_smart_card"/>
+                
                 <field name="etsi_employee_in" string="Employee" />
-                <field name="etsi_product_id"/>
                 <field name="etsi_product_name" invisible='True'/>
-                <field name="type_checker"/>
+                
                 <!-- <field name="create_date" widget="date"/> -->
 
                 <!-- ADDING NEW FIELDS -->
                 <field name="etsi_punched_date_in" />
-                <field name="etsi_subscriber_in" />
+                <field name="etsi_subscriber_in" invisible='True'/>
                 <field name="etsi_receive_date_in" />
                 <field name="etsi_date_issued_in" />
                 <field name="etsi_date_returned_in" />
                 <field name="etsi_team_in" />
 
                 <field name="etsi_status"/>
-
+                
 
 
 
@@ -73,6 +77,7 @@
         <field name="res_model">etsi.inventory</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree</field>
+        <field name="view_id" ref="serials_tree_view"/>
         <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_deployed':0,'search_default_filter_type_used':0,'search_default_filter_type_returned':0,'search_default_filter_type_damaged':0,'search_default_filter_type_onhand':0,'search_default_filter_type_delivery':0,'search_default_filter_type_delivered':0} </field>
 
     </record>
