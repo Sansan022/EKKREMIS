@@ -21,7 +21,7 @@
     <record id="View_all_serial_action" model="ir.actions.act_window">
         <field name="name">View All Serial</field>
         <field name="res_model">etsi.inventory</field>
-        <field name="view_mode">tree,pivot</field>
+        <field name="view_mode">tree,pivot,form</field>
     </record>
         
 

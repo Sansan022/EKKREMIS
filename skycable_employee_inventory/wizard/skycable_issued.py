@@ -184,7 +184,7 @@ class convert_transient(models.TransientModel):
     currentquantity = fields.Integer(string="Current Quantity",compute='_get_current_quantity',readonly="True")
     employeename = fields.Many2one('res.users', string="Employee Name", default=lambda self: self.env.user.id)
     current_unit = fields.Char(readonly=True, string="Units", related='matcode.product_tmpl_id.uom_id.name')
-
+    matname = fields.Char(related='matcode.product_tmpl_id.name')
 
     sky_drops_reference_wiz = fields.Char(related='matcode.product_tmpl_id.drops_reference_id.drops_references')
 
@@ -202,7 +202,7 @@ class convert_transient(models.TransientModel):
         product = self.env['product.product'].browse(self.matcode.id)
         current = product.with_context({'location' : 'WH/Stock'}).qty_available
         self.currentquantity = current
-
+    @api.multi
     @api.depends('initial_current_quantity', 'drops_type_convert_to')
     def _get_initial_current_quantity(self):
         product = self.env['product.product'].browse(self.drops_type_convert_to.id)
