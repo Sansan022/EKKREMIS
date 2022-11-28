@@ -38,7 +38,7 @@
                     <attribute name="invisible">1</attribute>
               </xpath>
 
-              <xpath expr="//tree/field[@name='uom_field_duplicate']" position="after">
+              <xpath expr="//tree/field[@name='product_id_duplicate']" position="after">
                     <field name="etsi_description_txt" readonly="1"/>
               </xpath>
 
