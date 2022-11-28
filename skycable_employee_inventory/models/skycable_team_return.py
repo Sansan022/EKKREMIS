@@ -147,12 +147,10 @@ class Return_list_holder(models.TransientModel):
                     'etsi_serials_field': line_ret.etsi_serial_product,
                     'etsi_mac_field': line_ret.etsi_mac_product,
                     'etsi_smart_card_field': line_ret.etsi_smart_card,
-                    # Additional for returned items
                     'etsi_serial_product' : line_ret.etsi_serial_product,
                     'etsi_mac_product' : line_ret.etsi_mac_product,
                     'etsi_smart_card' : line_ret.etsi_smart_card,
                     'issued' : "Available",
-                    # Continuation
                     'issued_field': "Available",
                     'product_uom': line_ret.product_id.product_tmpl_id.uom_id.id,
                     'product_uom_qty' : line_ret.quantity,
@@ -168,13 +166,11 @@ class Return_list_holder(models.TransientModel):
             picking_checker_damaged = self.env['stock.picking.type'].search([('name', '=', 'Damage Location')])
             for line_dmg in self.damage_list_ids:
                 team_return_damaged.append({
-
                     'name':line_dmg.product_id.product_tmpl_id.name,
                     'product_id': line_dmg.product_id.id,
                     'etsi_serials_field': line_dmg.etsi_serial_product,
                     'etsi_mac_field': line_dmg.etsi_mac_product,
                     'etsi_smart_card_field': line_dmg.etsi_smart_card,
-                    # Additional for damaged items
                     'etsi_serial_product' : line_dmg.etsi_serial_product,
                     'etsi_mac_product' : line_dmg.etsi_mac_product,
                     'etsi_smart_card' : line_dmg.etsi_smart_card,
@@ -190,7 +186,6 @@ class Return_list_holder(models.TransientModel):
                     'picking_type_id': picking_checker_damaged.id,
                     'teams_from_damage' : line_dmg.teams_from_damage,
                     'active_name' : picking.id
-        
                 })
         
         # Transfer declaration / process
@@ -213,18 +208,18 @@ class Return_list_holder(models.TransientModel):
                 })       
         
         for rec in self:
-            # # Normal Return
+            # Normal Return
             if team_return:
                 picking.update({
                     'state' : 'done',
-                    'picking_type_id': picking_type_id,
-                    'move_lines': team_return,
+                    # 'picking_type_id': picking_type_id,
+                    # 'move_lines': team_return,
                     'return_items' : team_return,
                     'status_field' :  'done',
                     'location_id': picking.picking_type_id.default_location_src_id.id,
                     'location_dest_id': picking.picking_type_id.default_location_dest_id.id,
                 })
-                
+            
                 for plines in rec.return_list_move_holder:
                     if picking.etsi_teams_id.id == plines.teams.id:
                         product_lists.append(plines.product_id)
@@ -234,14 +229,14 @@ class Return_list_holder(models.TransientModel):
                         trans_sr.append(plines.etsi_serial_product)
                 
                 # For Normal Return
-                if product_lists and product_serials:
+                if product_lists and product_serials or trans_list and trans_sr:
                     for issued_ids in issued_stats:
-                        if issued_ids.etsi_serials_field in product_serials or issued_ids.etsi_serials_field in trans_sr:
+                        if issued_ids.etsi_serials_field in product_serials: 
                             issued_ids.update({'issued_field': 'Available'})
             
                     for searched_ids in inventory_stats:
-                        if searched_ids.etsi_product_id in product_lists:
-                            if searched_ids.etsi_serial in product_serials:
+                        if searched_ids.etsi_product_id in product_lists or searched_ids.etsi_product_id in trans_list: # Normal Return or Transfer transaction
+                            if searched_ids.etsi_serial in product_serials or searched_ids.etsi_serial in trans_sr: # Normal Return or Transfer transaction
                                 date_returned = datetime.today()
                                 searched_ids.update({'etsi_status': 'available'})
                                 searched_ids.update({'etsi_date_returned_in': date_returned})
@@ -272,39 +267,28 @@ class Return_list_holder(models.TransientModel):
                         if picking.etsi_teams_id.team_number != t_hold.teams.team_number:
                             serial_stored_nl.append(t_hold.etsi_serial_product)
                             serial_only.append(t_hold.etsi_serial_product)
-                            print(serial_stored_nl, "1")
                         
                         # Temporary / Floating database
                         for trans_to2 in trans_ako:
                             if trans_to2: # if database is not empty
-                                print(trans_to2.etsi_serial_product, "TTTTTT")
                                 serial_stored_tmp.append(trans_to2.etsi_serial_product)
                                 
                             # Condition / Transaction
                             for nl in serial_stored_nl: # fetch return list  
-                                print("PUMAPASOK SA CONDITION")
-                                print(nl, "NL") 
-                                print(serial_stored_tmp, "TMP")  
-                                print(trans_to2.return_checker, "RETURRRRN")
-                                print(trans_to2.transfer_checker, "TRAAANSFEER")
                                 if nl in serial_stored_tmp and trans_to2.issued == 'Waiting' and trans_to2.transfer_checker == True: 
-                                    print("PUMAPASOK 1")
                                     # Update existing floatong data
                                     if nl == trans_to2.etsi_serial_product:
                                         trans_to2.update({
                                             'issued': "Done",
                                             'return_checker': True,
                                         })
-                                        print("UPDATED")
                                         
                                 elif nl in serial_stored_tmp and trans_to2.return_checker == True and trans_to2.transfer_checker == False:
-                                    print("PUMAPASOK SA VALIDATION")
                                     raise ValidationError("This serial is already returned, Please wait the other team for transfer slip (confirmation)!")
                                 
                         # create record if condition above are false
                         if picking.etsi_teams_id.team_number != t_hold.teams.team_number: # filter transfered items only
                             if not trans_ako or t_hold.etsi_serial_product not in serial_stored_tmp: 
-                                print("ELESEEEE 1")
                                 # Create data function for transfer items
                                 return_transfer_function = self.env['stock.transfer.team.return'].create({
                                     'product_id': t_hold.product_id.id,
@@ -334,7 +318,6 @@ class Return_list_holder(models.TransientModel):
                         })
                         # Serial only
                         serial_only.append(t_hold.etsi_serial_product)
-                        print(serial_only)
                     
                     for trans_to in listahan_ng_trans:
                         for trans_to2 in trans_ako:
@@ -393,8 +376,8 @@ class Return_list_holder(models.TransientModel):
                     
                     for move in trans_move: # update stock.move
                         if move.etsi_serials_field: # get true data
-                            print(move.etsi_serials_field, "SERIAAAL")
-                            move.update({'picking_id': fin['source']})
+                            move.update({'picking_id': fin['source']}) # Replace team_issuance ref number
+                            move.update({'issued_field': 'Available'}) # Update product status - to available
                                     
                     for inventory in transfer_picking: # update etsi.inventory - team number
                         if inventory.etsi_serial == fin['serial']:
@@ -463,8 +446,6 @@ class Return_list_holder(models.TransientModel):
                     active_names = name.name
 
                 create_damaged_function = stock_damaged_db.create({
-                    # 'etsi_team_issuance_id': picking.id,
-                    # 'job_number' : laman['job_number'], 
                     'etsi_product_name' : dmg['name'],
                     'etsi_serial': dmg['etsi_serials_field'],
                     'etsi_mac': dmg['etsi_mac_field'],
@@ -480,7 +461,6 @@ class Return_list_holder(models.TransientModel):
             return_damaged_function.do_transfer()
 
             # Update the status of created record for damaged items in stock.picking 
-
             search_picking = self.env['stock.move'].search([])
 
             for serial in search_picking:
@@ -537,12 +517,17 @@ class Return_list_holder(models.TransientModel):
         transfer_list_move = []
         for p in picking:
             for move in p.return_list:
-                # check if teams from is not the same on team return
+                trans = self.env['stock.transfer.team.return'].search([('etsi_serial_product','=', move.etsi_serial_product)]) # fetch temp transfer data
+                
                 if move.transfer_checker:
-                    if move.teams_from.id != picking.etsi_teams_id.id:
-                        raise UserError("This is already returned by the team who recieved the product. (Please indicate what team returned on 'Teams from').")
-                    if move.teams_from.id == move.teams_to.id:
+                    if move.teams_from.id != picking.etsi_teams_id.id: # check if teams from is not the same on team return
+                        raise UserError("Returned Team and 'Teams From' must be the same!")
+                    if move.teams_from.id == move.teams_to.id: # check if teams_from and teams_to is the same
                         raise UserError("'Teams from' and 'Teams to' cannot be the same.")
+                    if trans: # check if trans have value
+                        if move.teams_to.id != trans.team_num_to.id: # check if teams_to and team_num_to are'nt the same
+                            raise UserError("The 'Teams to' are not the same as the team that returned the item.")
+                    
                 if picking.return_list:
                     # If CATV is selected
                     if move.etsi_smart_card:
@@ -912,9 +897,9 @@ class Return_list_childs(models.Model):
                     elif rec.transfer_checker:
                         
                         # Auto-fill teams_from
-                        search_name = self.env['etsi.inventory'].search([('etsi_serial','=', rec.etsi_serial_product)])
+                        search_name = self.env['stock.transfer.team.return'].search([('etsi_serial_product','=', rec.etsi_serial_product)])
                         for s_name in search_name:
-                            rec.teams_from = s_name.etsi_team_in.id
+                            rec.teams_from = s_name.team_num_from.id
                             
                         rec.return_checker = False
                         rec.damage_checker = False
