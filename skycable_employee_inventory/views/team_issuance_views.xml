@@ -34,6 +34,14 @@
                     <field name="uom_field_duplicate2" invisible="True"/>
               </xpath>
 
+              <xpath expr="//tree/field[@name='state']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+              </xpath>
+
+              <xpath expr="//tree/field[@name='uom_field_duplicate']" position="after">
+                    <field name="etsi_description_txt" readonly="1"/>
+              </xpath>
+
           
               <xpath expr="//tree/field[@name='product_id']" position="after">
               
@@ -50,7 +58,7 @@
 
                   <!-- <field name="checker_box" attrs="{'invisible': [('state','!=','done')],'readonly': [('issued_field','!=','No')]}"/> -->
                   <field name="issued_field" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
-                  <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/>
+                  <!-- <field name="subscriber_field" domain="[('subscriber','=','True')]" attrs="{'invisible': [('state','!=','done')]}" readonly="True"/> -->
 
 
               </xpath>

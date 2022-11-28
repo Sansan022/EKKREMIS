@@ -25,10 +25,11 @@ class Team_issuance(models.Model):
     # ,related="product_id_duplicate.product_tmpl_id.uom_id.id"
     checker_box = fields.Boolean(string="To be issued")
 
-    issued_field = fields.Char(string="Status")
+    issued_field = fields.Char(string="Status" , default="Available")
     subscriber_field = fields.Many2one('res.partner',string="Subcscriber")
     doc_source = fields.Many2one('stock.picking')
-       
+
+    etsi_description_txt = fields.Text(related='product_id.description_txt')  
 
     @api.multi
     @api.onchange('etsi_serials_field','etsi_mac_field','etsi_smart_card_field')

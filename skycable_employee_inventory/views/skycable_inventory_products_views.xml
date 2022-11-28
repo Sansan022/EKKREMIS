@@ -250,24 +250,29 @@
     <field name="arch" type="xml">
         <tree string="Serial Tree" create="false" delete="false">
 
-          <field name="etsi_serial"/>
-                <field name="etsi_mac"/>
-                <field name="etsi_employee_in" string="Employee" />
+                <field name="type_checker"/>
                 <field name="etsi_product_id"/>
                 <field name="etsi_product_name" invisible='True'/>
-                <field name="type_checker"/>
+
+
+                <field name="etsi_description"/>
+
+                <field name="etsi_serial"/>
+                <field name="etsi_mac"/>
+                <field name="etsi_employee_in" string="Employee" />
+                
+                
                 <!-- <field name="create_date" widget="date"/> -->
 
                 <!-- ADDING NEW FIELDS -->
                 <field name="etsi_punched_date_in" />
-                <field name="etsi_subscriber_in" invisible='True'/>
+                <!-- <field name="etsi_subscriber_in" /> -->
                 <field name="etsi_receive_date_in" />
-                <field name="etsi_date_issued_in" invisible='True'/>
-                <field name="etsi_date_returned_in" invisible='True'/>
+                <field name="etsi_date_issued_in" />
+                <field name="etsi_date_returned_in" />
                 <field name="etsi_team_in" />
 
                 <field name="etsi_status"/>
-                <field name="etsi_description"/>
                 
 
         </tree>
@@ -280,18 +285,23 @@
     <field name="model">etsi.inventory</field>
     <field name="arch" type="xml">
         <tree string="Serial Tree" create="false" delete="false">
-
-          <field name="etsi_serial"/>
-                <field name="etsi_smart_card"/>
-                <field name="etsi_employee_in" string="Employee" />
+                <field name="type_checker"/>
                 <field name="etsi_product_id"/>
                 <field name="etsi_product_name" invisible='True'/>
-                <field name="type_checker"/>
+
+
+                <field name="etsi_description"/>
+
+                <field name="etsi_serial"/>
+                <field name="etsi_smart_card"/>
+                <field name="etsi_employee_in" string="Employee" />
+                
+                
                 <!-- <field name="create_date" widget="date"/> -->
 
                 <!-- ADDING NEW FIELDS -->
                 <field name="etsi_punched_date_in" />
-                <field name="etsi_subscriber_in" />
+                <!-- <field name="etsi_subscriber_in" /> -->
                 <field name="etsi_receive_date_in" />
                 <field name="etsi_date_issued_in" />
                 <field name="etsi_date_returned_in" />
