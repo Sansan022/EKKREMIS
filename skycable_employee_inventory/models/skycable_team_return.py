@@ -898,8 +898,15 @@ class Return_list_childs(models.Model):
                         
                         # Auto-fill teams_from
                         search_name = self.env['stock.transfer.team.return'].search([('etsi_serial_product','=', rec.etsi_serial_product)])
-                        for s_name in search_name:
-                            rec.teams_from = s_name.team_num_from.id
+                        search_name2 = self.env['etsi.inventory'].search([('etsi_serial','=', rec.etsi_serial_product)])
+                        
+                        if search_name: # check if search have value
+                            for s_name in search_name:
+                                rec.teams_from = s_name.team_num_from.id
+                        else: # if have'nt, get team_from value to etsi_inventory
+                            for s_name in search_name2:
+                                rec.teams_from = s_name.etsi_team_in.id
+                            
                             
                         rec.return_checker = False
                         rec.damage_checker = False
