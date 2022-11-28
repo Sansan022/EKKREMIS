@@ -263,7 +263,19 @@
         <field name="act_window_id" ref="action_inventory_form20"/>
         </record>
 
-
+    <record id="product_template_search_view_inherit" model="ir.ui.view">
+            <field name="name">product.template.search.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view" />
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+	              <filter name="filter_type_CATV" string="CATV" domain="[('internal_ref_name','=','catv5')]"/>
+                  <filter name="filter_type_MODEM" string="BROADBAND" domain="[('internal_ref_name','=','broadband')]"/>
+                  <filter name="filter_type_DROPS" string="DROPS" domain="[('internal_ref_name','=','drops')]"/>
+                  <filter name="filter_type_OTHERS" string="OTHERS" domain="[('internal_ref_name','=','others')]"/>
+             </xpath>
+            </field>
+        </record>
     
 
 
