@@ -113,12 +113,24 @@
                                     
                                 </tbody>
                             </table>
+                            <br/> <br/>
+                            <br/> <br/>
+                            <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
+
+                            <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
+                                <t t-if="int(obj.job_id) == 3593">
+                                <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
+                                </t>
+                                </t>
+                                
+                            <h5 >SIGNATURE:_________________</h5>
                          
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
                                 <p><strong>Source Location:</strong>    <span t-field="o.location_id"/></p>
                                 <p><strong>Destination Location:</strong>    <span t-field="o.location_dest_id"/></p>
+                                <p><strong>Team code:</strong>    <span t-field="o.etsi_teams_id"/></p>
                           
                             </div> 
                       
@@ -126,8 +138,8 @@
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
                                 <p><strong>Date:</strong>  <span t-field="o.date"/></p>
-                                <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
-                                <p><strong>State:</strong>   <span t-field="o.state"/></p>
+                                <!-- <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
+                                <p><strong>State:</strong>   <span t-field="o.state"/></p> -->
                                 
                                 <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>

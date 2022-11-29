@@ -61,6 +61,7 @@
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>DESCRIPTION</strong></th>
                                     <!-- </t> -->
                                 </thead>
 
@@ -103,6 +104,12 @@
                                             <td style=" border: 1px solid;  text-align: center; ">
                                                 <span t-esc="line.product_uom_qty" />
                                             </td>
+
+                                            <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-esc="line.etsi_description_txt" />
+                                            </td>
+
+                                       
                                         </t>
                                             
                                         </tr>
@@ -132,6 +139,7 @@
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MATL. CODE</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>STATUS</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>DESCRIPTION</strong></th>
                                   
                               
                                 </thead>
@@ -154,6 +162,10 @@
 
                                                 <td style=" border: 1px solid;  text-align: center;">
                                                     <span t-esc="line.product_uom_qty" />
+                                                </td>
+
+                                                <td style=" border: 1px solid;  text-align: center; ">
+                                                    <span t-esc="line.etsi_description_txt" />
                                                 </td>
                                             </t>
                                  
@@ -222,8 +234,23 @@
                              </div>
 
                              <div style=" page-break-inside: avoid;">
-                                <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: <span t-esc="request.env.user.name"/> </h5>
-                                <h5 class="text-right">RECIEVED SIGNATURE:__________________</h5>
+                                <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
+                                
+                                <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
+                                <t t-if="int(obj.job_id) == 3593">
+                                <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
+                                </t>
+                                </t>
+                                
+                                <h5 >SIGNATURE:_________________</h5>
+                                <h5 style="padding-left: 100px;"><span t-esc="o.etsi_teams_member_name.name"/> </h5>
+                                
+                                <!-- <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
+                                <t t-if="int(obj.job_id) == 3593">
+                                <h5 class="text-left" style=" padding-right: 130px;">Warehouse Manager: <span t-esc="obj.name"/> </h5>
+                                </t>
+                                </t> -->
+
                             </div>
                         </div>
                         <!-- <div class="footer">
@@ -237,3 +264,4 @@
         </template>
     </data>
 </odoo>
+

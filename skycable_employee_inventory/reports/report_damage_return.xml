@@ -100,8 +100,16 @@
                             </table>
                              <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right" style=" padding-right: 130px;">ENCODE BY: <span t-esc="request.env.user.name"/></h5>
-                            <h5 class="text-right">SIGNATURE: ______________________</h5>
+                            <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
+                            
+                            <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
+                                <t t-if="int(obj.job_id) == 3593">
+                                <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
+                                </t>
+                                </t>
+
+                            <h5 >SIGNATURE:_________________</h5>
+                            <h5 style="padding-left: 100px;"><span t-esc="o.etsi_teams_member_name.name"/> </h5>
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
@@ -114,8 +122,8 @@
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
                                 <p><strong>Release Date:</strong>  <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%m/%d/%y %H:%M:%S')"/></p>
-                                <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
-                                <p><strong>State:</strong>   <span t-field="o.state"/></p>
+                                <!-- <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
+                                <p><strong>State:</strong>   <span t-field="o.state"/></p> -->
                                 
                                 <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>

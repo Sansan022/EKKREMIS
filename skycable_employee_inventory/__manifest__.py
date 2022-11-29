@@ -64,10 +64,14 @@
         'reports/report_damage_return.xml',
         'reports/pull_out_recieve_print.xml',
         'reports/pull_out_delivery_print.xml',
+        'reports/pull_out_delivery_form.xml',
+        'reports/view_all_pull_out_form.xml',
+
 
         'views/pivot_view_all_serial.xml',
         'views/pivot_product_view.xml',
 
+        
         
 
     ]

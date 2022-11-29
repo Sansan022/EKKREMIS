@@ -46,7 +46,6 @@
                             
                                 <thead  style=" border: 1px solid; "  >
                                         <th style=" border: 1px solid;  text-align: center;"><strong>JOB ORDER</strong></th> 
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>CPE MAT. CODE</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
@@ -66,10 +65,6 @@
                                         
                                             <td style=" border: 1px solid;  text-align: center; "> 
                                                 <span t-field="line.job_number_related" />  
-                                            </td>
-
-                                            <td style=" border: 1px solid;  text-align: center; ">
-                                               <span t-field="line.product_id" />
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
@@ -93,7 +88,7 @@
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
-                                                <span t-field="line.product_uom_qty" />
+                                                <span > 1</span>
                                             </td>
                                             
                                      
@@ -102,10 +97,17 @@
                                     
                                 </tbody>
                             </table>
-                             <br/> <br/>
+                              <br/> <br/>
                             <br/> <br/>
-                            <h5 class="text-right">RELEASE BY: <span t-esc="request.env.user.name"/></h5>
-                            <h5 class="text-right">SIGNATURE: ______________________</h5>
+                            <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
+                            
+                            <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
+                                <t t-if="int(obj.job_id) == 3593">
+                                <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
+                                </t>
+                                </t>
+
+                            <h5 >SIGNATURE:_________________</h5>
                         
                             
                             <p t-field="o.note"/>

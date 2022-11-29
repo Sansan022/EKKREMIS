@@ -82,6 +82,7 @@
                   <field name="team_members_lines" readonly="1" />
                   <field name="etsi_teams_replace" attrs="{'readonly':[('etsi_teams_temporary', '=', False)], 'required' :[(('etsi_teams_temporary','=',True))]}"/>
                   <field name="etsi_teams_temporary"/>
+                  <field name="etsi_teams_member_name_copy" invisible="1"/>
                 </tree>
               </field>
             

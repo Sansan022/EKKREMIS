@@ -18,7 +18,7 @@
       string="Team Issuance Report"
       name="skycable_employee_inventory.report_view"
       file="skycable_employee_inventory.report_view"
-      report_type="qweb-pdf"
+      report_type="qweb-html"
       paperformat="landscape_format"
       />
       
@@ -110,7 +110,48 @@
       paperformat="landscape_format"
       />
 
+      <!-- PULL-OUT DELIVERY FORM TO SKY PRINT -->
+      <report 
+      id="pull_out_delivery_form_xml"
+      model="stock.picking"
+      string="Pull-Out Delivery to Sky Report Form"
+      name="skycable_employee_inventory.pull_out_delivery_view_form"
+      file="skycable_employee_inventory.pull_out_delivery_view_form"
+      report_type="qweb-html"
+      paperformat="landscape_format"
+      />
 
+   <!-- view all pull-out -->
+      <report 
+      id="view_all_pull_out_delivery_xml"
+      model="etsi.pull_out.inventory"
+      string="View All Pull-Out"
+      name="skycable_employee_inventory.view_all_pull_out_report"
+      file="skycable_employee_inventory.view_all_pull_out_report"
+      report_type="qweb-html"
+      paperformat="landscape_format"
+      />
+      
+   <!-- Print buttons -->
+    <record id="view_pullout_inherit_report" model="ir.ui.view">
+            <field name="name">stock.pullout.view.form.inherit.report</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- Hide the print button -->
+                <xpath expr="//header/button[@name='action_cancel']" position="after">
+                <button name="%(report_xml)d" string="Team Issuance Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','others'), ('state','!=','done')]}"/>
+               
+                <button name="%(team_return_report_xml)d" string="Team Return Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','return'), ('state','!=','done')]}"/>
+                <button name="%(subs_report_xml)d" string="Subscriber Isuance Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','subscriber'), ('state','!=','done')]}"/>
+                <button name="%(damage_return_report_xml)d" string="Damage Return Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','damage'), ('state','!=','done')]}"/>
+                <button name="%(pull_out_recieve_report_xml)d" string="Pullout Receive Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','pull-out'), ('state','!=','done')]}"/>
+                <button name="%(pull_out_delivery_form_xml)d" string="Delivery Form"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|','|', ('teller','!=','pull-out-return'), ('status_field','!=','waiting'), ('state','=','done')]}"/>
+                <button name="%(pull_out_delivery_report_xml)d" string="Pullout  Return Report"  type="action"  class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', ('teller','!=','pull-out-return'), ('state','!=','done')]}"/>
+            
+                </xpath>
+    </field>
+    </record>
 
 
 </odoo>

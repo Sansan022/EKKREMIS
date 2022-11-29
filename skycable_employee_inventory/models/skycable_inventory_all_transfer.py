@@ -184,6 +184,7 @@ class EtsiTeamsReplace(models.Model):
     team_members_lines = fields.Many2one('hr.employee', string="Team Member")
     etsi_teams_replace = fields.Many2one('hr.employee', string="Replaced Member")
     etsi_teams_temporary = fields.Boolean(string="Temporary Team")
+    etsi_teams_member_name_copy =fields.Many2one(related = "etsi_teams_replace_line.etsi_teams_member_name")
     # etsi_teams_id_line = fields.Many2one('team.configuration.line', string="Teams")
     # etsi_team_members_lines = fields.Many2one('stock.picking', related="etsi_teams_id_line.team_members_lines1")
     # team_members_lines = fields.Many2one(related="etsi_teams_id_line.team_members_lines")
@@ -253,5 +254,11 @@ class EtsiTeamsReplace(models.Model):
     def onchange_replaced_clear(self):
         if self.etsi_teams_temporary is False:
                 self.etsi_teams_replace = ""
+                
+    @api.multi
+    @api.onchange('etsi_teams_temporary')
+    def auto_fill_details_temporary(self):
+        if self.etsi_teams_temporary == True:
+            self.etsi_teams_replace = self.etsi_teams_member_name_copy.id ,
 
    

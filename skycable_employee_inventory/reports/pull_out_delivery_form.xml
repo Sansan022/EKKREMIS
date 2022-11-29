@@ -18,13 +18,13 @@
             </xpath>
         </template>
 
-        <template id="team_return_report_view">
+        <template id="pull_out_delivery_view_form">
             <t t-call="report.html_container">
                 <t t-foreach="docs" t-as="o">
                     <t t-call="stock.external_layout_barcode_right">
                     <link rel="stylesheet" href="/skycable_employee_inventory/static/src/style.css"/>
                         <div class="page">
-                            <h1 class="text-center">Team Return Item Reports</h1>
+                            <h1 class="text-center">Pull-Out Delivery Report</h1>
                             <br/>
 
                             <br/>
@@ -45,13 +45,13 @@
                                     
                             
                                 <thead  style=" border: 1px solid; "  >
-                                            
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>PRODUCT</strong></th>
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>JOB ORDER</strong></th> 
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SERIAL ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>MAC ID</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>SMART CARD</strong></th>
+                                        <!-- <th style=" border: 1px solid;  text-align: center;"><strong>TEAM NUMBER</strong></th> -->
+                                        <th style=" border: 1px solid;  text-align: center;"><strong>PULL-OUT DATE</strong></th>
                                         <th style=" border: 1px solid;  text-align: center;"><strong>QUANTITY</strong></th>
-                                        <th style=" border: 1px solid;  text-align: center;"><strong>PRODUCT STATUS</strong></th>
                                 </thead>
 
                                 
@@ -60,11 +60,11 @@
                                    
                                     
                                     
-                                        <tr style=" border: 1px solid; " t-foreach='o.return_items' t-as='line' >
+                                        <tr style=" border: 1px solid; " t-foreach='o.pullout_return_list' t-as='line' >
                                     
                                         
                                             <td style=" border: 1px solid;  text-align: center; "> 
-                                                <span t-field="line.product_id" />  
+                                                <span t-field="line.job_number_related" />  
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
@@ -79,12 +79,16 @@
                                                 <span t-field="line.etsi_smart_card" />
                                             </td>
 
+                                            <!-- <td style=" border: 1px solid;  text-align: center; ">
+                                                <span t-field="line.etsi_teams_id" />
+                                            </td> -->
+
                                             <td style=" border: 1px solid;  text-align: center; ">
-                                                <span t-field="line.quantity" />
+                                               <span t-field="line.comp_date" />
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
-                                                <span t-esc="line.issued" />
+                                                <span > 1 </span>  
                                             </td>
                                             
                                      
@@ -93,33 +97,42 @@
                                     
                                 </tbody>
                             </table>
-                            <br/> <br/>
+
+                               <br/> <br/>
                             <br/> <br/>
                             <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
-
                             <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
                                 <t t-if="int(obj.job_id) == 3593">
                                 <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
                                 </t>
                                 </t>
-                                
+                           
                             <h5 >SIGNATURE:_________________</h5>
-                         
+
+                             <!-- <br/> <br/>
+                            <br/> <br/>
+                            <h5 >ENCODE BY:  <span t-esc="request.env.user.name"/> </h5>
+                            <h5 >SIGNATURE:_________________</h5>
+                            <h5 style="padding-left: 100px;"><span t-esc="o.etsi_teams_member_name.name"/> </h5>
+                         -->
+                            
                             <p t-field="o.note"/>
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; right: 1px; ">
                                 <p><strong>Source Location:</strong>    <span t-field="o.location_id"/></p>
                                 <p><strong>Destination Location:</strong>    <span t-field="o.location_dest_id"/></p>
-                          
+                                <p><strong>Employee for delivery:</strong>    <span t-field="o.employee_for_delivery"/></p>
+                                <p><strong>Date Returned: </strong>    <span t-field="o.date_delivered"/></p>
+                                <p><strong>Received By: </strong>    <span t-field="o.received_by"/></p>
+
                             </div> 
+                            <br></br>
                       
 
                             
                             <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
-                                <p><strong>Date:</strong>  <span t-field="o.date"/></p>
-                                <!-- <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p> -->
-                                <!-- <p><strong>State:</strong>   <span t-field="o.state"/></p> -->
-                                
+                                <p><strong>Release Date:</strong>  <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%m/%d/%y %H:%M:%S')"/></p>
+                                <p><strong>Scheduled Date:</strong>    <span t-field="o.min_date"/></p>
                                 <p><strong> Transaction Number:</strong><spant t-field="o.name"/></p>
                              </div>
                         </div>

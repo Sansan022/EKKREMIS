@@ -343,7 +343,7 @@ class Validate_Subscriber_Issuance(models.Model):
 
    
 
-class Validate_Subscriber_Issuance_Child(models.TransientModel):
+class Validate_Subscriber_Issuance_Child(models.Model):
     _name = 'subscriber_issuance_child'
 
     subs_issuance_connector = fields.Many2one('stock.picking')

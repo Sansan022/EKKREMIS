@@ -14,7 +14,7 @@ class Validate_Pullout_Received(models.Model):
     pullout_return_list = fields.One2many('pullout_picking_child_return_list','pullout_return_list_connector')
 
     # Fields after the delivery 
-    employee_for_delivery = fields.Many2one('team.configuration')
+    employee_for_delivery = fields.Many2one('hr.employee')
     date_delivered = fields.Date(string="Date Returned")
     received_by = fields.Char(string="Received By: ")
 
@@ -31,6 +31,11 @@ class Validate_Pullout_Received(models.Model):
     # Detects how many lines to process
     line_counter = fields.Integer('First: ')
     
+    @api.multi
+    def button(self):
+        raise ValidationError("aaaaaaaaaaaaaaaaaaaa")
+        
+    
     # Detects how many lines per batch, will be transferred 
     @api.onchange('line_counter')
     def set_num_lines(self):
@@ -38,9 +43,10 @@ class Validate_Pullout_Received(models.Model):
         return_lines = []
         return_res =self.env['etsi.pull_out.inventory'].search([('etsi_status', 'in', ('received', 'damaged')),('status_field', 'not in', ('waiting', 'done'))])
         counter = 0 
+        date = fields.date.today()
         for item in return_res:
 
-            if item.etsi_status == 'received':
+            if item.etsi_status == 'received' or item.etsi_status == 'damaged' :
 
                 return_lines.append(( 0,0, {
                     'for_delivery': True,  
@@ -54,6 +60,7 @@ class Validate_Pullout_Received(models.Model):
                     'etsi_serial_product' : item.etsi_serial,
                     'etsi_mac_product' : item.etsi_mac,
                     'etsi_smart_card' : item.etsi_smart_card,
+                    'comp_date' : date,
                     'etsi_teams_id' : item.etsi_teams_id,
                     'issued' : item.etsi_status
                     
@@ -65,7 +72,6 @@ class Validate_Pullout_Received(models.Model):
                 
                 break
                 
-   
         self.update({'pullout_holder_return' : return_lines })
 
     # Register the serial to the etsi.inventory 
@@ -292,7 +298,8 @@ class Validate_Pullout_Received(models.Model):
                                 'etsi_receive_date_in' : x.comp_date,
                                 # 'etsi_punched_date_in' : x.comp_date,
                                 # 'etsi_date_returned_in' : x.comp_date,
-                                'name' : rec.name
+                                'name' : rec.name,
+                                'serial_type' : x.serial_type
                                 })
                                 
                 for rec in self:
@@ -315,7 +322,8 @@ class Validate_Pullout_Received(models.Model):
                     'etsi_receive_date_in': laman['etsi_receive_date_in'],
                     # 'etsi_punched_date_in': laman['etsi_punched_date_in'],
                     # 'etsi_date_returned_in': laman['etsi_date_returned_in'],     
-                    'transaction_number' : laman['name']          
+                    'transaction_number' : laman['name'],
+                    'serial_type' : laman['serial_type']
                     }
                     )        
                     print(laman['etsi_serial'])
@@ -442,7 +450,31 @@ class Validate_Pullout_Received(models.Model):
                                 'transaction_number' : rec.name,
                                 'status_field' : 'waiting',
                                 })
+            returned_pullouts = []
+            for x in rec.pullout_holder_return:
 
+                if x.for_delivery == True:
+
+                    returned_pullouts.append((
+                        0, 0, {
+                            'product_id': x.product_id,
+                            'etsi_serial_product': x.etsi_serial_product, 
+                            'etsi_mac_product': x.etsi_mac_product, 
+                            'etsi_smart_card': x.etsi_smart_card,
+                            'comp_date' : x.comp_date,
+                            'quantity' : x.product_uom_qty,
+                            # Unit of measure 
+                            'product_uom' : x.product_uom.id,
+                            'product_uom_qty' : x.product_uom_qty, 
+                            'issued': "returned",
+
+                            'job_number' : x.job_number,
+                            # 'name':x.product_id.product_tmpl_id.name,
+
+                            'move_id': x.id, 
+                            'issued_field': "Returned"
+                        }
+                        ))
 
             self.update({
                 # 'etsi_team_issuance_id': picking.id,
@@ -454,7 +486,10 @@ class Validate_Pullout_Received(models.Model):
                 # 'location_dest_id': picking_checker2.default_location_dest_id.id,
                 # 'etsi_teams_id':  picking.etsi_teams_id.id,
                 'state' : 'draft',
+                'pullout_holder_return' : False,
+                'pullout_return_list' : returned_pullouts,  
                 'status_field' : 'waiting'
+                
                 })
     
     # Validation for serial number for broadband within the table
@@ -583,11 +618,11 @@ class Validate_Pullout_Received(models.Model):
         self.update({
         'pullout_return_list' : returned_pullouts,
         'state' : 'done',
-        'pullout_holder_return' : False,
+
         'status_field' : 'done'
          })
 
-class Validate_Pullout_Received_Child(models.TransientModel):
+class Validate_Pullout_Received_Child(models.Model):
     _name = 'pullout_picking_child'
     
     pullout_picking_child_connector = fields.Many2one('stock.picking')
@@ -600,7 +635,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
         ('a','Newly Installed'),
         ('b','Immediate')
     })
-    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Broadband')], default='catv')
+    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'BROADBAND')], default='catv')
     
     etsi_teams_id = fields.Many2one('team.configuration', string="Team Number")
     product_id =  fields.Char('CPE Mat. Code') 
@@ -673,7 +708,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
                 self.update({'etsi_smart_card' : False})
 
     
-class Validate_Pullout_Received_Child(models.TransientModel):
+class Validate_Pullout_Received_Child(models.Model):
     _name = 'pullout_picking_child_return'
     
     pullout_picking_child_connector_2 = fields.Many2one('stock.picking')
@@ -694,7 +729,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
     product_id_related = fields.Char(related='product_id')
     quantity = fields.Float('Quantity')
 
-    issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered')], string="Status", default='delivery', readonly=True)
+    issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered'),('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
     etsi_serial_product = fields.Char(string="Serial ID", required="True")
     etsi_mac_product = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
@@ -812,7 +847,7 @@ class Validate_Pullout_Received_Child(models.TransientModel):
                     raise ValidationError("Serial not found in the database")
 
 
-class Validate_Pullout_Return_List(models.TransientModel):
+class Validate_Pullout_Return_List(models.Model):
     _name = 'pullout_picking_child_return_list'
 
 
@@ -887,4 +922,6 @@ class Etsi_Pullout_Inventory(models.Model):
 
     status_field = fields.Selection([('draft', 'Draft'),('waiting', 'Waiting For Delivery Team'),('done', 'Done')], default='draft')
 
+    serial_type = fields.Selection([('catv', 'CATV'),('modem', 'BROADBAND')], default='catv')
+    
     # count = fields.Char('Count: ' default=data.example_count)

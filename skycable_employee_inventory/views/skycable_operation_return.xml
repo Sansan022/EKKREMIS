@@ -140,12 +140,12 @@
                                 <field name="issued" readonly="1" />
                                 <field name="product_uom" readonly="1" /> 
                                 <field name="active_ako" invisible="1" />
-                                <field name="return_checker"  />
-                                <field name="damage_checker"  />
-                                <field name="dmg_type" />
-                                <field name="transfer_checker"/>
-                                <field name="teams_from" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
-                                <field name="teams_to"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                <field name="return_checker" attrs="{'invisible': ['|',('damage_checker', '=', True), ('transfer_checker', '=', True)]}" />
+                                <field name="damage_checker" attrs="{'invisible': ['|',('transfer_checker', '=', True), ('return_checker', '=', True)]}" />
+                                <field name="dmg_type" attrs="{'invisible': [('damage_checker', '=', False)], 'required': [('damage_checker', '=', True)]}" />
+                                <field name="transfer_checker" attrs="{'invisible': ['|',('damage_checker', '=', True), ('return_checker', '=', True)]}" />
+                                <field name="teams_from" attrs="{'invisible': [('transfer_checker', '=', False)], 'required': [('transfer_checker', '=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                <field name="teams_to" attrs="{'invisible': [('transfer_checker', '=', False)], 'required': [('transfer_checker', '=', True)]}"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  -->
                                 <field name="teams_from_damage" invisible="1" />

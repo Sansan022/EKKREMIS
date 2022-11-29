@@ -454,7 +454,7 @@ class Return_list_holder(models.TransientModel):
                     'etsi_smart_card': dmg['etsi_smart_card_field'],
                     'etsi_teams_id' : team_no,
                     'transaction_number' : active_names,
-                    'etsi_status': 'damaged',
+                    'etsi_status': 'received',
                     'etsi_receive_date_in': fields.Date.today()
                 })
                 
