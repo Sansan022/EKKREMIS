@@ -80,6 +80,7 @@ class Validate_Subscriber_Issuance(models.Model):
         issued_stats = self.env['stock.move'].search([])
         inventory_stats = self.env['etsi.inventory'].search([])
 
+        date = fields.date.today()
         if final and final_ids:
             for issued_ids in issued_stats:
                 if issued_ids.etsi_serials_field in final:
@@ -88,7 +89,10 @@ class Validate_Subscriber_Issuance(models.Model):
                     for searched_ids in inventory_stats:
                         if searched_ids.etsi_product_id.id in final_ids:
                             if searched_ids.etsi_serial in final:
-                                searched_ids.update({'etsi_status': 'used'})
+                                searched_ids.update({'etsi_status': 'used',
+                                                     'etsi_date_issued_in': fields.date.today()
+                                                     })
+                                
 
     # Validation for serial number within the table 
     @api.constrains('subs_issue')
@@ -265,7 +269,9 @@ class Validate_Subscriber_Issuance(models.Model):
                             for searched_ids in inventory_stats:
                                 if searched_ids.etsi_product_id.id in final_ids:
                                     if searched_ids.etsi_serial in final:
-                                        searched_ids.update({'etsi_status': 'used'})
+                                        searched_ids.update({'etsi_status': 'used',
+                                                            'etsi_date_issued_in': fields.date.today()   
+                                                             })
                                         
                         # If transfer transaction is finished / confirmed update product location
                         for list_trans in trans_float_data:

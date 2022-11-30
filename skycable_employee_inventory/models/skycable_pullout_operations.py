@@ -14,7 +14,7 @@ class Validate_Pullout_Received(models.Model):
     pullout_return_list = fields.One2many('pullout_picking_child_return_list','pullout_return_list_connector')
 
     # Fields after the delivery 
-    employee_for_delivery = fields.Many2one('hr.employee')
+    employee_for_delivery = fields.Many2one('team.configuration')
     date_delivered = fields.Date(string="Date Returned")
     received_by = fields.Char(string="Received By: ")
 

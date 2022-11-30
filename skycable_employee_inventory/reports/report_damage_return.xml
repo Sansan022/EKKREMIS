@@ -81,7 +81,8 @@
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
-                                                <span t-field="line.quantity" />
+                                                <!-- <span t-field="line.quantity" /> -->
+                                                <span>1</span>
                                             </td>
 
                                             <td style=" border: 1px solid;  text-align: center; ">
