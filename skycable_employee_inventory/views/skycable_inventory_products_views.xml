@@ -243,42 +243,6 @@
 
     <!-- smart button content -->
 
-    <record model="ir.ui.view" id="serials_tree_vieww">
-
-    <field name="name">serials.tree</field>
-    <field name="model">etsi.inventory</field>
-    <field name="arch" type="xml">
-        <tree string="Serial Tree" create="false" delete="false">
-
-                <field name="type_checker"/>
-                <field name="etsi_product_id"/>
-                <field name="etsi_product_name" invisible='True'/>
-
-
-                <field name="etsi_description"/>
-
-                <field name="etsi_serial"/>
-                <field name="etsi_mac"/>
-                <field name="etsi_employee_in" string="Employee" />
-                
-                
-                <!-- <field name="create_date" widget="date"/> -->
-
-                <!-- ADDING NEW FIELDS -->
-                <field name="etsi_punched_date_in" />
-                <!-- <field name="etsi_subscriber_in" /> -->
-                <field name="etsi_receive_date_in" />
-                <field name="etsi_date_issued_in" />
-                <field name="etsi_date_returned_in" />
-                <field name="etsi_team_in" />
-
-                <field name="etsi_status"/>
-                
-
-        </tree>
-    </field>
-    </record>
-
     <record model="ir.ui.view" id="serials_tree_view_two">
 
     <field name="name">serials.tree</field>
@@ -313,6 +277,109 @@
     </field>
     </record>
 
+    <record id="etsi_inventory_form_02" model="ir.ui.view">
+        <field name="name">serials.form.two</field>
+        <field name="model">etsi.inventory</field>
+        <field name="arch" type="xml">
+            <form  create="false" delete="false" edit="false">   
+                <sheet>
+                    <group  string="Product Information">
+                        <group>
+                            <field name="type_checker" />
+                            <field name="etsi_product_id"/>
+                            <field name="etsi_description"/>
+                        </group>
+
+                        <group>
+                            <field name="etsi_serial"/>
+                            <field name="etsi_mac"/>
+                            <field name="etsi_smart_card"/>
+                        </group>
+                    </group>
+
+                    <group  string="Other Information">
+                        <group>
+                            <field name="etsi_employee_in" string="Employee" />
+                            <field name="etsi_punched_date_in" />
+                            <field name="etsi_receive_date_in" />    
+                        </group>
+
+                        <group>
+                            <field name="etsi_date_issued_in" />
+                            <field name="etsi_date_returned_in" />
+                            <field name="etsi_team_in" />
+                            <field name="etsi_status"/>
+                        </group>
+                    </group>
+
+                    <group  string="History">
+                        <field name="etsi_history_lines" nolabel="1"> 
+                            <tree  editable="bottom" create="false" delete="false">
+                                <field name="etsi_operation"/>
+                                <field name="etsi_transaction_num"/>
+                                <field name="etsi_action_date"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>     
+            </form>
+        </field>
+    </record>
+
+    <record id="action_inventory_table_one" model="ir.actions.act_window">
+        <field name="name">CATV5</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">etsi.inventory</field>
+        <field name="view_type">tree</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <record model="ir.ui.view" id="serials_tree_view_one">
+
+    <field name="name">serials.tree</field>
+    <field name="model">etsi.inventory</field>
+    <field name="arch" type="xml">
+        <tree string="Serial Tree" create="false" delete="false">
+                <field name="type_checker"/>
+                <field name="etsi_product_id"/>
+                <field name="etsi_product_name" invisible='True'/>
+
+
+                <field name="etsi_description"/>
+
+                <field name="etsi_serial"/>
+                <field name="etsi_mac"/>
+                <field name="etsi_employee_in" string="Employee" />
+                
+                
+                <!-- <field name="create_date" widget="date"/> -->
+
+                <!-- ADDING NEW FIELDS -->
+                <field name="etsi_punched_date_in" />
+                <!-- <field name="etsi_subscriber_in" /> -->
+                <field name="etsi_receive_date_in" />
+                <field name="etsi_date_issued_in" />
+                <field name="etsi_date_returned_in" />
+                <field name="etsi_team_in" />
+
+                <field name="etsi_status"/>
+
+        </tree>
+    </field>
+    </record>
+
+    <record id="action_inventory_table_two" model="ir.actions.act_window">
+        <field name="name">BROADBAND</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">etsi.inventory</field>
+        <field name="view_type">tree</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
 
     <record id="product_template_form_view_procurement_button_serialbutton" model="ir.ui.view">
         <field name="name">model.name.view.form.inherit.smart</field>
@@ -320,8 +387,8 @@
         <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
         <field name="arch" type="xml">
             <xpath expr="//div/button[@name='action_view_stock_moves']" position="after">
-                <button icon="fa-barcode" class="oe_stat_button" name="serial_location" string="Serials"  type="object" >
-                  <field name="product_count"/>
+                <button icon="fa-barcode" class="oe_stat_button" name="serial_location" string="Serials"  type="object" attrs="{'invisible' : [('internal_ref_name','in',('drops','others'))]}">
+                  <field name="product_count" />
                 </button>
             </xpath>
 

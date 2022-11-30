@@ -347,6 +347,11 @@ class Team_issuance_stock_picking(models.Model):
                         status_checker.etsi_team_in = self.etsi_teams_id.id
 
                         status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
+                        
+                        status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Issuance','etsi_transaction_num':self.name,'etsi_action_date':self.min_date,})]})
+
+
+
                         for records in status_checker2:
                                 records.issued_field = "Deployed"
                                 records.doc_source = check.id

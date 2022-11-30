@@ -41,24 +41,26 @@ class ProductTemplateInheritance(models.Model):
     @api.multi
     def serial_location(self):
         if self.internal_ref_name == 'broadband':
-            view_id = self.env.ref("skycable_employee_inventory.serials_tree_vieww").id
+            view_id = self.env.ref("skycable_employee_inventory.serials_tree_view_one").id
+            view_ids = self.env.ref("skycable_employee_inventory.etsi_inventory_form_02").id
             return {
-                'name': 'serials.tree',
+                'name': 'BROADBAND',
                 'type': 'ir.actions.act_window',
                 'res_model': 'etsi.inventory',
-                'view_mode': 'tree',
-                'views': [(view_id,'tree')],
+                'view_mode': 'tree,form',
+                'views': [(view_id,'tree'),(view_ids,'form')],
                 'domain': [('etsi_product_id', '=', self.name )]
             }
             
         else:
             view_id = self.env.ref("skycable_employee_inventory.serials_tree_view_two").id
+            view_ids = self.env.ref("skycable_employee_inventory.etsi_inventory_form_02").id
             return {
-                'name': 'serials.tree.two',
+                'name': 'CATV5',
                 'type': 'ir.actions.act_window',
                 'res_model': 'etsi.inventory',
-                'view_mode': 'tree',
-                'views': [(view_id,'tree')],
+                'view_mode': 'tree,form',
+                'views': [(view_id,'tree'),(view_ids,'form')],
                 'domain': [('etsi_product_id', '=', self.name )]
             }
 
@@ -147,6 +149,9 @@ class Product_Serial_SmartButton(models.Model):
     
     #ADDING DESCRIPTION FIELD
     etsi_description = fields.Text(related='etsi_product_id.description_txt')
+
+    #history one2many
+    etsi_history_lines =  fields.One2many('etsi.inventory.history','etsi_connection')
     
     #product scheduler
     @api.multi
@@ -158,6 +163,16 @@ class Product_Serial_SmartButton(models.Model):
             archive_products.active = False
 
 # update quantity on hand one2many content
+
+class Product_Serial_SmartButton(models.Model):
+    _name = 'etsi.inventory.history'
+
+    etsi_connection = fields.Many2one('etsi.inventory')
+    etsi_operation = fields.Char(string="Operation")
+    etsi_transaction_num = fields.Char(string="Transaction Number")
+    etsi_action_date = fields.Date(string="Date")
+
+
 class Product_Quanty_On_Hand_Model(models.TransientModel):
 
     _name = 'etsi.inventory.product'

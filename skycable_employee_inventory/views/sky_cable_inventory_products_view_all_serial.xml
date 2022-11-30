@@ -46,6 +46,55 @@
         
     </record>
 
+    <record id="etsi_inventory_form" model="ir.ui.view">
+        <field name="name">serials.form</field>
+        <field name="model">etsi.inventory</field>
+        <field name="arch" type="xml">
+            <form  create="false" delete="false" edit="false">   
+                <sheet>
+                    <group  string="Product Information">
+                        <group>
+                            <field name="type_checker" />
+                            <field name="etsi_product_id"/>
+                            <field name="etsi_description"/>
+                        </group>
+
+                        <group>
+                            <field name="etsi_serial"/>
+                            <field name="etsi_mac"/>
+                            <field name="etsi_smart_card"/>
+                        </group>
+                    </group>
+
+                    <group  string="Other Information">
+                        <group>
+                            <field name="etsi_employee_in" string="Employee" />
+                            <field name="etsi_punched_date_in" />
+                            <field name="etsi_receive_date_in" />    
+                        </group>
+
+                        <group>
+                            <field name="etsi_date_issued_in" />
+                            <field name="etsi_date_returned_in" />
+                            <field name="etsi_team_in" />
+                            <field name="etsi_status"/>
+                        </group>
+                    </group>
+
+                    <group  string="History">
+                        <field name="etsi_history_lines" nolabel="1"> 
+                            <tree  editable="bottom" create="false" delete="false">
+                                <field name="etsi_operation"/>
+                                <field name="etsi_transaction_num"/>
+                                <field name="etsi_action_date"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>     
+            </form>
+        </field>
+    </record>
+
     <record id="etsi_inventory_view_search" model="ir.ui.view">
         <field name="name">etsi.inventory.view.search</field>
         <field name="model">etsi.inventory</field>
@@ -76,7 +125,7 @@
         <field name="name">View_all_serial</field>
         <field name="res_model">etsi.inventory</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">kanban,form,tree</field>
         <field name="view_id" ref="serials_tree_view"/>
         <field name="context">{'search_default_filter_type_CATV':1,'search_default_filter_type_MODEM':1,'search_default_filter_type_available':0,'search_default_filter_type_deployed':0,'search_default_filter_type_used':0,'search_default_filter_type_returned':0,'search_default_filter_type_damaged':0,'search_default_filter_type_onhand':0,'search_default_filter_type_delivery':0,'search_default_filter_type_delivered':0} </field>
 
