@@ -238,10 +238,10 @@ class Return_list_holder(models.TransientModel):
                                 searched_ids.update({'etsi_date_returned_in': date_returned})
                                 searched_ids.update({'etsi_team_in': False})
                         
-                        if searched_ids.etsi_product_id in product_lists:
-                            # update history
-                            date_returned = datetime.today()
-                            searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return (Returned Items)','etsi_transaction_num':picking.name,'etsi_action_date':date_returned,})]})
+                        # if searched_ids.etsi_product_id in product_lists:
+                        #     # update history
+                        #     date_returned = datetime.today()
+                        #     searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return (Returned Items)','etsi_transaction_num':picking.name,'etsi_action_date':date_returned,})]})
                                         
             # Transfer Items
             if team_return_transfer or team_return: # Transfer list or Team Return list
