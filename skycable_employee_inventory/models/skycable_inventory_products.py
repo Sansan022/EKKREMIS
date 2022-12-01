@@ -281,6 +281,11 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
     @api.onchange('etsi_serial_product_2')
     def _onchange_etsi_serial_product_2(self):
+        print(list_of_serials_2)
+        print(list_of_serials_2)
+        print(list_of_serials_2)
+        print(list_of_serials_2)
+        print(list_of_serials_2)
 
 
         for rec in self:
@@ -291,9 +296,14 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     @api.onchange('etsi_smart_card_product_2')
     def _onchange_etsi_smart_card_product_2(self):
 
+        print(list_of_smart_card_2)
+        print(list_of_smart_card_2)
+        print(list_of_smart_card_2)
+        print(list_of_smart_card_2)
+
         for rec in self:
             if rec.etsi_smart_card_product_2:
-                if rec.etsi_smart_card_product_2 in list_of_macs_2:
+                if rec.etsi_smart_card_product_2 in list_of_smart_card_2:
                     rec.checkbox_duplicate_2 = True
     
 
@@ -352,9 +362,9 @@ class Inherit_Product_Quantity(models.TransientModel):
         for rec in self:
             for line in rec.etsi_product_items_2:
                 if not line.etsi_serial_product_2 == False:
-                    list_of_serials.append(line.etsi_serial_product_2)
+                    list_of_serials_2.append(line.etsi_serial_product_2)
                 if not line.etsi_smart_card_product_2 == False:
-                    list_of_smart_card.append(line.etsi_smart_card_product_2)
+                    list_of_smart_card_2.append(line.etsi_smart_card_product_2)
 
         # df_serials = pd.DataFrame(list_of_serials)
         # df_smart_card = pd.DataFrame(list_of_smart_card)
