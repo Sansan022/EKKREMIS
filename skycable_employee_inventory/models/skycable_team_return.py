@@ -386,10 +386,10 @@ class Return_list_holder(models.TransientModel):
                             else: # if not installed
                                 inventory.update({'etsi_team_in': fin['team_to']}) # update team number
                 
-                # Delete done transactions
-                for list_trans in trans_ako:
-                    if list_trans.etsi_serial_product in serial_only and list_trans.issued == "Done" and list_trans.return_checker == True and list_trans.transfer_checker == True:
-                        list_trans.unlink() # Delete floating data
+                # # Delete done transactions
+                # for list_trans in trans_ako:
+                #     if list_trans.etsi_serial_product in serial_only and list_trans.issued == "Done" and list_trans.return_checker == True and list_trans.transfer_checker == True:
+                #         list_trans.unlink() # Delete floating data
                 
         # Damage Transaction
         if team_return_damaged: 
