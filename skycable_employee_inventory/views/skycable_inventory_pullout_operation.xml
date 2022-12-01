@@ -147,8 +147,8 @@
                     <field name="pullout_return_list" delete="0" create="0" string="Pull Out Form"  nolabel="1" attrs="{'readonly': [('state','=','done')], 'invisible': [('teller','!=','pull-out-return')]}">
 
                         <tree editable="bottom">
-<!-- 
-                                    <field name="for_delivery" /> -->
+
+                                    <field name="for_delivery" /> 
                                     <field name="job_number" invisible="1"   />
                                     <field name="job_number_related" readonly="1"/>
                                     <field name ="product_id"  invisible="1" />

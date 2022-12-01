@@ -14,7 +14,7 @@ class Validate_Pullout_Received(models.Model):
     pullout_return_list = fields.One2many('pullout_picking_child_return_list','pullout_return_list_connector')
 
     # Fields after the delivery 
-    employee_for_delivery = fields.Many2one('team.configuration')
+    employee_for_delivery = fields.Many2one('team.configuration') 
     date_delivered = fields.Date(string="Date Returned")
     received_by = fields.Char(string="Received By: ")
 
@@ -270,7 +270,7 @@ class Validate_Pullout_Received(models.Model):
                         for item in listahan_delivery:
                             print(item)
                         
-                picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Return To Sky')])
+                picking_checker2 = self.env['stock.picking.type'].search([('name', '=', 'Pullout Receive')])
                 stock_picking_db = self.env['stock.picking']
 
                 
@@ -551,10 +551,47 @@ class Validate_Pullout_Received(models.Model):
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         listahan = []
         returned_pullouts = []
+        
+        
+        for rec in self:
+            for x in rec.pullout_return_list:
+
+                    if x.for_delivery == True:
+
+                        returned_pullouts.append((
+                            0, 0, {
+                                
+
+                                'product_id': x.product_id,
+                                'etsi_serial_product': x.etsi_serial_product, 
+                                'etsi_mac_product': x.etsi_mac_product, 
+                                'etsi_smart_card': x.etsi_smart_card,
+                                'comp_date' : x.comp_date,
+                                'quantity' : x.product_uom_qty,
+                                # Unit of measure 
+                                'product_uom' : x.product_uom.id,
+                                'product_uom_qty' : x.product_uom_qty, 
+                                'issued': "returned",
+
+                                'job_number' : x.job_number,
+                                # 'name':x.product_id.product_tmpl_id.name,
+
+                                'move_id': x.id, 
+                                'issued_field': "Returned"
+                            }
+                            ))
+        
+        self.update({
+        'pullout_return_list' : returned_pullouts,
+        # 'state' : 'done',
+
+        # 'status_field' : 'done'
+        })
+        
         for rec in self:
 
             search_name = self.env['stock.picking'].search([('name','=',rec.name)])
-            picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
+            picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Return To Sky')])
 
             product_lists = []
             product_serials = []
@@ -569,17 +606,42 @@ class Validate_Pullout_Received(models.Model):
                 raise ValidationError("Please input who received")
             else:
 
-                for plines_issued in rec.pullout_holder_return:
-                    if plines_issued.for_delivery == True:
+                for plines_issued in rec.pullout_return_list:
+                    
+                    print(plines_issued, "MGA SERIAL")
+                    print(plines_issued, "MGA SERIAL")
+                    print(plines_issued, "MGA SERIAL")
+                    print(plines_issued, "MGA SERIAL")
+                    print(plines_issued.etsi_serial_product, "SERIAl")
+                    print(plines_issued.for_delivery)
+
+                    if plines_issued.for_delivery == True :
+                        print("1")
+                        print("1")
+                        print("1")
+                        
                         product_lists.append(plines_issued.etsi_serial_product)
                         product_serials.append(plines_issued.etsi_serial_product)
-
+                        print("2")
+                        
                 issued_stats = self.env['pullout_picking_child_return'].search([])
                 inventory_stats = self.env['etsi.pull_out.inventory'].search([])
+                
+                if product_lists:
+                    
+                    print("SA BABA NANGYAYARE")
+                    print("SA BABA NANGYAYARE")
+                    print("SA BABA NANGYAYARE")
+                    print("SA BABA NANGYAYARE")
 
                 # To update the status of serials as returned from sky 
                 if product_serials:
                     for searched_issueds in issued_stats:
+                        print(searched_issueds.etsi_serial_product,"Mga serial")
+                        print(searched_issueds.etsi_serial_product,"Mga serial")
+                        print(searched_issueds.etsi_serial_product,"Mga serial")
+                        print(searched_issueds.etsi_serial_product,"Mga serial")
+                        
                         if searched_issueds.etsi_serial_product in product_lists:
                             searched_issueds.update({'issued': 'returned'})
 
@@ -588,39 +650,14 @@ class Validate_Pullout_Received(models.Model):
                                 searched_ids.update({'etsi_status': 'returned',
                                 'etsi_date_returned_in' : rec.date_delivered,
                                 })
-
-            for x in rec.pullout_holder_return:
-
-                if x.for_delivery == True:
-
-                    returned_pullouts.append((
-                        0, 0, {
-                            'product_id': x.product_id,
-                            'etsi_serial_product': x.etsi_serial_product, 
-                            'etsi_mac_product': x.etsi_mac_product, 
-                            'etsi_smart_card': x.etsi_smart_card,
-                            'comp_date' : x.comp_date,
-                            'quantity' : x.product_uom_qty,
-                            # Unit of measure 
-                            'product_uom' : x.product_uom.id,
-                            'product_uom_qty' : x.product_uom_qty, 
-                            'issued': "returned",
-
-                            'job_number' : x.job_number,
-                            # 'name':x.product_id.product_tmpl_id.name,
-
-                            'move_id': x.id, 
-                            'issued_field': "Returned"
-                        }
-                        ))
-
+        
         # Finish the form
         self.update({
-        'pullout_return_list' : returned_pullouts,
+        # 'pullout_return_list' : returned_pullouts,
         'state' : 'done',
 
         'status_field' : 'done'
-         })
+        })
 
 class Validate_Pullout_Received_Child(models.Model):
     _name = 'pullout_picking_child'
@@ -853,7 +890,7 @@ class Validate_Pullout_Return_List(models.Model):
 
     pullout_return_list_connector = fields.Many2one('stock.picking')
      # Pull Out Return Form
-    for_delivery = fields.Boolean('Delivery')
+    for_delivery = fields.Boolean('Delivery', default = True)
     job_number = fields.Char("Job Order")
     job_number_related = fields.Char(related="job_number")
     subs_type = fields.Char("Type")
