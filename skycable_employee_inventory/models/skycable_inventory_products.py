@@ -284,7 +284,7 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
 
 
         for rec in self:
-            if rec.etsi_serial_product:
+            if rec.etsi_serial_product_2:
                 if rec.etsi_serial_product_2 in list_of_serials_2:
                     rec.checkbox_duplicate_2 = True
 
@@ -292,7 +292,7 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     def _onchange_etsi_smart_card_product_2(self):
 
         for rec in self:
-            if rec.etsi_serial_product:
+            if rec.etsi_smart_card_product_2:
                 if rec.etsi_smart_card_product_2 in list_of_macs_2:
                     rec.checkbox_duplicate_2 = True
     
