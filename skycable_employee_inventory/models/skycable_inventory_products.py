@@ -179,6 +179,7 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_product_type = fields.Selection(related='etsi_product_name_product.internal_ref_name')
 
 
+
     #ADDING NEW FIELDS
     # date_and
     etsi_receive_date = fields.Date(string="Receive", related='etsi_product_id_product.date_time', required=True)
@@ -188,16 +189,49 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     etsi_team = fields.Char(string="Team")
     etsi_punch_time = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
 
+    checkbox_duplicate  = fields.Boolean('Duplicate Products')
+  
+
+    @api.onchange('etsi_serial_product')
+    def _onchange_etsi_serial_product(self):
+
+        print(list_of_serials)
+        print(list_of_macs)
+      
+        
+        for rec in self:
+            if rec.etsi_serial_product:
+                if rec.etsi_serial_product in list_of_serials:
+                    rec.checkbox_duplicate =True
+            
+
+    @api.onchange('etsi_mac_product')
+    def _onchange_etsi_mac_product(self):
+       
+        for rec in self:
+            if rec.etsi_serial_product:
+                if rec.etsi_serial_product in list_of_macs:
+                    rec.checkbox_duplicate =True
+                    
+
+
 
 # Onchange Validation for serial product and mac product
     @api.onchange('etsi_serial_product', 'etsi_mac_product')
     def onchangevalidation(self):
 
+
+    
+
         for rec in self:
+                
             if self.etsi_serial_product:
                 if self.etsi_serial_product in self.env['etsi.inventory'].search([]).mapped('etsi_serial'):
                     
                     check = "Duplicate detected within the database \n Serial Number: {}".format(self.etsi_serial_product)
+
+                    # self.checkbox_duplicate = True
+
                     raise ValidationError(check)
 
             if self.etsi_mac_product:
@@ -205,6 +239,8 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
 
                     check = "Duplicate detected within the database \n MAC ID: {}".format(self.etsi_mac_product)
                     raise ValidationError(check)
+
+    
 
 
 
@@ -230,6 +266,28 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     etsi_date_returned2 = fields.Date(string="Date Returned")
     etsi_team2 = fields.Char(string="Team")
     etsi_punch_time_2 = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
+    checkbox_duplicate_2  = fields.Boolean('Duplicate Products')
+
+
+    @api.onchange('etsi_serial_product_2')
+    def _onchange_etsi_serial_product_2(self):
+
+
+        for rec in self:
+            if rec.etsi_serial_product:
+                if rec.etsi_serial_product_2 in list_of_serials_2:
+                    rec.checkbox_duplicate_2 = True
+
+    @api.onchange('etsi_smart_card_product_2')
+    def _onchange_etsi_smart_card_product_2(self):
+
+        for rec in self:
+            if rec.etsi_serial_product:
+                if rec.etsi_smart_card_product_2 in list_of_macs_2:
+                    rec.checkbox_duplicate_2 = True
+    
+
+    
 
  # Onchange Validation for serial product2 and smart card2
     @api.onchange('etsi_serial_product_2', 'etsi_smart_card_product_2')
@@ -266,14 +324,21 @@ class Inherit_Product_Quantity(models.TransientModel):
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Many2one('res.users', string='Employee Name', default=lambda self: self.env.user.id)
     date_time = fields.Date(string="Date Received",required="True", default=fields.Datetime.now)
+    
+    
 
 
 #currently testing the ui
     @api.onchange('etsi_product_items_2')
     def _onchange_etsi_product_items_2(self):
 
-        list_of_serials =[]
-        list_of_smart_card = []
+
+        #DO NOT USE THESE GLOBAL VARIABLE TO OTHER CLASSES AND PACKAGES: @mr.robot
+        global list_of_serials_2
+        global list_of_smart_card_2
+
+        list_of_serials_2 =[]
+        list_of_smart_card_2 = []
         for rec in self:
             for line in rec.etsi_product_items_2:
                 if not line.etsi_serial_product_2 == False:
@@ -281,28 +346,34 @@ class Inherit_Product_Quantity(models.TransientModel):
                 if not line.etsi_smart_card_product_2 == False:
                     list_of_smart_card.append(line.etsi_smart_card_product_2)
 
-        df_serials = pd.DataFrame(list_of_serials)
-        df_smart_card = pd.DataFrame(list_of_smart_card)
+        # df_serials = pd.DataFrame(list_of_serials)
+        # df_smart_card = pd.DataFrame(list_of_smart_card)
 
-        duplicate_serials = df_serials[df_serials.duplicated()]
-        duplicate_smart_card = df_smart_card[df_smart_card.duplicated()]
+        # duplicate_serials = df_serials[df_serials.duplicated()]
+        # duplicate_smart_card = df_smart_card[df_smart_card.duplicated()]
+        # global list_of_serials
 
 
-        if not duplicate_serials.empty:
-             return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
-        if not duplicate_smart_card.empty:
-             return {'warning': {'title': _('Warning'),'message': _('Duplicate Smart Card Detected within the table.')}}
+        # if not duplicate_serials.empty:
+
+            #  return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+        # if not duplicate_smart_card.empty:
+        #      return {'warning': {'title': _('Warning'),'message': _('Duplicate Smart Card Detected within the table.')}}
 
 
 
     # duplicated in BROADBAND ON CHANGE
     @api.onchange('etsi_product_items')
     def _onchange_etsi_product_items(self):
+        
+        #DO NOT USE THESE GLOBAL VARIABLE TO OTHER CLASSES AND PACKAGES: @mr.robot
+        global list_of_serials
+        global list_of_macs
 
         list_of_serials =[]
         list_of_macs = []
 
-        is_okay = False
+
         for rec in self:
             for line in rec.etsi_product_items:
                 if not line.etsi_serial_product == False:
@@ -312,17 +383,17 @@ class Inherit_Product_Quantity(models.TransientModel):
 
 
 
-        df_serials = pd.DataFrame(list_of_serials)
-        df_macs = pd.DataFrame(list_of_macs)
+        # df_serials = pd.DataFrame(list_of_serials)
+        # df_macs = pd.DataFrame(list_of_macs)
 
-        duplicate_serials = df_serials[df_serials.duplicated()]
-        duplicate_macs = df_macs[df_macs.duplicated()]
+        # duplicate_serials = df_serials[df_serials.duplicated()]
+        # duplicate_macs = df_macs[df_macs.duplicated()]
 
 
-        if not duplicate_serials.empty:
-            return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
-        if not duplicate_macs.empty:
-            return {'warning': {'title': _('Warning'),'message': _('Duplicate Mac Address Detected within the table.')}}
+        # if not duplicate_serials.empty:
+        #     return {'warning': {'title': _('Warning'),'message': _('Duplicate Serials Detected within the table.')}}
+        # if not duplicate_macs.empty:
+        #     return {'warning': {'title': _('Warning'),'message': _('Duplicate Mac Address Detected within the table.')}}
 
 # Validation for serial number for broadband within the table
     @api.constrains('etsi_product_items')
@@ -520,8 +591,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                 product = wizard.product_id.with_context(location=wizard.location_id.id, lot_id=wizard.lot_id.id)
                 line_data = wizard._prepare_inventory_line()
                 # line_data2 = wizard._prepare_product_line()
-
-
+                
                
                 
 

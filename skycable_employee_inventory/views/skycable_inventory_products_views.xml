@@ -405,6 +405,8 @@
                                 <field name="etsi_date_returned" invisible='1' />
                                 <field name="etsi_team" invisible='1' />
                                 <field name="etsi_punch_time" />
+                                <field name="checkbox_duplicate" readonly="1"/>
+
 
                             </tree>
 
@@ -433,6 +435,7 @@
                             <field name="etsi_date_returned2" invisible='1'/>
                             <field name="etsi_team2" invisible='1'/>
                             <field name="etsi_punch_time_2" />
+                            <field name="checkbox_duplicate_2" readonly="1"/>
 
                         </tree>
 
