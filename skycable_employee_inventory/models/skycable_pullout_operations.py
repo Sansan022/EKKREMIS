@@ -581,12 +581,12 @@ class Validate_Pullout_Received(models.Model):
                             }
                             ))
         
-        self.update({
-        'pullout_return_list' : returned_pullouts,
-        # 'state' : 'done',
+        # self.update({
+        # 'pullout_return_list' : returned_pullouts,
+        # # 'state' : 'done',
 
-        # 'status_field' : 'done'
-        })
+        # # 'status_field' : 'done'
+        # })
         
         for rec in self:
 
