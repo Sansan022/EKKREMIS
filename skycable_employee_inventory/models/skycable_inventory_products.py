@@ -170,6 +170,11 @@ class Product_Serial_SmartButton(models.Model):
     etsi_connection = fields.Many2one('etsi.inventory')
     etsi_operation = fields.Char(string="Operation")
     etsi_transaction_num = fields.Char(string="Transaction Number")
+    # etsi_date_issued = fields.Date(string="Date Issued")
+    # etsi_date_returned = fields.Date(string="Date Returned")
+    etsi_status = fields.Char(string="Status")
+    etsi_employee = fields.Many2one('res.users',string="Employee")
+    etsi_teams = fields.Many2one('team.configuration',string="Team")
     etsi_action_date = fields.Date(string="Date")
 
 
@@ -676,11 +681,11 @@ class Inherit_Product_Quantity(models.TransientModel):
                 inventory.action_done()
                 for line in self.etsi_product_items:
                     status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product)])
-                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time,})]})
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time,'etsi_status':'Available'})]})
 
                 for line in self.etsi_product_items_2:
                     status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product_2)])
-                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time_2,})]})
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time_2,'etsi_status':'Available'})]})
 
                 
                 

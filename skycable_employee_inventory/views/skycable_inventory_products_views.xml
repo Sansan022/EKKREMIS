@@ -317,7 +317,13 @@
                             <tree  editable="bottom" create="false" delete="false">
                                 <field name="etsi_operation"/>
                                 <field name="etsi_transaction_num"/>
+                                
+
+                                <field name="etsi_employee"/>
+                                <field name="etsi_teams"/>
+
                                 <field name="etsi_action_date"/>
+                                <field name="etsi_status"/>
                             </tree>
                         </field>
                     </group>
