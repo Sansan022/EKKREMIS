@@ -161,11 +161,13 @@ class ValidationProcess(models.TransientModel):
 class functionWizard(models.Model):
     _inherit = 'stock.move'
 
+
+
     def testing1212(self):
         return {
 
             'name': 'Convert Transient',
-            'res_model': 'stock.move.test',
+            'res_model': 'stock.move.test2',
             'view_type': 'form',
             'view_mode': 'form',
             'type': 'ir.actions.act_window',
@@ -178,6 +180,7 @@ class functionWizard(models.Model):
         }
 
 class convert_transient(models.TransientModel):
+
     _name='stock.move.test'
 
     matcode = fields.Many2one('product.product' , string="Material Code:",readonly="True")
@@ -346,17 +349,19 @@ class convert_transient(models.TransientModel):
 
             else:
                 raise ValidationError("ERROR!!! You can't convert same material code.")
-            picking = self.env['stock.move'].browse(self.env.context.get('active_id'))
 
-            if picking:
+                
+            # picking = self.env['stock.move'].browse(self.env.context.get('active_id'))
+
+            # if picking:
 
 
-                for move2 in picking:
-                    product = self.env['product.product'].browse(move2.product_id.id)
-                    current = product.with_context({'location' : 'WH/Stock'}).qty_available
+            #     for move2 in picking:
+            #         product = self.env['product.product'].browse(move2.product_id.id)
+            #         current = product.with_context({'location' : 'WH/Stock'}).qty_available
 
-                    if(current <= 0):
-                        picking.unlink()
+            #         if(current <= 0):
+            #             picking.unlink()
 
         else:
             raise ValidationError("Invalid quantity input")
@@ -365,13 +370,13 @@ class convert_transient(models.TransientModel):
     #ADDING VALIDATION IN CONVERTING PRODUCTS
     @api.onchange('quantity_you_want_to_convert')
     def _onchange_quantity_you_want_to_convert(self):
-        print("Hello world")
-        print(self.drops_type_convert_to.id)
-        print(self.drops_type_convert_to.id)
-        print(self.quantity_you_want_to_convert)
-        print(self.quantity_you_want_to_convert)
-        print(self.quantity_you_want_to_convert)
-        print(type(self.quantity_you_want_to_convert))
+        # print("Hello world")
+        # print(self.drops_type_convert_to.id)
+        # print(self.drops_type_convert_to.id)
+        # print(self.quantity_you_want_to_convert)
+        # print(self.quantity_you_want_to_convert)
+        # print(self.quantity_you_want_to_convert)
+        # print(type(self.quantity_you_want_to_convert))
 
         # if self.quantity_you_want_to_convert < 0:
         #     print("hello")
@@ -382,10 +387,10 @@ class convert_transient(models.TransientModel):
 
 
         if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0):
-            print("This is good")
-            print("This is good")
-            print("This is good")
-            print("This is good")
+            # print("This is good")
+            # print("This is good")
+            # print("This is good")
+            # print("This is good")
 
             
 
@@ -451,7 +456,286 @@ class convert_transient(models.TransientModel):
         # else:
         #     raise ValidationError("Invalid data")
 
+    
+
+    class convert_transient(models.TransientModel):
+
+        _name='stock.move.test2'
+
+        matcode = fields.Many2one('product.product' , string="Material Code:",readonly="True")
+        currentquantity = fields.Integer(string="Current Quantity",compute='_get_current_quantity',readonly="True")
+        employeename = fields.Many2one('res.users', string="Employee Name", default=lambda self: self.env.user.id)
+        current_unit = fields.Char(readonly=True, string="Units", related='matcode.product_tmpl_id.uom_id.name')
+        matname = fields.Char(related='matcode.product_tmpl_id.name')
+
+        sky_drops_reference_wiz = fields.Char(related='matcode.product_tmpl_id.drops_reference_id.drops_references')
+
+        # NEXT LINE IS OUR MATERIAL CODE 
+        drops_type_convert_to = fields.Many2one('product.template', required=True)
+        initial_current_quantity= fields.Integer(compute='_get_initial_current_quantity')    
+        converted_units = fields.Char(related='drops_type_convert_to.uom_id.name',readonly=True)
 
 
+        quantity_you_want_to_convert = fields.Integer(required=True)
+
+        @api.multi
+        @api.depends('currentquantity','matcode' )
+        def _get_current_quantity(self):
+            product = self.env['product.product'].browse(self.matcode.id)
+            current = product.with_context({'location' : 'WH/Stock'}).qty_available
+            self.currentquantity = current
+        @api.multi
+        @api.depends('initial_current_quantity', 'drops_type_convert_to')
+        def _get_initial_current_quantity(self):
+            product = self.env['product.product'].browse(self.drops_type_convert_to.id)
+            current = product.with_context({'location' : 'WH/Stock'}).qty_available
+            self.initial_current_quantity = current
+
+
+        
+
+        @api.multi
+        def convert_btn(self):
+            if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0):
+                # product01
+                if(self.matcode.product_tmpl_id.uom_id.uom_type == 'reference'):
+                    product01_uom_value = 1
+                elif(self.matcode.product_tmpl_id.uom_id.uom_type == 'bigger'):
+                    product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor_inv
+                else:
+                    product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor
+
+                # product02
+                if(self.drops_type_convert_to.uom_id.uom_type == 'reference'):
+                    product02_uom_value = 1
+                elif(self.drops_type_convert_to.uom_id.uom_type == 'bigger'):
+                    product02_uom_value = self.drops_type_convert_to.uom_id.factor_inv
+                else:
+                    product02_uom_value = self.drops_type_convert_to.uom_id.factor
+                
+                if(product01_uom_value < product02_uom_value):
+
+
+                    availabletoconvert = self.quantity_you_want_to_convert*product02_uom_value
+                    availabletoconvert2 = availabletoconvert/product02_uom_value
+                    availabletoconvertchecker = availabletoconvert2%1
+
+                    if(int(availabletoconvert)>self.currentquantity):
+                        raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nYou only need: " + str(self.currentquantity / 50) + " (Bag of 50)")
+                    if(int(availabletoconvert2) <= 0):
+                        raise ValidationError("Error: Invalid quantity inserted")
+
+                    if(availabletoconvertchecker != 0):
+                        raise ValidationError("Error: Inserted quantity is less than the current quantity. \nThe minimum quantity is 1")
+                    
+                    else:
+                        product01newvalue = self.currentquantity - int(availabletoconvert)
+                        product02newvalue = self.initial_current_quantity + int(availabletoconvert2)
+
+                    Inventory = self.env['stock.inventory']
+                    for wizard in self:
+                            
+                        loc_id = self.env['stock.location'].search([('usage', '=', "internal"),("name","=","Stock")])
+
+
+                        lst = []
+                        lst.append((
+                            0, 0, {
+                                'product_id': self.matcode.id,
+                                'location_id': loc_id.id,
+                                'company_id': self.matcode.product_tmpl_id.company_id.id,
+                                'product_uom_id': self.matcode.product_tmpl_id.uom_id.id,
+                                'product_qty':product01newvalue,
+                                
+                            }
+                        ))
+
+                        lst.append((
+                            0, 0, {
+                                'product_id': self.drops_type_convert_to.id,
+                                'location_id': loc_id.id,
+                                'company_id': self.drops_type_convert_to.company_id.id,
+                                'product_uom_id': self.drops_type_convert_to.uom_id.id,
+                                'product_qty':product02newvalue,
+                                
+                            }
+                        ))
+
+                        inventory = Inventory.create({
+                            
+
+                            'filter': 'partial',
+                            'filter2':'drops',
+                            'line_ids': lst,
+                            
+                        })
+                        inventory.action_done()
+                
+
+
+                elif(product01_uom_value > product02_uom_value):
+                    availabletoconvert = self.quantity_you_want_to_convert / product01_uom_value
+                    availabletoconvertchecker = availabletoconvert % 1
+
+                    if(availabletoconvertchecker!=0):
+                        raise ValidationError("Error: Inserted quantity is not applicable. \nIt must be divisible by 50")
+                    if(int(availabletoconvert) <= 0):
+                        raise ValidationError("Error: Invalid quantity inserted")
+                    if(int(availabletoconvert)>self.currentquantity):
+                        raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nQuantity to convert must not exceed to: " + str(self.currentquantity * 50) + " Piece(s)")
+                    else:
+                        convertedvalue = int(availabletoconvert) / product02_uom_value
+                        product01newvalue = self.currentquantity - availabletoconvert
+                        product02newvalue = self.initial_current_quantity + self.quantity_you_want_to_convert
+
+                    Inventory = self.env['stock.inventory']
+                    for wizard in self:
+                            
+                        loc_id = self.env['stock.location'].search([('usage', '=', "internal"),("name","=","Stock")])
+
+
+                        lst = []
+                        lst.append((
+                            0, 0, {
+                                'product_id': self.matcode.id,
+                                'location_id': loc_id.id,
+                                'company_id': self.matcode.product_tmpl_id.company_id.id,
+                                'product_uom_id': self.matcode.product_tmpl_id.uom_id.id,
+                                'product_qty':product01newvalue,
+                                
+                            }
+                        ))
+
+                        lst.append((
+                            0, 0, {
+                                'product_id': self.drops_type_convert_to.id,
+                                'location_id': loc_id.id,
+                                'company_id': self.drops_type_convert_to.company_id.id,
+                                'product_uom_id': self.drops_type_convert_to.uom_id.id,
+                                'product_qty':product02newvalue,
+                                
+                            }
+                        ))
+
+                        inventory = Inventory.create({
+                            
+                            'filter': 'partial',
+                            'filter2':'drops',
+                            'line_ids': lst,
+                            
+                        })
+                        inventory.action_done()
+
+                else:
+                    raise ValidationError("ERROR!!! You can't convert same material code.")
+
+                    
+                picking = self.env['stock.move'].browse(self.env.context.get('active_id'))
+
+                if picking:
+
+
+                    for move2 in picking:
+                        product = self.env['product.product'].browse(move2.product_id.id)
+                        current = product.with_context({'location' : 'WH/Stock'}).qty_available
+
+                        if(current <= 0):
+                            picking.unlink()
+
+            else:
+                raise ValidationError("Invalid quantity input")
+
+
+        #ADDING VALIDATION IN CONVERTING PRODUCTS
+        @api.onchange('quantity_you_want_to_convert')
+        def _onchange_quantity_you_want_to_convert(self):
+            # print("Hello world")
+            # print(self.drops_type_convert_to.id)
+            # print(self.drops_type_convert_to.id)
+            # print(self.quantity_you_want_to_convert)
+            # print(self.quantity_you_want_to_convert)
+            # print(self.quantity_you_want_to_convert)
+            # print(type(self.quantity_you_want_to_convert))
+
+            # if self.quantity_you_want_to_convert < 0:
+            #     print("hello")
+            #     print("hello")
+            #     print("hello")
+            #     print("hello")
+        
+
+
+            if(self.drops_type_convert_to.id != False and self.quantity_you_want_to_convert > 0):
+                # print("This is good")
+                # print("This is good")
+                # print("This is good")
+                # print("This is good")
 
                 
+
+                if(self.matcode.product_tmpl_id.uom_id.uom_type == 'reference'):
+                        product01_uom_value = 1
+                elif(self.matcode.product_tmpl_id.uom_id.uom_type == 'bigger'):
+                        product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor_inv
+                else:
+                    product01_uom_value = self.matcode.product_tmpl_id.uom_id.factor
+
+                    # product02
+                if(self.drops_type_convert_to.uom_id.uom_type == 'reference'):
+                    product02_uom_value = 1
+                elif(self.drops_type_convert_to.uom_id.uom_type == 'bigger'):
+                    product02_uom_value = self.drops_type_convert_to.uom_id.factor_inv
+                else:
+                    product02_uom_value = self.drops_type_convert_to.uom_id.factor
+                
+                if(product01_uom_value < product02_uom_value):
+
+
+                    availabletoconvert = self.quantity_you_want_to_convert*product02_uom_value
+                    availabletoconvert2 = availabletoconvert/product02_uom_value
+                    availabletoconvertchecker = availabletoconvert2%1
+
+                    if(int(availabletoconvert)>self.currentquantity):
+                        raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nYou only need: " + str(self.currentquantity / 50) + " (Bag of 50)")
+                    if(int(availabletoconvert2) <= 0):
+                        raise ValidationError("Error: Invalid quantity inserted")
+
+                    if(availabletoconvertchecker != 0):
+                        raise ValidationError("Error: Inserted quantity is less than the current quantity. \nThe minimum quantity is 1")
+                    
+                    else:
+                        product01newvalue = self.currentquantity - int(availabletoconvert)
+                        product02newvalue = self.initial_current_quantity + int(availabletoconvert2)
+
+
+
+
+                elif(product01_uom_value > product02_uom_value):
+                    availabletoconvert = self.quantity_you_want_to_convert / product01_uom_value
+                    availabletoconvertchecker = availabletoconvert % 1
+
+                    if(availabletoconvertchecker!=0):
+                        raise ValidationError("Error: Inserted quantity is not applicable. \nIt must be divisible by 50")
+                    if(int(availabletoconvert) <= 0):
+                        raise ValidationError("Error: Invalid quantity inserted")
+                    if(int(availabletoconvert)>self.currentquantity):
+                        raise ValidationError("Error: Inserted quantity is greater than the current quantity. \nQuantity to convert must not exceed to: " + str(self.currentquantity * 50) + " Piece(s)")
+                    else:
+                        convertedvalue = int(availabletoconvert) / product02_uom_value
+                        product01newvalue = self.currentquantity - availabletoconvert
+                        product02newvalue = self.initial_current_quantity + self.quantity_you_want_to_convert
+
+            if self.quantity_you_want_to_convert < 0:
+                print("Lower banker")
+                print("Lower banker")
+                print("Lower banker")
+                print("Lower banker")
+                raise ValidationError("The number you enter is invalid.")
+
+            # else:
+            #     raise ValidationError("Invalid data")
+
+
+
+
+                    

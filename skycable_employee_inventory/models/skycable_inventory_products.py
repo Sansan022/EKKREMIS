@@ -70,7 +70,7 @@ class ProductTemplateInheritance(models.Model):
             count = self.env['etsi.inventory'].search_count([('etsi_product_id', '=', rec.name)])
             rec.product_count = count
 
-    def testing1212(self):
+    def testing121212(self):
         return {
 
             'name': 'Convert Transient',
@@ -337,9 +337,7 @@ class Inherit_Product_Quantity(models.TransientModel):
 
     etsi_product_items = fields.One2many('etsi.inventory.product', 'etsi_product_id_product')
     etsi_product_items_2 = fields.One2many('etsi.inventory.product_2', 'etsi_product_id_product_2')
-    new_quantity = fields.Float()
-    # compute='update_product_qty3', 
-    new_quantity2 = fields.Float(string='New Quantity on Hand')
+    new_quantity2 = fields.Float(string='New Quantity on Hand' , related='new_quantity')
 
     internal_ref_name_2 = fields.Selection(related='product_id.internal_ref_name', string = "Internal Reference")
     employee_name = fields.Many2one('res.users', string='Employee Name', default=lambda self: self.env.user.id)
@@ -628,24 +626,6 @@ class Inherit_Product_Quantity(models.TransientModel):
                         'sky_date_returned': line.etsi_date_returned,
                         'sky_team': line.etsi_team,
 
-
-# etsi_receive_date2 = fields.Date(string="Receive", default=datetime.now(), readonly=True)
-#     etsi_subscriber2 = fields.Char(string="Subscriber")
-#     etsi_date_issued2 = fields.Date(string="Date Issued")
-#     etsi_date_returned2 = fields.Date(string="Date Returned")
-#     etsi_team2 = fields.Char(string="Team")
-#     etsi_punch_time_2 = fields.Datetime("Punched Time", default=fields.Datetime.now, readonly=True, required=True)
-
-
-
-
-    #                     sky_receive_date = fields.Date("Receive Date")
-    # sky_subscriber = fields.Char("Subscriber")
-    # sky_date_issued = fields.Date("Date Issued")
-    # sky_date_returned = fields.Date("Returned Date")
-    # sky_team = fields.Char("Team")
-    # sky_time_punch = fields.Datetime(string="Punch Time")
-                        
                     }
                     lst.append(res)
 
@@ -692,8 +672,24 @@ class Inherit_Product_Quantity(models.TransientModel):
                     'employee_name_inv': self.employee_name.id,
                     'receive_date_inv': self.date_time,
                 })
+
                 inventory.action_done()
+                for line in self.etsi_product_items:
+                    status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product)])
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time,})]})
+
+                for line in self.etsi_product_items_2:
+                    status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product_2)])
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time_2,})]})
+
+                
+                
+
+            
+                
         return {'type': 'ir.actions.act_window_close'}
+
+ 
 
     @api.multi
     def _prepare_inventory_line(self):

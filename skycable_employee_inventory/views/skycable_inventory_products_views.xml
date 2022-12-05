@@ -25,7 +25,7 @@
         </xpath>
 
         <xpath expr="//button[2]" position="after">
-            <button name="testing1212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
+            <button name="testing121212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
         </xpath>
 
         </field>
@@ -418,9 +418,8 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '!=', 'drops'),('internal_ref_name_2', '!=', 'others')]}</attribute>
+                <attribute name="readonly">1</attribute>
 
-                <!-- {'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]} -->
             </xpath>    
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
@@ -456,7 +455,7 @@
 
             
             <xpath expr="//group/field[7]" position="after">
-                <field name="new_quantity2" readonly='True'/>
+                <field name="new_quantity2"/>
             </xpath>
             <xpath expr="//group/field[8]" position="after">
                 <field name="date_time" />
@@ -535,7 +534,7 @@
             </xpath> -->
 
             <xpath expr="//group/field[@name='new_quantity2']" position="attributes">
-                <attribute name="attrs">{'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]}</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>   
 
 
