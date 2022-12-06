@@ -258,6 +258,9 @@
 
                 <field name="etsi_serial"/>
                 <field name="etsi_smart_card"/>
+
+                <field name="etsi_product_quantity"/>
+
                 <field name="etsi_employee_in" string="Employee" />
                 
                 
@@ -357,6 +360,9 @@
 
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
+                
+                <field name="etsi_product_quantity"/>
+
                 <field name="etsi_employee_in" string="Employee" />
                 
                 

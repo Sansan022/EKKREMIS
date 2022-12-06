@@ -214,6 +214,7 @@ class ProductDetails(models.Model):
                     # 'etsi_status':line.etsi_status,
                     'etsi_product_id':line.etsi_products.id,
                     'etsi_product_name':line.etsi_products.id,
+                    'etsi_product_quantity': 1,
                     'etsi_receive_date_in':line.sky_receive_date,
                     'etsi_subscriber_in': line.sky_subscriber,
                     'etsi_date_issued_in': line.sky_date_issued,
@@ -231,7 +232,7 @@ class ProductDetails(models.Model):
                     'etsi_smart_card':line.etsi_smart_card_2,
                     'etsi_product_id':line.etsi_products_2.id,
                     'etsi_product_name':line.etsi_products_2.id,
-
+                    'etsi_product_quantity': 1,
                     'etsi_receive_date_in':line.sky_receive_date_2,
                     'etsi_subscriber_in': line.sky_subscriber_2,
                     'etsi_date_issued_in': line.sky_date_issued_2,

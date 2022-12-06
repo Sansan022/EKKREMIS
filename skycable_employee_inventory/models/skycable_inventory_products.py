@@ -152,6 +152,10 @@ class Product_Serial_SmartButton(models.Model):
 
     #history one2many
     etsi_history_lines =  fields.One2many('etsi.inventory.history','etsi_connection')
+
+
+    #Quantity
+    etsi_product_quantity = fields.Integer(string="Quantity")
     
     #product scheduler
     @api.multi
@@ -624,6 +628,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                         'etsi_serials': line.etsi_serial_product,
                         'etsi_macs': line.etsi_mac_product,
                         'etsi_products': line.etsi_product_name_product.id,
+                       
                         'sky_receive_date': line.etsi_receive_date,
                         'sky_time_punch': line.etsi_punch_time,
                         'sky_subscriber': line.etsi_subscriber,
@@ -640,6 +645,7 @@ class Inherit_Product_Quantity(models.TransientModel):
                         'etsi_serials_2': line.etsi_serial_product_2,
                         'etsi_smart_card_2': line.etsi_smart_card_product_2,
                         'etsi_products_2': line.etsi_product_name_product_2.id,
+                        
                         'sky_receive_date_2': line.etsi_receive_date2,
                         'sky_time_punch_2': line.etsi_punch_time_2,
                         'sky_subscriber_2': line.etsi_subscriber2,
@@ -681,11 +687,11 @@ class Inherit_Product_Quantity(models.TransientModel):
                 inventory.action_done()
                 for line in self.etsi_product_items:
                     status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product)])
-                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time,'etsi_status':'Available'})]})
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time,'etsi_status':'Available','etsi_employee':self.employee_name.id})]})
 
                 for line in self.etsi_product_items_2:
                     status_checker = self.env['etsi.inventory'].search([('etsi_serial', '=', line.etsi_serial_product_2)])
-                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time_2,'etsi_status':'Available'})]})
+                    status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Product Module','etsi_transaction_num':'Serial Added','etsi_action_date':line.etsi_punch_time_2,'etsi_status':'Available','etsi_employee':self.employee_name.id})]})
 
                 
                 
