@@ -8,7 +8,7 @@ from datetime import datetime
 
 class EtsiTeams(models.Model):
     _inherit = "stock.picking"
-    _rec_name = "etsi_teams_id"
+    # _rec_name = "etsi_teams_id"
     etsi_teams_id = fields.Many2one('team.configuration', string="Teams Number")
     etsi_teams_member_no = fields.Char(string="Employee Number")
     etsi_teams_member_name = fields.Many2one('hr.employee',string="Employee Name")

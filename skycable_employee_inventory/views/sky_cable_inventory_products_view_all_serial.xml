@@ -9,7 +9,8 @@
         <field name="model">etsi.inventory</field>
         <field name="arch" type="xml">
             <tree string="Serial Tree" create="false" delete="false" edit="false">
-
+                
+                <field name="type_checker_02" invisible='True'/>
                 <field name="type_checker"/>
                 <field name="etsi_product_id"/>
                 <field name="etsi_description"/>
@@ -87,6 +88,9 @@
                         <field name="etsi_history_lines" nolabel="1"> 
                             <tree  editable="bottom" create="false" delete="false">
                                 <field name="etsi_operation"/>
+                                <field name="etsi_transaction_description"/>
+                                <field name="etsi_history_quantity"/>
+                                
                                 <field name="etsi_transaction_num"/>
                                 
 
@@ -110,6 +114,7 @@
             <search string="etsi_search">
                 <filter name="filter_type_CATV" string="CATV" domain="[('type_checker','=','catv5')]"/>
                 <filter name="filter_type_MODEM" string="BROADBAND" domain="[('type_checker','=','broadband')]"/>
+                <filter name="filter_type_DROPS" string="DROPS" domain="[('type_checker','=','drops')]"/>
                 <separator/>
                 <group>
                 <filter name="filter_type_available" string="Available" domain="[('etsi_status','=','available')]"/>
@@ -124,6 +129,7 @@
                 <filter name="filter_type_delivered" string="Delivered" domain="[('etsi_status','=','delivered')]"/>
 
                 <filter name="filter_etsi_team_in" string="Team" context="{'group_by': 'etsi_team_in'}" />
+                <filter name="filter_type_type_checher" string="Types" context="{'group_by': 'type_checker_02'}" />
                 </group>
             </search>
         </field>

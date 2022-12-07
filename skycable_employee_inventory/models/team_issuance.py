@@ -347,10 +347,8 @@ class Team_issuance_stock_picking(models.Model):
                         status_checker.etsi_team_in = self.etsi_teams_id.id
 
                         status_checker2 = self.env['stock.move'].search([('etsi_serials_field', '=', rec.etsi_serials_field)])
-                        
-                        status_checker.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Issuance','etsi_transaction_num':self.name,'etsi_action_date':self.min_date,'etsi_status':'Deployed','etsi_employee':self.env.user.id,'etsi_teams':self.etsi_teams_id.id})]})
-
-
+                        picking_id_checker = self.env['stock.picking'].search([('name', '=', self.name)])
+                        status_checker.write({'etsi_history_lines': [(0,0, {'etsi_history_quantity':rec.product_uom_qty,'etsi_operation':'Team Issuance','etsi_transaction_description':'Warehouse to Team Location','etsi_transaction_num':picking_id_checker.id,'etsi_action_date':self.min_date,'etsi_status':'Deployed','etsi_employee':self.env.user.id,'etsi_teams':self.etsi_teams_id.id})]})
 
                         for records in status_checker2:
                                 records.issued_field = "Deployed"
@@ -358,6 +356,62 @@ class Team_issuance_stock_picking(models.Model):
                                 # records.checker_box = False
                     elif rec.etsi_serials_field == False and rec.product_id_duplicate.id != False:
                         rec.issued_field = "Deployed"
+                        picking_id_checker = self.env['stock.picking'].search([('name', '=', self.name)])
+                        checker = self.env['etsi.inventory'].search([('etsi_team_in', '=', self.etsi_teams_id.id),('type_checker', '=', 'drops'),('etsi_product_id', '=', rec.product_id_duplicate.id)])
+                        quantity_result = checker.etsi_product_quantity + rec.product_uom_qty
+
+                       
+                        if checker:
+                            
+                            checker.update(
+                                {
+                                # 'etsi_serial': line.etsi_serials,
+                                # 'etsi_mac':line.etsi_macs,
+                                'type_checker_02':rec.product_id_duplicate.internal_ref_name,
+                                'etsi_product_id':rec.product_id_duplicate.id,
+                                'etsi_product_name':rec.product_id_duplicate.id,
+                                'etsi_product_quantity': quantity_result,
+                                # 'etsi_receive_date_in':line.sky_receive_date,
+                                # 'etsi_subscriber_in': line.sky_subscriber,
+                                # 'etsi_date_issued_in': line.sky_date_issued,
+                                # 'etsi_date_returned_in': line.sky_date_returned,
+                                'etsi_team_in': self.etsi_teams_id.id,
+                                # 'etsi_punched_date_in': line.sky_time_punch,
+                                'etsi_employee_in': self.env.user.id,
+                                'etsi_status':"deployed",
+                                
+                                })
+                            checker.write({'etsi_history_lines': [(0,0, {'etsi_history_quantity':rec.product_uom_qty,'etsi_operation':'Team Issuance','etsi_transaction_description':'Warehouse to Team Location','etsi_transaction_num':picking_id_checker.id,'etsi_action_date':self.min_date,'etsi_status':'Deployed','etsi_employee':self.env.user.id,'etsi_teams':self.etsi_teams_id.id})]})
+                        else:
+
+                            lst = []
+                            res = {'etsi_history_quantity':rec.product_uom_qty,'etsi_operation':'Team Issuance','etsi_transaction_description':'Warehouse to Team Location','etsi_transaction_num':picking_id_checker.id,'etsi_action_date':self.min_date,'etsi_status':'Deployed','etsi_employee':self.env.user.id,'etsi_teams':self.etsi_teams_id.id}
+                            lst.append(res)
+                            new_lst = []
+                            for x in lst:
+                                new_lst.append((0, 0, x))
+
+
+                            self.env['etsi.inventory'].create(
+                                {
+                                # 'etsi_serial': line.etsi_serials,
+                                # 'etsi_mac':line.etsi_macs,
+                                'type_checker_02':rec.product_id_duplicate.internal_ref_name,
+                                'etsi_product_id':rec.product_id_duplicate.id,
+                                'etsi_product_name':rec.product_id_duplicate.id,
+                                'etsi_product_quantity': quantity_result,
+                                # 'etsi_receive_date_in':line.sky_receive_date,
+                                # 'etsi_subscriber_in': line.sky_subscriber,
+                                # 'etsi_date_issued_in': line.sky_date_issued,
+                                # 'etsi_date_returned_in': line.sky_date_returned,
+                                'etsi_team_in': self.etsi_teams_id.id,
+                                # 'etsi_punched_date_in': line.sky_time_punch,
+                                'etsi_employee_in': self.env.user.id,
+                                'etsi_history_lines': new_lst,
+                                'etsi_status':"deployed",
+                                })
+                            
+
             else:
                 pass
         return res

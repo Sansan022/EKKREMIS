@@ -319,6 +319,8 @@
                         <field name="etsi_history_lines" nolabel="1"> 
                             <tree  editable="bottom" create="false" delete="false">
                                 <field name="etsi_operation"/>
+                                <field name="etsi_transaction_description"/>
+                                <field name="etsi_history_quantity"/>
                                 <field name="etsi_transaction_num"/>
                                 
 
@@ -430,7 +432,7 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly' : [('internal_ref_name_2', '=', 'catv5'),('internal_ref_name_2', '=', 'broadband')]}</attribute>
 
             </xpath>    
 

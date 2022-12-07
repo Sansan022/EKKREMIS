@@ -211,7 +211,7 @@ class ProductDetails(models.Model):
                 self.env['etsi.inventory'].create(
                     {'etsi_serial': line.etsi_serials,
                     'etsi_mac':line.etsi_macs,
-                    # 'etsi_status':line.etsi_status,
+                    'type_checker_02':line.etsi_products.internal_ref_name,
                     'etsi_product_id':line.etsi_products.id,
                     'etsi_product_name':line.etsi_products.id,
                     'etsi_product_quantity': 1,
@@ -230,6 +230,7 @@ class ProductDetails(models.Model):
                 self.env['etsi.inventory'].create(
                     {'etsi_serial': line.etsi_serials_2,
                     'etsi_smart_card':line.etsi_smart_card_2,
+                    'type_checker_02':line.etsi_products_2.internal_ref_name,
                     'etsi_product_id':line.etsi_products_2.id,
                     'etsi_product_name':line.etsi_products_2.id,
                     'etsi_product_quantity': 1,
