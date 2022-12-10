@@ -1,6 +1,5 @@
 <odoo>
   <data>
-
     <record id="view_picking_form_table_inherit" model="ir.ui.view">
             <field name="name">stock.picking.table.inherit</field>
             <field name="model">stock.move</field>

@@ -82,6 +82,7 @@
                                 <field name="product_uom" /> 
                                 <field name="teams_from_damage" invisible="1" />
                                 <field name="active_name" invisible="1" />
+                                <field name="teams" />
                             </tree>
                         </field> 
                     </group>
@@ -144,7 +145,7 @@
                                 <field name="damage_checker" attrs="{'invisible': ['|',('transfer_checker', '=', True), ('return_checker', '=', True)]}" />
                                 <field name="dmg_type" attrs="{'invisible': [('damage_checker', '=', False)], 'required': [('damage_checker', '=', True)]}" />
                                 <field name="transfer_checker" attrs="{'invisible': ['|',('damage_checker', '=', True), ('return_checker', '=', True)]}" />
-                                <field name="teams_from" attrs="{'invisible': [('transfer_checker', '=', False)], 'required': [('transfer_checker', '=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
+                                <field name="teams_from" readonly="1" attrs="{'invisible': [('transfer_checker', '=', False)], 'required': [('transfer_checker', '=', True)]}" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                 <field name="teams_to" attrs="{'invisible': [('transfer_checker', '=', False)], 'required': [('transfer_checker', '=', True)]}"  options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  <!-- <field name="teams_to" options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open' : True}" />
                                  -->
