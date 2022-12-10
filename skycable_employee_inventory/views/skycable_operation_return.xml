@@ -129,7 +129,7 @@
         <field name="arch" type="xml">
             <!-- Add One2many Field for return page -->
             <xpath expr="//notebook/page[2]" position="after">
-                <page string="Team Return" attrs="{'invisible': [('teller','!=','return')]}">
+                <page string="Team Return" attrs="{'invisible': ['|',('teller','!=','return'),('etsi_teams_id','=',False)]}">
                     <group name="name_group" >
                         <field name="return_list" string="Return List"  nolabel="1" attrs="{'readonly': [('state','=','done')]}">
                             <tree editable="bottom">

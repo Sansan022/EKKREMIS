@@ -112,8 +112,8 @@ class Validate_Subscriber_Issuance(models.Model):
                     
                     if line.etsi_serial_product in exist_serial_list:
                         check = "Duplicate detected within the table \n Serial Number: {}".format(line.etsi_serial_product)
-                        raise ValidationError(check)
-                        # Raise Validation Error
+                        raise ValidationError(check) # Raise Validation Error
+                        
                     exist_serial_list.append(line.etsi_serial_product)
 
 
@@ -229,6 +229,10 @@ class Validate_Subscriber_Issuance(models.Model):
                                 if invento.etsi_team_in.id == plines_issued.teams_to.id: # check if 'teams_from' and 'teams_to' are the same 
                                     raise UserError("'Teams from' and 'Teams to' cannot be the same!")
                                 
+                                invento.update({'etsi_status': 'pending'}) # update product status in etsi_inventory -> Pending transfer
+                                # update history
+                                invento.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.name,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number})]})
+                                
                                 return_transfer = self.env['stock.transfer.team.return'].create({ # Create data for transfer items
                                     'product_id': plines_issued.product_id.id,
                                     'quantity': 1.0,
@@ -289,6 +293,9 @@ class Validate_Subscriber_Issuance(models.Model):
                                 if inventory.etsi_serial == fin['serial']:
                                     inventory.update({'etsi_team_in': fin['team_to']}) # update team_number
                                     inventory.update({'etsi_status': 'used'}) # update product status 
+                                    
+                                    # update history
+                                    inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.name,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number})]})
                         
                         # # Delete done transactions
                         # for list_trans in trans_float_data:

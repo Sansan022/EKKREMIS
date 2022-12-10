@@ -333,6 +333,9 @@ class Return_list_holder(models.TransientModel):
                                 if searched_ids.etsi_product_id in product_lists_damaged:
                                     if searched_ids.etsi_serial in product_serials_damaged:
                                         searched_ids.update({'etsi_status': 'damaged'})
+
+                                        # update history
+                                        searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Damaged Location','etsi_transaction_num':picking.name,'etsi_action_date': datetime.today(),'etsi_status':'Damaged','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number})]})
                         
             # Transfer Items
             if team_return_transfer or team_return or team_return_damaged: # Transfer list or Team Return list
@@ -450,7 +453,6 @@ class Return_list_holder(models.TransientModel):
                                     'return_checker': True,
                                     'damaged': True
                                 })
-
 
                 # who transfered the item
                 if team_return_transfer:
@@ -907,14 +909,10 @@ class Return_list_childs(models.Model):
                         
                 # Serial Number
                 if rec.etsi_serial_product:
-                    # Validation for issued status
-                    if pm_search_sr:
-                        # check stock.move
-                        for ser in pm_search_sr:
-                            # check etsi.inventory
-                            for ser2 in ei_search_sr:
-                                # check if transfer list is true
-                                if transfer_list:
+                    if pm_search_sr: # Validation for issued status
+                        for ser in pm_search_sr: # check stock.move
+                            for ser2 in ei_search_sr: # check etsi.inventory
+                                if transfer_list: # check if transfer list is true
                                     # check stock.transfer.team.return
                                     for t_list in transfer_list:
                                         para_sa_trans_sr.append(t_list.etsi_serial_product)
@@ -949,7 +947,6 @@ class Return_list_childs(models.Model):
                                                 raise ValidationError("This Product is already transfered!")
                                             else:
                                                 raise ValidationError("This Product is not Deployed / Already installed (Used)")
-                                    
                                 else:
                                     # check stock.transfer.team.return
                                     if ser2.etsi_status == "deployed":
