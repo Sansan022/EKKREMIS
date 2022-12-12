@@ -100,7 +100,9 @@
 
                             <t t-foreach="request.env['hr.employee'].search([])" t-as="obj">
                                 <t t-if="int(obj.job_id) == 3593">
-                                <h5 class="text-left" >WAREHOUSE MANAGER: <span t-esc="obj.name"/> </h5>
+                                <h5 class="text-left" >WAREHOUSE IN-CHARGE:_________________
+                                <!-- <span t-esc="obj.name"/> -->
+                                 </h5>
                                 </t>
                                 </t>
                                 

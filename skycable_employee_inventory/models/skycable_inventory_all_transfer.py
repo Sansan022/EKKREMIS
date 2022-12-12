@@ -36,17 +36,35 @@ class EtsiTeams(models.Model):
             rec.etsi_teams_id = database2.id
             
 
+    #  FOR PUSH           
     @api.multi
     @api.onchange('etsi_teams_id')
     def auto_fill_details_02(self):
         table=[]
-        for rec2 in self.etsi_teams_id.team_members:
-            table.append((0,0,{
-            'team_members_lines': rec2.team_members_lines,
-            'etsi_teams_replace' :'' ,
-            'etsi_teams_temporary' : '',
-            }))
-        self.etsi_teams_line_ids = table
+        # table2=[]
+        if self.etsi_teams_member_name:
+            for rec2 in self.etsi_teams_id.team_members:
+                table.append((0,0,{
+                'team_members_lines': rec2.team_members_lines,
+                'etsi_teams_replace' :'' ,
+                'etsi_teams_temporary' : '',
+                }))
+            self.etsi_teams_line_ids = table
+#FOR SELECTING TEAM CODE ONLY WITH EMPTY EMPLOYEE NAME AND NUMBER 
+        else:
+            for lis in self:
+                database = self.env['team.configuration'].search([('id', '=' ,lis.etsi_teams_id.id)])
+                database2 = self.env['hr.employee'].search([('team_number_id','=',database.team_number)],limit=1)
+                lis.etsi_teams_member_name = database2
+
+            for rec2 in self.etsi_teams_id.team_members:
+                table.append((0,0,{
+                'team_members_lines': rec2.team_members_lines,
+                'etsi_teams_replace' :'' ,
+                'etsi_teams_temporary' : '',
+                }))
+            self.etsi_teams_line_ids = table
+# END OF PUSH
        
         
     # @api.model 

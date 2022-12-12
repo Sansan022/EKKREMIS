@@ -14,14 +14,17 @@ class Validate_Pullout_Received(models.Model):
     pullout_return_list = fields.One2many('pullout_picking_child_return_list','pullout_return_list_connector')
 
     # Fields after the delivery 
-    employee_for_delivery = fields.Many2one('team.configuration') 
+    employee_for_delivery = fields.Many2one('hr.employee') 
     date_delivered = fields.Date(string="Date Returned")
     received_by = fields.Char(string="Received By: ")
 
     # Count all etsi.inventory.pullouts
-    etsi_pullout_count = fields.Integer(compute = '_count_pullouts', string="Pull-Out Counts")
-    etsi_pullout_count_temp = fields.Integer(string="Pull-Out Counts Temp")
-
+    etsi_pullout_count = fields.Integer(string="Pull-Out Counts")
+    etsi_pullout_count_temp = fields.Integer(string="Quantity")
+    etsi_pullout_count_temp_related = fields.Integer(string="Quantity", related="etsi_pullout_count_temp", readonly="True")
+    pullout_return_quantity = fields.Integer(string="Quantity")
+    pullout_return_quantity_related = fields.Integer(string="Quantity",related="pullout_return_quantity", readonly="True")
+    pullout_returned_quantity = fields.Integer(string="Returned Quantity")
     # Detects what type of serial
     serial_type = fields.Selection([('catv', 'CATV'),('modem', 'Modem')], default='catv')
 
@@ -32,9 +35,66 @@ class Validate_Pullout_Received(models.Model):
     line_counter = fields.Integer('First: ')
     
     @api.multi
-    def button(self):
-        raise ValidationError("aaaaaaaaaaaaaaaaaaaa")
+    def action_cancel(self):
         
+        if self.teller == 'subscriber':
+
+            self.update({'state' :'cancel'})
+
+
+        if self.teller == 'pull-out':
+
+            self.update({'state' :'cancel'})
+
+        if self.teller == 'pull-out-return':
+            
+            product_lists = []
+            product_serials = []
+            # Update the date of delivery to sky cable of pull outs
+            for rec in self:
+                
+                for plines_issued in rec.pullout_holder_return:
+
+                    if plines_issued.for_delivery == True:
+
+                        product_lists.append(plines_issued.etsi_serial_product)
+                        product_serials.append(plines_issued.etsi_serial_product)
+
+                        issued_stats = self.env['pullout_picking_child_return'].search([])
+                        inventory_stats = self.env['etsi.pull_out.inventory'].search([])
+
+                        # To update the status of serials as returned from sky 
+                        if product_serials:
+                            for searched_ids in inventory_stats:
+                                if searched_ids.etsi_serial in product_serials:
+                                    searched_ids.update({'etsi_status': 'received',
+                                    })
+                
+                if self.status_field == 'waiting':
+                    
+                    for plines_issued in rec.pullout_return_list:
+                        
+
+                        if plines_issued.for_delivery == True:
+
+                            product_lists.append(plines_issued.etsi_serial_product)
+                            product_serials.append(plines_issued.etsi_serial_product)
+
+                            issued_stats = self.env['pullout_picking_child_return'].search([])
+                            inventory_stats = self.env['etsi.pull_out.inventory'].search([])
+
+                            # To update the status of serials as returned from sky 
+                            if product_serials:
+                                for searched_ids in inventory_stats:
+                                    if searched_ids.etsi_serial in product_serials:
+                                        searched_ids.update({'etsi_status': 'received',
+                                                             'etsi_date_issued_in' : False,
+                                                             'status_field' : 'draft'
+                                        })
+                                        
+                                        
+            self.update({'state' :'cancel'})
+        # return res
     
     # Detects how many lines per batch, will be transferred 
     @api.onchange('line_counter')
@@ -46,7 +106,7 @@ class Validate_Pullout_Received(models.Model):
         date = fields.date.today()
         for item in return_res:
 
-            if item.etsi_status == 'received' or item.etsi_status == 'damaged' :
+            if item.etsi_status == 'received' or item.is_damaged == True :
 
                 return_lines.append(( 0,0, {
                     'for_delivery': True,  
@@ -62,7 +122,10 @@ class Validate_Pullout_Received(models.Model):
                     'etsi_smart_card' : item.etsi_smart_card,
                     'comp_date' : date,
                     'etsi_teams_id' : item.etsi_teams_id,
-                    'issued' : item.etsi_status
+                    'issued' : item.etsi_status,
+                    'employee_number' : item.employee_number,
+                    'is_damaged': item.is_damaged,
+                    'description' : item.description
                     
                 }))
  
@@ -97,12 +160,38 @@ class Validate_Pullout_Received(models.Model):
     @api.onchange('pullout_holder')
     def check_pullut_count(self):
         count = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery'))])
+        count2 = 0 
+        
         for rec in self:
             for lines in rec.pullout_holder :
                 
                 count += 1
+                count2 += 1
 
-        self.update({'etsi_pullout_count' : count} )
+        self.update({
+            # 'etsi_pullout_count' : count, 
+                     'etsi_pullout_count_temp' :  count2
+                     } )
+
+# Load count for the checked items
+
+    @api.onchange('pullout_holder_return')
+    def check_pullout_counter(self):
+      
+        count = 0 
+        
+        for rec in self:
+            
+            for lines in rec.pullout_holder_return :
+                if lines.for_delivery == True:
+                    count += 1
+
+
+        self.update({
+            # 'etsi_pullout_count' : count, 
+                     'pullout_return_quantity' :  count
+                     } )
+
 
     @api.model
     def default_get(self, fields):
@@ -128,7 +217,7 @@ class Validate_Pullout_Received(models.Model):
             # Code sa pag create
             stock_picking_db = self.env['etsi.pull_out.inventory']
 
-            listahan = []
+            listahan = []   
             for rec in self:
                 search_name = self.env['stock.picking'].search([('name','=',rec.name)])
                 picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
@@ -238,10 +327,17 @@ class Validate_Pullout_Received(models.Model):
                 picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Pullout Receive')])
             
                 for x in rec.pullout_holder:
+                    
+                    # For Broadband 
+                    if x.serial_type == 'catv' and x.etsi_serial_product == False:
+                        raise ValidationError("Please make sure to fill Serial ID")
+                    
+                    if x.serial_type == 'modem' and x.etsi_mac_product == False:
+                        raise ValidationError("Please make sure to fill MAC ID")
 
-                    if x.etsi_mac_product  == False and x.etsi_smart_card == False:
+                    # if x.etsi_mac_product  == False and x.etsi_smart_card == False:
 
-                        raise ValidationError("Please make sure to fill MAC or Smart Card for each lines")
+                    #     raise ValidationError("Please make sure to fill MAC or Smart Card for each lines")
                     else:
                         listahan_delivery.append((
                             0, 0, {
@@ -295,11 +391,13 @@ class Validate_Pullout_Received(models.Model):
                                 'etsi_smart_card': x.etsi_smart_card ,
                                 'etsi_employee_in' : 'Administrator',
                                 'etsi_teams_id' : rec.etsi_teams_id,
+                                'employee_number': x.employee_number.id,
                                 'etsi_receive_date_in' : x.comp_date,
                                 # 'etsi_punched_date_in' : x.comp_date,
                                 # 'etsi_date_returned_in' : x.comp_date,
                                 'name' : rec.name,
-                                'serial_type' : x.serial_type
+                                'serial_type' : x.serial_type,
+                                'description' : x.description
                                 })
                                 
                 for rec in self:
@@ -323,18 +421,39 @@ class Validate_Pullout_Received(models.Model):
                     # 'etsi_punched_date_in': laman['etsi_punched_date_in'],
                     # 'etsi_date_returned_in': laman['etsi_date_returned_in'],     
                     'transaction_number' : laman['name'],
-                    'serial_type' : laman['serial_type']
+                    'serial_type' : laman['serial_type'],
+                    'employee_number' :laman['employee_number'],
+                    'description' : laman['description']
                     }
                     )        
                     print(laman['etsi_serial'])
             else:
                 raise ValidationError("Please fill up  Items to receive for pull-outs ")
-            
+        
+        
+        total = self.etsi_pullout_count + self.etsi_pullout_count_temp
         self.update({
             'state' : 'done',
             'status_field' : 'done',
-            'min_date' : datetime.today()
+            'min_date' : datetime.today(),
+            'etsi_pullout_count' : total ,
         })
+        
+        
+        count = self.env['etsi.pull_out.inventory'].search_count([('etsi_status','in', ('received','delivery'))])
+        count2 = 0 
+        
+        # Apply the count per page
+        for rec in self:
+            for lines in rec.pullout_holder :
+                
+                count += 1
+                count2 += 1
+
+        self.update({
+            # 'etsi_pullout_count' : count, 
+                     'etsi_pullout_count_temp' :  count2
+                     } )
             
     # @api.multi
     # def receive_pullout_btn(self):
@@ -453,6 +572,7 @@ class Validate_Pullout_Received(models.Model):
             returned_pullouts = []
             for x in rec.pullout_holder_return:
 
+
                 if x.for_delivery == True:
 
                     returned_pullouts.append((
@@ -472,7 +592,10 @@ class Validate_Pullout_Received(models.Model):
                             # 'name':x.product_id.product_tmpl_id.name,
 
                             'move_id': x.id, 
-                            'issued_field': "Returned"
+                            'issued_field': "Returned",
+                            'employee_number' : x.employee_number.id,
+                            'is_damaged' : x.is_damaged,
+                            'description' : x.description
                         }
                         ))
 
@@ -488,7 +611,8 @@ class Validate_Pullout_Received(models.Model):
                 'state' : 'draft',
                 'pullout_holder_return' : False,
                 'pullout_return_list' : returned_pullouts,  
-                'status_field' : 'waiting'
+                'status_field' : 'waiting',
+              
                 
                 })
     
@@ -504,8 +628,8 @@ class Validate_Pullout_Received(models.Model):
         for search in self:
             
             for line in search.pullout_holder:
-                if line.etsi_serial_product == False:
-                    raise ValidationError(_('Serial ID can not be blank'))
+                # if line.etsi_serial_product == False:
+                #     raise ValidationError(_('Serial ID can not be blank'))
                 if line.etsi_serial_product:
                     
                     if line.etsi_serial_product in exist_serial_list:
@@ -551,11 +675,23 @@ class Validate_Pullout_Received(models.Model):
         picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
         listahan = []
         returned_pullouts = []
+        rejected_pullouts = []
         
+        # Checks if there stil remainingchckecked item
         
         for rec in self:
+            counter = 0
+            for item in rec.pullout_return_list:
+                if item.for_delivery == True:
+                    counter += 1
+                    
+        if counter == 0:
+            raise ValidationError("Please select atleast one item to confirm delivery to sky") 
+        
+        for rec in self:
+            counter = 0 
             for x in rec.pullout_return_list:
-
+                if x.for_delivery == True:
                     if x.for_delivery == True:
 
                         returned_pullouts.append((
@@ -580,8 +716,49 @@ class Validate_Pullout_Received(models.Model):
                                 'issued_field': "Returned"
                             }
                             ))
+                        
+                    
+                    if x.for_delivery == False:
+                        print("MAY MGA FALSEEEE")
+                        print("MAY MGA FALSEEEE")
+                        print("MAY MGA FALSEEEE")
+                        print("MAY MGA FALSEEEE")
+
+                        rejected_pullouts.append((
+                            {
+                                
+
+                                'product_id': x.product_id,
+                                'etsi_serial_product': x.etsi_serial_product, 
+                                'etsi_mac_product': x.etsi_mac_product, 
+                                'etsi_smart_card': x.etsi_smart_card,
+                                'comp_date' : x.comp_date,
+                                'quantity' : x.product_uom_qty,
+                                # Unit of measure 
+                                'product_uom' : x.product_uom.id,
+                                'product_uom_qty' : x.product_uom_qty, 
+                                'issued': "received",
+
+                                'job_number' : x.job_number,
+                                # 'name':x.product_id.product_tmpl_id.name,
+
+                                'move_id': x.id, 
+                                'issued_field': "Received"
+                            }
+                            ))
+                        
+                        
+                        counter += 1
+                        
+
+                    if counter == self.line_counter:
+                        
+                        break
         
+        for item in rejected_pullouts:
+            print(item)                    
         # self.update({
+        #     'pullout_return_list' : False,
         # 'pullout_return_list' : returned_pullouts,
         # # 'state' : 'done',
 
@@ -595,8 +772,10 @@ class Validate_Pullout_Received(models.Model):
 
             product_lists = []
             product_serials = []
+            
+            product_lists_rejected = []
+            product_serials_rejected = []
 
-           
             # if rec.picking_type_id.name == "Subscriber Return" or rec.picking_type_id.name == "Team Return":
             if rec.employee_for_delivery == False:
                 raise ValidationError("Please input the team number for delivery")
@@ -607,41 +786,43 @@ class Validate_Pullout_Received(models.Model):
             else:
 
                 for plines_issued in rec.pullout_return_list:
-                    
-                    print(plines_issued, "MGA SERIAL")
-                    print(plines_issued, "MGA SERIAL")
-                    print(plines_issued, "MGA SERIAL")
-                    print(plines_issued, "MGA SERIAL")
-                    print(plines_issued.etsi_serial_product, "SERIAl")
-                    print(plines_issued.for_delivery)
 
                     if plines_issued.for_delivery == True :
-                        print("1")
-                        print("1")
-                        print("1")
                         
                         product_lists.append(plines_issued.etsi_serial_product)
                         product_serials.append(plines_issued.etsi_serial_product)
-                        print("2")
+                        
+                    if plines_issued.for_delivery == False :
+                        
+                        product_lists_rejected.append(plines_issued.etsi_serial_product)
+                        product_serials_rejected.append(plines_issued.etsi_serial_product)
+                        
+                for laman in product_lists_rejected:
+                    print(laman, "MGA REJECTED")
+                    print(laman, "MGA REJECTED")
+                    print(laman, "MGA REJECTED")             
+                    print(laman, "MGA REJECTED")           
+                        
+                # for plines_issued_rejected in rejected_pullouts:
+                    
+
+                #     print(plines_issued_rejected['etsi_serial_product'], "SERIAl")
+   
+
+                #     if plines_issued.for_delivery == False :
+                        
+                #         product_lists_rejected.append(plines_issued.etsi_serial_product)
+                #         product_serials_rejected.append(plines_issued.etsi_serial_product)
+
                         
                 issued_stats = self.env['pullout_picking_child_return'].search([])
                 inventory_stats = self.env['etsi.pull_out.inventory'].search([])
                 
-                if product_lists:
-                    
-                    print("SA BABA NANGYAYARE")
-                    print("SA BABA NANGYAYARE")
-                    print("SA BABA NANGYAYARE")
-                    print("SA BABA NANGYAYARE")
+                # if product_lists:
 
                 # To update the status of serials as returned from sky 
                 if product_serials:
-                    for searched_issueds in issued_stats:
-                        print(searched_issueds.etsi_serial_product,"Mga serial")
-                        print(searched_issueds.etsi_serial_product,"Mga serial")
-                        print(searched_issueds.etsi_serial_product,"Mga serial")
-                        print(searched_issueds.etsi_serial_product,"Mga serial")
-                        
+                    for searched_issueds in issued_stats:                
                         if searched_issueds.etsi_serial_product in product_lists:
                             searched_issueds.update({'issued': 'returned'})
 
@@ -650,13 +831,34 @@ class Validate_Pullout_Received(models.Model):
                                 searched_ids.update({'etsi_status': 'returned',
                                 'etsi_date_returned_in' : rec.date_delivered,
                                 })
+
+                # To update the status of rejected pullouts 
+                
+                if product_serials_rejected:
+                    
+                    for searched_issueds_reject in issued_stats:
+                        if searched_issueds_reject.etsi_serial_product in product_lists_rejected:
+                            searched_issueds_reject.update({'issued': 'received'})
+
+                        for searched_ids_reject in inventory_stats:
+                            if searched_ids_reject.etsi_serial in product_serials_rejected:
+                                searched_ids_reject.update({'etsi_status': 'received'
+                                })
         
+        
+        for rec in self:
+            counter = 0
+            for item in rec.pullout_return_list:
+                if item.for_delivery == True:
+                    counter += 1
+                    
+                    
         # Finish the form
         self.update({
         # 'pullout_return_list' : returned_pullouts,
         'state' : 'done',
-
-        'status_field' : 'done'
+        'status_field' : 'done',
+        'pullout_returned_quantity' : counter 
         })
 
 class Validate_Pullout_Received_Child(models.Model):
@@ -679,7 +881,7 @@ class Validate_Pullout_Received_Child(models.Model):
     quantity = fields.Float('Quantity')
 
     issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered')], string="Status", default='received', readonly=True)
-    etsi_serial_product = fields.Char(string="Serial ID", required="True")
+    etsi_serial_product = fields.Char(string="Serial ID")
     etsi_mac_product = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
     active_ako = fields.Many2one('stock.picking')
@@ -687,6 +889,12 @@ class Validate_Pullout_Received_Child(models.Model):
         'product.uom', 'Unit of Measure', default=1)
     product_uom_qty = fields.Float('Quantity',default=1.0)
     active_name = fields.Char('Active Name')
+    
+    # Additional
+    employee_number = fields.Many2one('hr.employee')
+    is_damaged = fields.Boolean("Damaged")
+    description = fields.Char("Description", required=True)
+
 
 
     # Validation for not both MAC and Serial
@@ -766,14 +974,20 @@ class Validate_Pullout_Received_Child(models.Model):
     product_id_related = fields.Char(related='product_id')
     quantity = fields.Float('Quantity')
 
-    issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered'),('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
-    etsi_serial_product = fields.Char(string="Serial ID", required="True")
+    issued = fields.Selection([('received', 'On-hand'),('delivery', 'Delivered'),('returned', 'Returned'),('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
+    etsi_serial_product = fields.Char(string="Serial ID")
     etsi_mac_product = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
     active_ako = fields.Char("Active Ako ")
     product_uom = fields.Many2one('product.uom', 'Unit of Measure', default= 1)
     product_uom_qty = fields.Float('Quantity',default=1.0)
     active_name = fields.Char('Active Name')
+
+           # Additional
+    employee_number = fields.Many2one('hr.employee')
+    is_damaged = fields.Boolean("Damaged")
+    description = fields.Char("Description")
+
 
     
     @api.onchange('etsi_serial_product','etsi_mac_product','etsi_smart_card')
@@ -906,8 +1120,8 @@ class Validate_Pullout_Return_List(models.Model):
     product_id_related = fields.Char(related='product_id')
     quantity = fields.Float('Quantity')
 
-    issued = fields.Selection([('received', 'On-hand'),('delivery', 'For Delivery'),('returned', 'Delivered'),('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
-    etsi_serial_product = fields.Char(string="Serial ID", required="True")
+    issued = fields.Selection([('received', 'On-hand'),('delivery', 'Delivery'),('returned', 'Returned'),('damaged', 'Damaged')], string="Status", default='delivery', readonly=True)
+    etsi_serial_product = fields.Char(string="Serial ID")
     etsi_mac_product = fields.Char(string="MAC ID")
     etsi_smart_card = fields.Char(string="Smart Card")
     active_ako = fields.Char("Active Ako ")
@@ -915,7 +1129,12 @@ class Validate_Pullout_Return_List(models.Model):
     product_uom_qty = fields.Float('Quantity',default=1.0)
     active_name = fields.Char('Active Name')
 
-
+            # Additional
+    employee_number = fields.Many2one('hr.employee')
+    is_damaged = fields.Boolean("Damaged")
+    description = fields.Char("Description")
+    
+    
 class Etsi_Pullout_Inventory(models.Model):
 
     _name = 'etsi.pull_out.inventory'
@@ -962,3 +1181,9 @@ class Etsi_Pullout_Inventory(models.Model):
     serial_type = fields.Selection([('catv', 'CATV'),('modem', 'BROADBAND')], default='catv')
     
     # count = fields.Char('Count: ' default=data.example_count)
+    
+        # Additional
+    employee_number = fields.Many2one('hr.employee')
+    is_damaged = fields.Boolean("Damaged")
+    description = fields.Char("Description", required=True)
+
