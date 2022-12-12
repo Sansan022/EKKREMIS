@@ -150,7 +150,7 @@
       file="skycable_employee_inventory.view_all_pull_out_report"
       report_type="qweb-html"
       paperformat="landscape_format"
-      menu = "False"
+  
       />
       
    <!-- Print buttons -->

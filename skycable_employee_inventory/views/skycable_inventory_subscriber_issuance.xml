@@ -22,7 +22,7 @@
             </xpath>
             <!-- Hiding the teams page if subscriber issuance -->
             <xpath expr="//notebook/page[2]" position="attributes">
-                <attribute name="attrs">{'invisible': [('teller', 'in', ('subscriber','pull-out-return'))]}</attribute>
+                <attribute name="attrs">{'invisible': [('teller', 'in', ('subscriber','pull-out','pull-out-return'))]}</attribute>
             </xpath>
             
                <!-- Add One2many Field for subscriber issuance page -->

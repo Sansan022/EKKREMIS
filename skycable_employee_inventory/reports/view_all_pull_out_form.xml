@@ -7,7 +7,7 @@
             <t t-call="report.external_layout">
             <link rel="stylesheet" href="/team-configuration/static/src/css/style.css"/>
                 <div class="page">
-                    <table class="table table-condensed table-bordered"  style=" border: 1px solid;">
+                    
                     <h1 class="text-center">View All Pull-Out Serial</h1>
                             <br/>
 
@@ -15,58 +15,68 @@
                             <br/>
                             <br/>
                             <br/>
-                
+                    <table class="table table-condensed"  style=" border: 1px solid; page-break-inside: avoid;">
                         <thead  style=" border: 1px solid; ">
-                                <th><strong>Job Order</strong></th>
-                                <th><strong>Serial ID</strong></th>
-                                <th><strong>MAC ID</strong></th>
-                                <th><strong>Smart Card</strong></th>
-                                <th><strong>MAC ID</strong></th>
-                                <th><strong>Date Received</strong></th>
-                                <th><strong>Date of Delivery</strong></th>
+                                <th style=" border: 1px solid;"><strong>J. O.</strong></th>
+                                <th style=" border: 1px solid;"><strong>Type</strong></th>
+                                <th style=" border: 1px solid;"><strong>Description</strong></th>
+                                <th style=" border: 1px solid;"><strong>Serial no.</strong></th>
+                                <th style=" border: 1px solid;"><strong>Smart Card</strong></th>
+                                <th style=" border: 1px solid;"><strong>MAC ID</strong></th>
+                                <th style=" border: 1px solid;"><strong>Date Received</strong></th>
+                                <th style=" border: 1px solid;"><strong>Date of Delivery</strong></th>
                                 
-                                <th><strong>Date Returned</strong></th>
-                                <th><strong>Team</strong></th>
-                                <th><strong>Status</strong></th>
+                                <th style=" border: 1px solid;"><strong>Date Returned</strong></th>
+                                <!-- <th style=" border: 1px solid;"><strong>Team</strong></th> -->
+                                 <th style=" border: 1px solid;"><strong>Employee No.</strong></th> 
+                                <th style=" border: 1px solid;"><strong>Status</strong></th>
                                 <!-- <th><strong>Date Issued</strong></th> -->
                                 <!-- <th><strong>Date returned</strong></th> -->
                                 <!-- <th><strong>Team</strong></th> -->
-                                <th><strong>Transaction Number</strong></th>
+                                <th style=" border: 1px solid;"><strong>Transaction Number</strong></th>
                                 
                         </thead>
 
                         <tbody  style=" border: 1px solid; ">
                             <t t-foreach="table1" t-as="rec">
-                                <tr >
-                                    <td>
+                                <tr style=" border: 1px solid;">
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['job_number']"/>
                                     </td>
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['serial_type']"/>
                                     </td>
-                                    <td>
+                                    <td style=" border: 1px solid;">
+                                        <t t-esc="rec['description']"/>
+                                    </td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_serial']"/>
                                     </td>  
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_mac']"/>
                                     </td>
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_smart_card']"/>
                                     </td>
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_receive_date_in']"/>
                                     </td>
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_date_issued_in']"/>
                                     </td>
                                     
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_date_returned_in']"/>
                                     </td>
-                                    <td>
+                                    <!-- <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_teams_id']"/>
+                                    </td> -->
+                                    <td style=" border: 1px solid;">
+                                        <t t-esc="rec['employee_number']"/>
                                     </td>
-                                    <td>
+
+                                    
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['etsi_status']"/>
                                     </td>
                                     <!-- <td>
@@ -78,7 +88,7 @@
                                     <!-- <td>
                                         <t t-esc="rec['etsi_team_in']"/>
                                     </td> -->
-                                    <td>
+                                    <td style=" border: 1px solid;">
                                         <t t-esc="rec['transaction_number']"/>
                                     </td>  
                                     
@@ -88,8 +98,10 @@
                     </table>
                     <br/> <br/>
                     <br/> <br/>
+                    <div style=" page-break-inside: avoid;">
                         <h5 class="text-left">ENCODE BY: <span t-esc="request.env.user.name"/></h5>
                         <h5 class="text-left">SIGNATURE: ______________________</h5>
+                    </div>
                     <div class="col-xs-5" style=" position: absolute; top: 90px; left: 1px; ">
                         <!-- <t t-foreach="docs" t-as="o"> -->
                         <p><strong>Date:</strong>  <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"/></p>

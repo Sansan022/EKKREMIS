@@ -224,6 +224,7 @@
                 <!-- <field name="etsi_product_name"/> -->
 
                 <field name="serial_type"/>
+                <field name="description"/>
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
                 <field name="etsi_smart_card"/>
@@ -236,7 +237,8 @@
                 <field name="etsi_date_issued_in" />
                 <!-- PULL OUTS RETURNED TO SKY  -->
                 <field name="etsi_date_returned_in" />
-                <field name="etsi_teams_id" />
+                <!-- <field name="etsi_teams_id" /> -->
+                <field name="employee_number"/>
                 <field name="etsi_status"/>
                 <field name="transaction_number" />
 

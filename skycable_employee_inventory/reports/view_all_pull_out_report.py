@@ -12,16 +12,17 @@ class view_all_pull_out_report(models.AbstractModel):
       for rec in item1:
          vals = {
          'job_number': rec.job_number,
-         'serial_type': rec.serial_type,
+         'serial_type': rec.serial_type.upper(),
          'etsi_serial': rec.etsi_serial,
          'etsi_mac': rec.etsi_mac,
          'etsi_smart_card': rec.etsi_smart_card,
          'etsi_receive_date_in': rec.etsi_receive_date_in,
          'etsi_date_issued_in': rec.etsi_date_issued_in,
          'etsi_date_returned_in': rec.etsi_date_returned_in,
-         'etsi_teams_id': rec.etsi_teams_id,
+         'employee_number': rec.employee_number.name,
          'etsi_status': rec.etsi_status,
          'transaction_number': rec.transaction_number,
+         'description' : rec.description
          }
          table1.append(vals)
       docargs = {

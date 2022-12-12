@@ -233,7 +233,7 @@ class Return_list_holder(models.TransientModel):
                                 searched_ids.update({'etsi_date_returned_in': date_returned})
                                 searched_ids.update({'etsi_team_in': False})
                                 # update history
-                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number,'etsi_history_quantity': 1})]})
+                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number,'etsi_history_quantity': 1,'etsi_transaction_description':'Team Location to Warehouse'})]})
             
             # Damage Transaction
             if team_return_damaged: 
@@ -335,7 +335,7 @@ class Return_list_holder(models.TransientModel):
                                         searched_ids.update({'etsi_status': 'damaged'})
 
                                         # update history
-                                        searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Damaged Location','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Damaged','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number,'etsi_history_quantity': 1})]})
+                                        searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Damaged Location','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Damaged','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Damage Location'})]})
                         
             # Transfer Items
             if team_return_transfer or team_return or team_return_damaged: # Transfer list or Team Return list
@@ -388,7 +388,7 @@ class Return_list_holder(models.TransientModel):
 
                                 transfer_picking.update({'etsi_status': 'pending'}) # update product status in etsi_inventory -> Pending transfer
                                 # update history
-                                transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Normal Return)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1})]})
+                                transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Normal Return)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team Location to Warehouse'})]})
                                 issued_stats.update({'issued_field': 'Available'}) # update product status in move -> Available
 
                                 # Create data function for transfer items
@@ -437,7 +437,7 @@ class Return_list_holder(models.TransientModel):
                                 
                                 transfer_picking.update({'etsi_status': 'pending'}) # update product status in etsi_inventory -> Pending transfer
                                 # update history
-                                transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Damage Location)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1})]})
+                                transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Damage Location)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Damage Location'})]})
 
                                 # Create data function for transfer items
                                 return_transfer_function = self.env['stock.transfer.team.return'].create({
@@ -501,7 +501,7 @@ class Return_list_holder(models.TransientModel):
                             # update product status -> pending transfer
                             transfer_picking.update({'etsi_status': 'pending'}) 
                             # update history
-                            transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer Item','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1})]})
+                            transfer_picking.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer Item','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to another Team Location'})]})
 
                             if store_me_daddy: # check if list has value        
                                 # Create data function for transfer items
@@ -557,17 +557,17 @@ class Return_list_holder(models.TransientModel):
                                 inventory.update({'etsi_team_in': fin['team_to']}) # update team number
                                 inventory.update({'etsi_date_issued_in': datetime.today()}) # update date issued       
                                 # update history                        
-                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1})]})
+                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
                             elif fin['damaged'] == True: # if transfered item is damage
                                 inventory.update({'etsi_status': 'damaged'}) # update product status
                                 inventory.update({'etsi_team_in': fin['team_to']}) # update team number
                                 # update history                        
-                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Damaged Location)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Damaged','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1})]})
+                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Damaged Location)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Damaged','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Damage Location'})]})
                             else: # if not installed
                                 inventory.update({'etsi_status': 'available'}) # update product status -> available
                                 inventory.update({'etsi_date_returned_in': datetime.today()}) # update date returned
                                 # update history
-                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Normal Return)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1})]})
+                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Normal Return)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1,'etsi_transaction_description':'Team Location to Warehouse'})]})
                 
                 # # Delete done transactions
                 # for list_trans in trans_ako:
