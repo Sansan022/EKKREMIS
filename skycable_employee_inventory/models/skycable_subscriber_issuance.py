@@ -406,8 +406,6 @@ class Validate_Subscriber_Issuance_Child(models.Model):
             if rec.etsi_serial_product != False or rec.etsi_mac_product != False or rec.etsi_smart_card != False:
                 
                 if rec.etsi_serial_product != False or rec.etsi_mac_product != False or rec.etsi_smart_card != False:
-                    
-                    
                 
                     if rec.etsi_serial_product :
                         for ser in pm_search_sr_id:
