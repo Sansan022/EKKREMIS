@@ -25,7 +25,7 @@
         </xpath>
 
         <xpath expr="//button[2]" position="after">
-            <button name="testing1212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
+            <button name="testing121212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
         </xpath>
 
         </field>
