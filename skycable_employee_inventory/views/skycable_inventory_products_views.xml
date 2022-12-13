@@ -25,7 +25,7 @@
         </xpath>
 
         <xpath expr="//button[2]" position="after">
-            <button name="testing121212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
+            <button name="testing1212" string="Convert" type="object" attrs="{'invisible': [('internal_ref_name', '!=', 'drops')]}"/>
         </xpath>
 
         </field>
@@ -258,9 +258,6 @@
 
                 <field name="etsi_serial"/>
                 <field name="etsi_smart_card"/>
-
-                <field name="etsi_product_quantity"/>
-
                 <field name="etsi_employee_in" string="Employee" />
                 
                 
@@ -319,16 +316,8 @@
                         <field name="etsi_history_lines" nolabel="1"> 
                             <tree  editable="bottom" create="false" delete="false">
                                 <field name="etsi_operation"/>
-                                <field name="etsi_transaction_description"/>
-                                <field name="etsi_history_quantity"/>
                                 <field name="etsi_transaction_num"/>
-                                
-
-                                <field name="etsi_employee"/>
-                                <field name="etsi_teams"/>
-
                                 <field name="etsi_action_date"/>
-                                <field name="etsi_status"/>
                             </tree>
                         </field>
                     </group>
@@ -362,9 +351,6 @@
 
                 <field name="etsi_serial"/>
                 <field name="etsi_mac"/>
-                
-                <field name="etsi_product_quantity"/>
-
                 <field name="etsi_employee_in" string="Employee" />
                 
                 
@@ -432,8 +418,10 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group/field[@name='new_quantity']" position="attributes">
-                <attribute name="attrs">{'readonly' : [('internal_ref_name_2', '=', 'catv5'),('internal_ref_name_2', '=', 'broadband')]}</attribute>
+                <attribute name="attrs">{'invisible' :[('internal_ref_name_2', '!=', 'drops'),('internal_ref_name_2', '!=', 'others')]}</attribute>
+                <attribute name="widget">integer</attribute>
 
+                <!-- {'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]} -->
             </xpath>    
 
             <xpath expr="//group/field[@name='new_quantity']" position="after">
@@ -448,6 +436,7 @@
             <!-- CHANGE LOCATION TO REAFONLY -->
             <xpath expr="//group/field[4]" position="attributes">
                 <attribute name="readonly">True</attribute>
+                
             </xpath>
 
             <!-- ADDING EMPLOYEE NAME: THE WHO PUNCH THE PRODUCT -->
@@ -469,7 +458,7 @@
 
             
             <xpath expr="//group/field[7]" position="after">
-                <field name="new_quantity2"/>
+                <field name="new_quantity2" readonly='True' widget="integer"/>
             </xpath>
             <xpath expr="//group/field[8]" position="after">
                 <field name="date_time" />
@@ -477,13 +466,15 @@
 
 
             <xpath expr="//group" position="after">
+
+                 
                 
                 <notebook>
                     <page string="Product Items" attrs="{'invisible': [('internal_ref_name_2','=','catv5')]}">
                         <field name="etsi_product_items">
                             <tree editable="bottom">
-                                <field name="etsi_serial_product"/>
-                                <field name="etsi_mac_product" />
+                                <field name="etsi_serial_product" required="1"/>
+                                <field name="etsi_mac_product" required="1"/>
                                 <field name="etsi_status_product" invisible="True"/>
                                 <field name="etsi_product_id_product" invisible='True'></field>
                                 <field name="etsi_product_name_product" invisible='True'></field>
@@ -548,7 +539,9 @@
             </xpath> -->
 
             <xpath expr="//group/field[@name='new_quantity2']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <attribute name="attrs">{'invisible' :['|',('internal_ref_name_2', '=', 'drops'),('internal_ref_name_2', '=', 'others')]}</attribute>
+                <attribute name="widget">integer</attribute>
+
             </xpath>   
 
 
@@ -602,6 +595,8 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_kanban_view"/>
         <field name="arch" type="xml">
+
+
             <xpath expr="//kanban/templates/t/div/div[2]/ul/li" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -609,7 +604,19 @@
             <!-- ADDING DROP CATEGORY TYPE -->
             <xpath expr="//kanban/templates/t/div/div[2]/ul/li" position="before">
                <li attrs="{'invisible': [('default_code', 'in', ('CATV5', 'BROADBAND'))]}">Drops Category Code:  <field name="drops_reference_id" /></li> 
+            </xpath>
+
+            <!-- <xpath expr="//kanban/templates/t/div/div[2]/ul/li[3]/field[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="widget">integer</attribute>
             </xpath>    
+            <xpath expr="//kanban/templates/t/div/div[2]/ul/li[3]/field[2]" position="before">
+               <field name="product_qty_modify_to_integer" />
+                <attribute name="widget">integer</attribute>
+            </xpath>    -->
+            
+
+
         </field>
 
 
@@ -620,7 +627,7 @@
       <record id="product_template_qty_available_tree_inherit" model="ir.ui.view">
         <field name="name">product.template.qty.available.tree.view</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/> 
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/> 	
         <field name="arch" type="xml">
 
             <!-- <xpath expr="//data/field//field[1]" position="attributes">
@@ -628,12 +635,48 @@
             </xpath> -->
             
 
-
+<!-- 
             <field name="uom_id" position="before">
                 <field name="qty_available" sum="Total" widget="integer"/>
-            </field>
+            </field> -->
+
+            <xpath expr="//field[@name='qty_available']" position="attributes">
+                <attribute name="widget">integer</attribute>
+                <attribute name="sum">Total</attribute>
+
+
+            </xpath>
+            <xpath expr="//field[@name='virtual_available']" position="attributes">
+                <attribute name="widget">integer</attribute>
+                <attribute name="sum">Total</attribute>
+            </xpath>
+
+
+            
 
         </field>
       </record>
+
+
+
+    <!-- ONHAND BECOME INTEGER -->
+      <record id="stock_quant_view_stock_quant_tree" model="ir.ui.view">
+        <field name="name">stock.quant.view.stock.quant.tree</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree"/> 	
+        <field name="arch" type="xml">
+
+            <xpath expr="//tree/field[2]" position="attributes">
+                <attribute name="widget">integer</attribute>
+            </xpath>
+            <xpath expr="//tree/field[10]" position="attributes">
+                <attribute name="widget">integer</attribute>
+            </xpath>
+
+        </field>
+      </record>
+
+
+
     </data>
 </odoo>

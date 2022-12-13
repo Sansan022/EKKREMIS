@@ -189,8 +189,8 @@ class Product_Quanty_On_Hand_Model(models.TransientModel):
     _rec_name = 'etsi_product_id_product'
 
 
-    etsi_serial_product = fields.Char(string="Serial ID")
-    etsi_mac_product = fields.Char(string="MAC ID")
+    etsi_serial_product = fields.Char(string="Serial ID", required=True)
+    etsi_mac_product = fields.Char(string="MAC ID", required=True)
     etsi_status_product = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used'),('returned', 'Returned'),('damaged', 'Damaged'),('onhand', 'On Hand'),('delivery', 'Delivery'),('delivered', 'Delivered')], string="Status", default='available', readonly=True)
     etsi_product_id_product = fields.Many2one('stock.change.product.qty')
     etsi_product_name_product = fields.Many2one(related='etsi_product_id_product.product_id',string="Product")
@@ -270,8 +270,8 @@ class Product_Quanty_On_Hand_Model_2(models.TransientModel):
     _rec_name = 'etsi_product_id_product_2'
 
 
-    etsi_serial_product_2 = fields.Char(string="Serial ID")
-    etsi_smart_card_product_2 = fields.Char(string="Smart Card ID")
+    etsi_serial_product_2 = fields.Char(string="Serial ID", required=True)
+    etsi_smart_card_product_2 = fields.Char(string="Smart Card ID", required=True)
     etsi_status_product_2 = fields.Selection([('available', 'Available'),('deployed', 'Deployed'),('used', 'Used'),('returned', 'Returned'),('damaged', 'Damaged'),('onhand', 'On Hand'),('delivery', 'Delivery'),('delivered', 'Delivered')], string="Status", default='available', readonly=True)
     etsi_product_id_product_2 = fields.Many2one('stock.change.product.qty')
     etsi_product_name_product_2 = fields.Many2one(related='etsi_product_id_product_2.product_id',string="Product")
@@ -532,6 +532,34 @@ class Inherit_Product_Quantity(models.TransientModel):
                     check = "Duplicate detected within the database \n Smart Card: {}".format(line_2.etsi_smart_card_product_2)
                     raise ValidationError(check)
 
+    # @api.onchange('etsi_product_items')
+    # def update_product_qty1(self):
+    #     count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+        
+    #     product = self.env['product.product'].browse(self.product_id.id)
+    #     warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+        
+    #     self.new_quantity = warehouse1_quantity
+    #     self.new_quantity2 = warehouse1_quantity
+
+    #     for record in self.etsi_product_items:
+    #         self.new_quantity += record.etsi_quantity
+    #         self.new_quantity2 = self.new_quantity 
+
+    # @api.onchange('etsi_product_items_2')
+    # def update_product_qty2(self):
+    #     count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
+
+    #     product = self.env['product.product'].browse(self.product_id.id)
+    #     warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
+
+    #     self.new_quantity = warehouse1_quantity
+    #     self.new_quantity2 = warehouse1_quantity
+
+    #     for record in self.etsi_product_items_2:
+    #         self.new_quantity += record.etsi_quantity_2
+    #         self.new_quantity2 = self.new_quantity 
+
     @api.onchange('etsi_product_items')
     def update_product_qty1(self):
         count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
@@ -540,11 +568,13 @@ class Inherit_Product_Quantity(models.TransientModel):
         warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
         
         self.new_quantity = warehouse1_quantity
-        self.new_quantity2 = warehouse1_quantity
+        # self.new_quantity2 = warehouse1_quantity
+        qty_count = 0
 
         for record in self.etsi_product_items:
-            self.new_quantity += record.etsi_quantity
-            self.new_quantity2 = self.new_quantity 
+            qty_count += record.etsi_quantity
+            self.new_quantity2 = qty_count
+        self.new_quantity = self.new_quantity + qty_count
 
     @api.onchange('etsi_product_items_2')
     def update_product_qty2(self):
@@ -554,39 +584,13 @@ class Inherit_Product_Quantity(models.TransientModel):
         warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
 
         self.new_quantity = warehouse1_quantity
-        self.new_quantity2 = warehouse1_quantity
+        # self.new_quantity2 = warehouse1_quantity
+        qty_count = 0
 
         for record in self.etsi_product_items_2:
-            self.new_quantity += record.etsi_quantity_2
-            self.new_quantity2 = self.new_quantity 
-
-    @api.onchange('etsi_product_items')
-    def update_product_qty1(self):
-        count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
-        
-        product = self.env['product.product'].browse(self.product_id.id)
-        warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
-        
-        self.new_quantity = warehouse1_quantity
-        self.new_quantity2 = warehouse1_quantity
-
-        for record in self.etsi_product_items:
-            self.new_quantity += record.etsi_quantity
-            self.new_quantity2 = self.new_quantity 
-
-    @api.onchange('etsi_product_items_2')
-    def update_product_qty2(self):
-        count = self.env['etsi.inventory'].search([('etsi_product_id.id', '=', self.product_id.id)])
-
-        product = self.env['product.product'].browse(self.product_id.id)
-        warehouse1_quantity = product.with_context({'location' : 'WH/Stock'}).qty_available
-
-        self.new_quantity = warehouse1_quantity
-        self.new_quantity2 = warehouse1_quantity
-
-        for record in self.etsi_product_items_2:
-            self.new_quantity += record.etsi_quantity_2
-            self.new_quantity2 = self.new_quantity 
+            qty_count += record.etsi_quantity_2
+            self.new_quantity2 = qty_count
+        self.new_quantity = self.new_quantity + qty_count
 
 
 
