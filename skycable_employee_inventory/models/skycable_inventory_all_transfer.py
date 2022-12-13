@@ -8,7 +8,7 @@ from datetime import datetime
 
 class EtsiTeams(models.Model):
     _inherit = "stock.picking"
-    # _rec_name = "etsi_teams_id"
+    _rec_name = "etsi_teams_id"
     etsi_teams_id = fields.Many2one('team.configuration', string="Teams Number")
     etsi_teams_member_no = fields.Char(string="Employee Number")
     etsi_teams_member_name = fields.Many2one('hr.employee',string="Employee Name")
@@ -36,7 +36,6 @@ class EtsiTeams(models.Model):
             rec.etsi_teams_id = database2.id
             
 
-    #  FOR PUSH           
     @api.multi
     @api.onchange('etsi_teams_id')
     def auto_fill_details_02(self):
@@ -50,7 +49,7 @@ class EtsiTeams(models.Model):
                 'etsi_teams_temporary' : '',
                 }))
             self.etsi_teams_line_ids = table
-#FOR SELECTING TEAM CODE ONLY WITH EMPTY EMPLOYEE NAME AND NUMBER 
+#FOR SELECTING TEAM CODE ONLY EMPTY EMPLOYEE NAME AND NUMBER 
         else:
             for lis in self:
                 database = self.env['team.configuration'].search([('id', '=' ,lis.etsi_teams_id.id)])
@@ -64,7 +63,16 @@ class EtsiTeams(models.Model):
                 'etsi_teams_temporary' : '',
                 }))
             self.etsi_teams_line_ids = table
-# END OF PUSH
+                
+
+            # for rec3 in self.etsi_teams_id.team_members:
+            #     table.append((0,0,{
+            #     'team_members_lines': rec3.team_members_lines,
+            #     'etsi_teams_replace' :'' ,
+            #     'etsi_teams_temporary' : '',
+            #     }))
+            # self.etsi_teams_line_ids = table2
+            
        
         
     # @api.model 
