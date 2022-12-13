@@ -154,6 +154,7 @@ class Validate_Subscriber_Issuance(models.Model):
         for rec in self:
             if rec.teller == 'subscriber':
                 picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+		picking_id_checker = self.env['stock.picking'].search([('name', '=', self.name)])
 
                 search_name = self.env['stock.picking'].search([('name','=',rec.name)])
                 picking_checker = self.env['stock.picking'].search([('picking_type_id.name','=', 'Subscriber Issuance')])
@@ -232,7 +233,7 @@ class Validate_Subscriber_Issuance(models.Model):
                                 
                                 invento.update({'etsi_status': 'pending'}) # update product status in etsi_inventory -> Pending transfer
                                 # update history
-                                invento.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':plines_issued.teams_to.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
+                                invento.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking_id_checker.id,'etsi_action_date': datetime.today(),'etsi_status':'Pending Transfer','etsi_employee':self.env.user.id,'etsi_teams':plines_issued.teams_to.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
                                 
                                 return_transfer = self.env['stock.transfer.team.return'].create({ # Create data for transfer items
                                     'product_id': plines_issued.product_id.id,
@@ -273,7 +274,7 @@ class Validate_Subscriber_Issuance(models.Model):
                                         if searched_ids.etsi_serial in final:
                                             searched_ids.update({'etsi_status': 'used','etsi_date_issued_in': fields.date.today()})
                                             # update history
-                                            searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Subscriber Issuance','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':searched_ids.etsi_team_in.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
+                                            searched_ids.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Subscriber Issuance','etsi_transaction_num':picking_id_checker.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':searched_ids.etsi_team_in.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
                                         
                         # If transfer transaction is finished / confirmed update product location
                         for list_trans in trans_float_data:
@@ -306,7 +307,7 @@ class Validate_Subscriber_Issuance(models.Model):
                                     inventory.update({'etsi_status': 'used'}) # update product status 
                                     
                                     # update history
-                                    inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
+                                    inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Transfer (Subscriber Issuance)','etsi_transaction_num':picking_id_checker.id,'etsi_action_date': datetime.today(),'etsi_status':'Used','etsi_employee':self.env.user.id,'etsi_teams':fin['team_to'],'etsi_history_quantity': 1,'etsi_transaction_description':'Team to Partner Location'})]})
                         
                         # # Delete done transactions
                         # for list_trans in trans_float_data:
