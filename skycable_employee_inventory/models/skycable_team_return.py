@@ -233,7 +233,7 @@ class Return_list_holder(models.TransientModel):
                                 searched_ids.update({'etsi_date_returned_in': date_returned})
                                 searched_ids.update({'etsi_team_in': False})
                                 # update history
-                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.team_number,'etsi_history_quantity': 1,'etsi_transaction_description':'Team Location to Warehouse'})]})
+                                inventory.write({'etsi_history_lines': [(0,0, {'etsi_operation':'Team Return','etsi_transaction_num':picking.id,'etsi_action_date': datetime.today(),'etsi_status':'Available','etsi_employee':self.env.user.id,'etsi_teams':picking.etsi_teams_id.id,'etsi_history_quantity': 1,'etsi_transaction_description':'Team Location to Warehouse'})]})
             
             # Damage Transaction
             if team_return_damaged: 
